@@ -1,9 +1,15 @@
-import Image from "next/image";
+import TestList from "@/app/components/TestList";
+import TaskGraph from "@/app/components/TaskGraph";
+import Options from "@/app/components/Options";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>Adatest App!!!</div>
+    <main className="flex h-screen flex-col items-center p-1">
+      <div className={'flex justify-between w-full h-60 border-black border-2'}>
+        <TaskGraph />
+        <Options />
+      </div>
+      <TestList />
     </main>
   );
 }
