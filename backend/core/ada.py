@@ -118,7 +118,7 @@ def create_obj():
     lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
     lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
-    OPENAI_API_KEY = "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"
+    # OPENAI_API_KEY = "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"
     generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
     browser = test_tree.adapt(lce_pipeline, generator)
     df1 = browser.test_tree._tests
