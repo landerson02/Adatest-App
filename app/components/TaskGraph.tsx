@@ -1,7 +1,7 @@
 
 const TaskGraph = () => {
     return (
-        <div className={'right-0 border-red-800 border-2 w-1/2 justify-center items-center flex flex-col'}>
+        <div className={'border-r-2 border-gray-600 w-1/2 justify-center items-center flex flex-col'}>
             <h1>Task Graph</h1>
         </div>
     )

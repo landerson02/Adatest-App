@@ -4,21 +4,33 @@ import React, { useState, useEffect } from 'react';
 import { testType, createFakeTests } from "@/app/DummyTests";
 import Row from "@/app/components/Row";
 
-const TestList = () => {
-  const [tests, setTests] = useState<testType[]>([]);
+type testListProps = {
+  tests: testType[]
+}
 
-  useEffect(() => {
-    console.log('creating tests')
-    const newTests = createFakeTests();
-    setTests(newTests);
-  }, []);
-
-  console.log(tests);
+const TestList = ({ tests } : testListProps) => {
+  // const [tests, setTests] = useState<testType[]>([]);
+  //
+  // useEffect(() => {
+  //   console.log('creating tests')
+  //   const newTests = createFakeTests();
+  //   setTests(newTests);
+  // }, []);
+  //
+  // console.log(tests);
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll'}>
+        <div className={'sticky top-0 border-black border-b-2 w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-300'}>
+          <div className={'text-xl'}>Test</div>
+          <div className={'ml-auto flex w-[30%] justify-between pr-2'}>
+            <div className={'text-xl w-[33%]'}>Label</div>
+            <div className={'text-xl w-[33%]'}>Output</div>
+            <div className={'text-xl w-[33%]'}>Decide</div>
+          </div>
+        </div>
       {tests && tests.map((test: testType, index: number) => {
-        return <Row key={index} test={test} />
-      })}
+        return <Row key={index} test={test}/>
+        })}
     </div>
   );
 }
