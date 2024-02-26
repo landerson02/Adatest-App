@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from . models import *
 from rest_framework.response import Response 
 from rest_framework import generics
-from . serializer import *
+from . serializer import ReactSerializer, TestSerializer
 
 from django_nextjs.render import render_nextjs_page_sync
 
