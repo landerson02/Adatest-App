@@ -1,7 +1,7 @@
-from django.urls import path 
-from .views import TestView
+from django.urls import path, re_path
+from core import views
 
 
 urlpatterns = [
-    path('', TestView.as_view()),
+    re_path(r'^core/tests/$', views.test_list),
 ]

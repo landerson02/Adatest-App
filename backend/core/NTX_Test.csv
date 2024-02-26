@@ -1,0 +1,90 @@
+,topic,input,output,label,labeler,description,author,model score
+001d29ac38a846eaaeb4b670842d4685,,Potential energy is energy at rest,Not Found,pass,adatest_default,,,
+002747a9059644b7bf1c96bea7dc8f0e,,Potential energy is energy that a body has because of its position relative to other bodies,Not Found,pass,adatest_default,,,
+00b80e0768c94a25acf2cea654b068a8,,Potential energy is energy stored in the car at the top of the initial drop,Not Found,pass,adatest_default,,,
+01450c14171d44559113adc39ede0d3f,,Potential energy is the stored energy of the rollercoaster car when it is not moving.,Not Found,pass,adatest_default,,,
+018b67acb8ff427f9c79a5878c2b895a,,Potential energy is energy that has the potential to become another form of energy.,Not Found,pass,adatest_default,,,
+01c984ad5b154bd5b67fc226056e93ad,,Kinetic energy is energy in motion,Not Found,pass,adatest_default,,,
+022942349c854e678b4623f37fdd6cd6,,Kinetic energy is energy that the car has because it is moving,Not Found,pass,adatest_default,,,
+0251c3c0a42641159eab7801b48a643d,,Kinetic energy is the work needed to accelerate the roller coaster car from rest,Not Found,pass,adatest_default,,,
+0267f558bd524ed5a5e6000ee34f93a7,,Kinetic energy is determined by the mass of the car and the velocity with which it is moving.,Not Found,pass,adatest_default,,,
+027b1e0fb8534699aa1096a2e76cafd4,,Kinetic energy is is what quantifies the work an object performs due to its motion,Not Found,pass,adatest_default,,,
+02b466f255854b3fb3d1f94e81e4e043,,"The Law of Conservation of energy states energy cannot be created or destroyed, only transformed.",Acceptable,pass,adatest_default,,,
+03ed93076c154486892e662b4609c03b,,The Law of Conservation of energy states the total energy of an isolated system remains constant.,Acceptable,pass,adatest_default,,,
+045f4ad7e36a4f1694f9260a6d8f32ab,,"The Law of Conservation of energy states energy can be converted from one form to another, but never created or destroyed.",Acceptable,pass,adatest_default,,,
+047994adde9147f59734ee1a3c2072ab,,"The Law of Conservation of energy states that if there were no friction, the potential energy at the top of the rollercoaster would be the same as the kinetic energy at the bottom of the drop..",Acceptable,pass,adatest_default,,,
+0580c4fc2d9241abbd344ded95fc1c89,,The Law of Conservation of energy states energy cannot be created or destroyed.,Acceptable,pass,adatest_default,,,
+05ce2308a4974026ac1ea52be07fbea3,,Potential energy is energy in motion,Not Found,pass,adatest_default,,,
+0656b6ed109d48b387649b4229481777,,Potential energy is energy lost as the car goes down the hill,Not Found,pass,adatest_default,,,
+06612f01aa104a99979c10941de0954a,,Potential energy is opposite of kinetic energy,Not Found,pass,adatest_default,,,
+069b188aee224d99a5738b9792eeacf0,,Potential energy is energy that is conserved by not moving.,Not Found,pass,adatest_default,,,
+07affcfaa3f045aebed2861e6df89234,,Potential energy is energy that is lost due to heat,Not Found,pass,adatest_default,,,
+082e08df8bc2488f98e389017ebba892,,Kinetic energy is energy at rest,Not Found,pass,adatest_default,,,
+08caa2fdbc4f4b5bad80fa3e7d739ae0,,Kinetic energy is never lost nor gained as the car moves,Acceptable,fail,adatest_default,,,
+08ffd2eb32f641d2a04283abbaa896dc,,Kinetic energy is the opposite of potantial energy,Not Found,pass,adatest_default,,,
+097d28b1c9414e5dac47193f9bd53b8c,,Kinetic energy is energy that is spent by moving up and down the hill.,Not Found,pass,adatest_default,,,
+0a3a12c82c53428d8b17aa33f6b893c0,,Kinetic energy is energy that is lost due to heat,Not Found,pass,adatest_default,,,
+0aa69a5294f34ceda9c838318c0fba4f,,"The Law of Conservation of energy states energy can be created or destroyed, not transformed.",Acceptable,fail,adatest_default,,,
+0b26e161b459453fb3f3e1401f4251b5,,The Law of Conservation of energy states the total energy of an isolated system will change.,Not Found,fail,adatest_default,,,
+0b2e5161d82d40bf8588a896c0a88333,,The Law of Conservation of energy states that the energy of a closed system will change..,Acceptable,fail,adatest_default,,,
+0b323b2820e147429d92a38a985fdbe3,,"The Law of Conservation of energy states in an open system, energy is conserved.",Acceptable,fail,adatest_default,,,
+0b43004d2bf74213b38ef2713233fbc4,,The Law of Conservation of energy states kinetic energy is always equal to potential energy.,Acceptable,fail,adatest_default,,,
+0bc5cee04a3d4b5dad2a92baaa95a831,,Potential energy is 4 Joules at the top of the roller coaster,Not Found,pass,adatest_default,,,
+0c171e43ba084d679edc7364b3c1a506,,Potential energy is measured in Joules,Not Found,pass,adatest_default,,,
+0c1e655299d14a028445d6ff7cb370a4,,Potential energy is equal to m*h*9.8,Not Found,pass,adatest_default,,,
+0c54e39931e249d2bcb96b6b049a0ec9,,Potential energy is when there is more potential energy at the top of the hill than the bottom,Not Found,pass,adatest_default,,,
+0dcc7940014141f88182e251c2ab531d,,Potential energy is is changed into kinetic energy as the car goes down the hill.,Not Found,pass,adatest_default,,,
+0e2a8609aa2c4c80b2ae9488ccd99bdb,,Kinetic energy is 4 Joules at the bottom of the roller coaster,Not Found,pass,adatest_default,,,
+0e80b1240efa4bf6921711586fa7514e,,Kinetic energy is measured in Joules,Not Found,pass,adatest_default,,,
+0f6e3d9cb5364cd39d96bfa319c4b309,,Kinetic energy is equal to .5*m*v^2,Not Found,pass,adatest_default,,,
+0ff34adb69b1481c81cae4ba2168b79d,,Kinetic energy is when there is more kinetic energy at the bottom of the hill than at the top.,Not Found,pass,adatest_default,,,
+10844b75badf4025b3815da641b15cfc,,Kinetic energy is what transforms into heat through friction,Acceptable,fail,adatest_default,,,
+11a784e3742141729221bdd0f203e652,,The Law of Conservation of energy states K1 + U1 = K2 + U2.,Acceptable,fail,adatest_default,,,
+1217b88f9014482e956ddba70b6d5b7a,,The Law of Conservation of energy states potential energy transforms into kinetic energy.,Acceptable,fail,adatest_default,,,
+1286d5e4e42d4ac1945885b995277662,,"The Law of Conservation of energy states As the car goes down the hill, some energy is lost to friction as heat.",Not Found,fail,adatest_default,,,
+1293a59da0684a2abf9fb1003c5ea2a0,,"The Law of Conservation of energy states If there were no friction, the energy would be the same at the start and at the finish..",Acceptable,fail,adatest_default,,,
+6ec30486b6f84d6f82f1df7b81f33025,,,,topic_marker,imputed,,,
+66b2b9218a0b4a028e99ece02184fafa,,Potential energy is energy at rest,insufficient,fail,imputed,,,0.7422675622835209
+6da743028b0e40679c35f510261328e2,,Potential energy is energy that a body has because of its position relative to other bodies,insufficient,fail,imputed,,,0.7407094739514676
+091265b9b51b4cbebdcb7ea74817bf64,,Potential energy is energy stored in the car at the top of the initial drop,insufficient,fail,imputed,,,0.7111738895438312
+8080ba4bb4ad42db999b11a1119170ef,,Potential energy is the stored energy of the rollercoaster car when it is not moving.,insufficient,fail,imputed,,,0.81949860363092
+c806ac60c5b34f31b88a5b8e8c1c7a34,,Potential energy is energy that has the potential to become another form of energy.,insufficient,fail,imputed,,,0.7604132625833219
+8012cfb62ebf402bb7923e8a290ab194,,Kinetic energy is energy in motion,insufficient,fail,imputed,,,0.6851842922671908
+250cb9929c93492582745c09886af153,,Kinetic energy is energy that the car has because it is moving,insufficient,fail,imputed,,,0.6585007373483995
+65ca7ec72f9245d194317375e511eb65,,Kinetic energy is the work needed to accelerate the roller coaster car from rest,not found,fail,imputed,,,0.8632353957258164
+5e98b4c75a8f4d0899cc795b36e618c0,,Kinetic energy is determined by the mass of the car and the velocity with which it is moving.,not found,fail,imputed,,,0.8184130552072885
+bde64c80080548e78d002974f2b3593d,,Kinetic energy is is what quantifies the work an object performs due to its motion,insufficient,fail,imputed,,,0.7174309857060742
+b47afa8e8d7e4df3bdd34956e0e2ddb9,,"The Law of Conservation of energy states energy cannot be created or destroyed, only transformed.",acceptable,fail,imputed,,,0.7038748666701237
+8034da5be9124293855dc946ade07950,,The Law of Conservation of energy states the total energy of an isolated system remains constant.,acceptable,fail,imputed,,,0.6033443985524288
+36dc5299b0454c9785ebae224c508d6e,,"The Law of Conservation of energy states energy can be converted from one form to another, but never created or destroyed.",acceptable,fail,imputed,,,0.696403444120207
+eb2bd72060f74084a3492aae1acb7ac6,,"The Law of Conservation of energy states that if there were no friction, the potential energy at the top of the rollercoaster would be the same as the kinetic energy at the bottom of the drop..",acceptable,fail,imputed,,,0.5964830626853204
+9c34cdadaf224a798e9fd5a4a1ad6d31,,The Law of Conservation of energy states energy cannot be created or destroyed.,acceptable,fail,imputed,,,0.6670206294122629
+a173bc601ba44ed8a894adc10e777b28,,Potential energy is energy in motion,insufficient,fail,imputed,,,0.7108714257428098
+75daafab1213434db8515b4a2b8e521a,,Potential energy is energy lost as the car goes down the hill,insufficient,fail,imputed,,,0.5997911800635425
+263f8a19dfd44bcfa8948bcc0a5687e3,,Potential energy is opposite of kinetic energy,insufficient,fail,imputed,,,0.7455587679487039
+4a874009c8dc480c977528fa3320e088,,Potential energy is energy that is conserved by not moving.,acceptable,fail,imputed,,,0.6344643358479203
+5d78b6214fcb4482ae534e186857e8c8,,Potential energy is energy that is lost due to heat,insufficient,fail,imputed,,,0.5800393021217866
+6d71757cdc954539a2bd45b22ea79107,,Kinetic energy is energy at rest,insufficient,fail,imputed,,,0.7474049108744737
+7a9c190a024b4aa794098c705f6faa28,,Kinetic energy is never lost nor gained as the car moves,acceptable,fail,imputed,,,0.5772225284845013
+4a3bf1de3a0149fe8b945ff5159d5f86,,Kinetic energy is the opposite of potantial energy,insufficient,fail,imputed,,,0.775919778368825
+000c7851bb9a45f78a1b9ecab6a42e41,,Kinetic energy is energy that is spent by moving up and down the hill.,insufficient,fail,imputed,,,0.6908896685413731
+752bae57431e4e0cbbe087bbcc3b1f8e,,Kinetic energy is energy that is lost due to heat,insufficient,fail,imputed,,,0.5636329048979922
+0cd26aa2e38847339b1755fd532f0f8c,,"The Law of Conservation of energy states energy can be created or destroyed, not transformed.",acceptable,pass,imputed,,,0.4623757859992247
+b470be261cdf4b95b1512b03ac1771c6,,The Law of Conservation of energy states the total energy of an isolated system will change.,acceptable,pass,imputed,,,0.27190294407408705
+29b39d0b593b4b028254025aae599344,,The Law of Conservation of energy states that the energy of a closed system will change..,acceptable,pass,imputed,,,0.3335152615560572
+885a37e9f6fe46c3a47916d290a61f18,,"The Law of Conservation of energy states in an open system, energy is conserved.",acceptable,pass,imputed,,,0.3960823745316432
+ed327e3e4a9444ffbddccfbe8faa89bb,,The Law of Conservation of energy states kinetic energy is always equal to potential energy.,acceptable,pass,imputed,,,0.48340510885753546
+f51e939cf2fc4ddaa83777bb05d56c1f,,Potential energy is 4 Joules at the top of the roller coaster,not found,fail,imputed,,,0.8745591893711316
+29a08504e87e47c2a8b4f403bd985cc2,,Potential energy is measured in Joules,insufficient,fail,imputed,,,0.7044370912844259
+1743325df0194ea8b533db21b6d89ee5,,Potential energy is equal to m*h*9.8,insufficient,fail,imputed,,,0.7599231982216939
+96e65f65746245e59fb6aae0b3c03953,,Potential energy is when there is more potential energy at the top of the hill than the bottom,insufficient,fail,imputed,,,0.7024435162876126
+e943c7444d2d4633ac2bfbca8cb47061,,Potential energy is is changed into kinetic energy as the car goes down the hill.,insufficient,fail,imputed,,,0.6624470588977599
+dea38cf547784fddb012326b95a324cc,,Kinetic energy is 4 Joules at the bottom of the roller coaster,not found,fail,imputed,,,0.8802324596957265
+a6a6fb462bb14c608548cc1020029eb3,,Kinetic energy is measured in Joules,not found,fail,imputed,,,0.8497415588597995
+d2f63a06a0c8430eab930dd733674792,,Kinetic energy is equal to .5*m*v^2,insufficient,fail,imputed,,,0.7383669483198655
+3c16df7bd5f944f19b11e79238a498ab,,Kinetic energy is when there is more kinetic energy at the bottom of the hill than at the top.,not found,fail,imputed,,,0.8343838436932525
+ee8cef22f41942a6a9ad717af61646d5,,Kinetic energy is what transforms into heat through friction,insufficient,fail,imputed,,,0.5223108285872078
+c1c938315f814249bc3638a5c2b633ae,,The Law of Conservation of energy states K1 + U1 = K2 + U2.,acceptable,pass,imputed,,,0.31204636650528667
+0d4f88f8d2074b29a3b6d7500d38ad6f,,The Law of Conservation of energy states potential energy transforms into kinetic energy.,acceptable,pass,imputed,,,0.402846524524521
+2c393427ad8345e0b64f7133f80415fd,,"The Law of Conservation of energy states As the car goes down the hill, some energy is lost to friction as heat.",acceptable,pass,imputed,,,0.2882520026135372
+2fd047984a45451b95ab24e10e270dc2,,"The Law of Conservation of energy states If there were no friction, the energy would be the same at the start and at the finish..",acceptable,pass,imputed,,,0.38750044265395306

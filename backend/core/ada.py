@@ -1,6 +1,7 @@
 from adatest import _prompt_builder
 from adatest import TestTree
 from adatest import * 
+import os 
 
 from adatest import generators
 import pandas as pd
@@ -92,16 +93,16 @@ class AdaClass():
     def check_col(self):
         list = []
         for row in self.df.iterrows():
-            if row['Topic'].contains('suggestions'): 
+            if row['topic'].contains('suggestions'): 
                 list.append("Unknown")
             else: 
                 list.append("Inputed Test")
-        self.df["Validity"] = list
+        self.df["validity"] = list
 
     def compute_statistics(self): 
         count = 0
         for row in self.df.iterrows(): 
-            if row['Topic'].contains('suggestions'): 
+            if row['topic'].contains('suggestions'): 
                 if row["Validity"] == "Approved": 
                     count+=1 
         return count 
@@ -113,12 +114,14 @@ class AdaClass():
 
 
 def create_obj(): 
-    test_tree = TestTree(pd.read_csv("NTX_Test.csv", index_col=0, dtype=str, keep_default_na=False))
+
+    csv_filename = os.path.join(os.path.dirname(__file__), 'NTX_Test.csv')
+    test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
     lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
     lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
-    # OPENAI_API_KEY = "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"
+    OPENAI_API_KEY = ""
     generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
     browser = test_tree.adapt(lce_pipeline, generator)
     df1 = browser.test_tree._tests
@@ -126,3 +129,4 @@ def create_obj():
 
     return obj
 
+obj = create_obj()
