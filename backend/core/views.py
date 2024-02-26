@@ -9,28 +9,26 @@ from rest_framework.response import Response
 from rest_framework import generics
 from . serializer import ReactSerializer, TestSerializer
 
-<<<<<<< HEAD
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
 
+from core.ada import * 
 
-
-=======
 from django_nextjs.render import render_nextjs_page_sync
 
 def index(request):
     return render_nextjs_page_sync(request)
      # return HttpResponse("Hello, world. You're at the polls index.")
->>>>>>> 6295df63214b028f53972c747dde70db60cdc6ae
 
 # Create your views here.
 
+obj = create_obj()
 
 
-<<<<<<< HEAD
+
+
 @api_view(['GET', 'POST'])
 def test_list(request):
     if request.method == 'GET':
@@ -41,18 +39,14 @@ def test_list(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = TestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-=======
-class TestView(generics.ListAPIView):
-    queryset = Test.objects.all()
-    serializer_class = TestSerializer
->>>>>>> 6295df63214b028f53972c747dde70db60cdc6ae
-
+        obj.generate() 
+        data = obj.df 
+        for index, row in data.iterrows():
+          test = Test(id=index, title=row['input'], topic = row['topic'], label = row['output'])
+          if Test.objects.filter(title=test_list.title).exists(): # does not work with get
+               pass
+          else: 
+               obj.save()
 
 
 class ReactView(APIView):
