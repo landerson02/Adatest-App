@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'core.apps.CoreConfig', 
     'rest_framework'
+    'django_nextjs',
+    'core'
 ]
 
 MIDDLEWARE = [
