@@ -1,11 +1,9 @@
-from adatest import _prompt_builder
-from adatest import TestTree
-from adatest import * 
-import os 
+from adatest import _prompt_builder, generators
 
-from adatest import generators
+import os
+
 import pandas as pd
-
+from adatest import *
 
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from transformers import AutoModelForSequenceClassification, AutoTokenizer

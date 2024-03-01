@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'core.apps.CoreConfig', 
+    'core.apps.CoreConfig',
     'rest_framework',
     'django_nextjs',
     # 'core'
