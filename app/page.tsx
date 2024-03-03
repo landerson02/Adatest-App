@@ -18,26 +18,15 @@ export default function Home() {
   useEffect(() => {
     async function fetchTests() {
       const data: testType[] = await getTests();
-      console.log(data);
+      // console.log(data);
       setTests(data);
       setIsCurrent(true);
     }
-    console.log('loading tests');
     fetchTests();
   }, [isCurrent]);
 
-  // useEffect(() => {
-  //   // generate tests
-  //   async function fetchTests() {
-  //     const data: testType[] = await generateTests();
-  //     console.log(data);
-  //     setTests(data);
-  //     console.log(123);
-  //     setIsCurrent(true);
-  //   }
-  //   fetchTests();
-  // }, []);
 
+  // Function for when the generate button is clicked
   async function onGenerate() {
     setIsGenerating(true);
     await generateTests();
