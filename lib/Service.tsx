@@ -1,6 +1,6 @@
 
 export async function getTests() {
-  const url = 'core/tests';
+  const url = 'core/tests/';
   try {
     const res = await fetch(url, {
       cache: "no-store",
@@ -17,9 +17,9 @@ export async function getTests() {
 }
 
 export async function generateTests() {
-  const url = 'core/tests';
+  const url = 'core/tests/';
   try {
-    fetch(url, {
+     await fetch(url, {
       method: 'POST',
       cache: "no-store",
     });
