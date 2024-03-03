@@ -1,4 +1,4 @@
-import {testType, createFakeTests} from "@/app/DummyTests";
+import { testType } from "@/lib/Types";
 import Buttons from "@/app/components/Buttons";
 
 type rowProps = {
@@ -15,7 +15,7 @@ const Row = ({ test } : rowProps) => {
         </div>
         <div className={'text-xl pr-8 w-[33%] flex justify-center'}>{test.label}</div>
         <div className={'w-[33%]'}>
-          <Buttons/>
+          <Buttons test={test}/>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
-'use client'
+// 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { testType, createFakeTests } from "@/app/DummyTests";
+import {testType} from "@/lib/Types";
 import Row from "@/app/components/Row";
 
 type testListProps = {
