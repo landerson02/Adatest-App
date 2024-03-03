@@ -8,7 +8,6 @@ import {generateTests, getTests} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestContextProvider} from "@/lib/TestContext";
-import localFont from "next/dist/compiled/@next/font/dist/local";
 
 export default function Home() {
   const [tests, setTests] = useState<testType[]>([]);
