@@ -5,9 +5,13 @@ from . import views
 from .views import index
 
 urlpatterns = [
-    re_path(r'^core/tests/$', views.test_list),
+    path('core/tests/get', views.test_get),
     # path('', TestView.as_view()),
     path('', index, name='index'),
     path('', include("django_nextjs.urls")),
     path('api/react/', views.ReactView.as_view(), name='react'),
+
+    path('core/tests/post', views.test_generate),
+    path('core/tests/clear', views.test_clear),
+    path('core/tests/delete', views.test_delete)
 ]
