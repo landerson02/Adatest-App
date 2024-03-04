@@ -4,7 +4,7 @@ import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
 import { useState, useEffect } from "react";
-import {generateTests, getTests} from "@/lib/Service";
+import {clearTests, generateTests, getTests} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestContextProvider} from "@/lib/TestContext";
@@ -36,6 +36,11 @@ export default function Home() {
     setIsGenerating(false);
   }
 
+  async function onClear() {
+    await clearTests();
+    setIsCurrent(false);
+  }
+
   useEffect(() => {
     let oldTests = tests;
     // Filter tests based on how they are grouped
@@ -61,10 +66,13 @@ export default function Home() {
           <TaskGraph />
           <Options onGroupByFunc={onGroupBy}/>
         </div>
-        {isGenerating ?
-          <div className={'text-yellow-600'}>Generating...</div>
-          : <GenerateButton onClickFunc={onGenerate}/>
-        }
+        <div className={'w-[30%] h-8 flex justify-between items-center'}>
+          {isGenerating ?
+            <div className={'text-yellow-600'}>Generating...</div>
+            : <GenerateButton onClickFunc={onGenerate}/>
+          }
+          <button onClick={onClear} className={'w-24 h-8 bg-red-600 hover:bg-red-800'}>Clear</button>
+        </div>
         {/*<GenerateButton onClickFunc={onGenerate}/>*/}
         {groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}
         {/*<TestList tests={tests} />*/}

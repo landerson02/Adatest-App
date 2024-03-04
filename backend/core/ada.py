@@ -127,5 +127,5 @@ def create_obj():
 
     return obj
 
-obj = create_obj()
-print(obj.df)
+# obj = create_obj()
+# print(obj.df)
