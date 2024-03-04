@@ -11,6 +11,13 @@ import {TestContextProvider} from "@/lib/TestContext";
 
 export default function Home() {
   const [tests, setTests] = useState<testType[]>([]);
+
+  const [currentTopic, setCurrentTopic] = useState<string>('PE');
+
+  const [testsPE, setTestsPE] = useState<testType[]>([]);
+  const [testsKE, setTestsKE] = useState<testType[]>([]);
+  const [testsLCE, setTestsLCE] = useState<testType[]>([]);
+
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [groupedBy, setGroupedBy] = useState<string>('');
@@ -44,14 +51,13 @@ export default function Home() {
   useEffect(() => {
     let oldTests = tests;
     // Filter tests based on how they are grouped
-    if(groupedBy == 'suggestion') {
-      oldTests.filter((test) => test.topic == '/__suggestions__');
-    } else if(groupedBy == 'acceptable') {
-      oldTests.filter((test) => test.label == 'acceptable' || test.label == 'Acceptable');
+    if(groupedBy == 'acceptable') {
+      oldTests = oldTests.filter((test) => test.label == 'acceptable' || test.label == 'Acceptable');
     } else if(groupedBy == 'unacceptable') {
-      oldTests.filter((test) => test.label == 'unacceptable' || test.label == 'Unacceptable');
+      oldTests = oldTests.filter((test) => test.label == 'unacceptable' || test.label == 'Unacceptable');
     }
     setGroupedTests(oldTests);
+    console.log(groupedTests);
   }, [groupedBy]);
 
   function onGroupBy(groupBy: string) {

@@ -1,6 +1,6 @@
 
 export interface testType {
-  id: number,
+  id: string,
   label: string, // Acceptable or Unacceptable
   title: string, // Actual test
   topic: string, // Concept - PE, KE, LCE
