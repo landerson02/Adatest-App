@@ -126,3 +126,6 @@ def create_obj():
     obj = AdaClass(browser)
 
     return obj
+
+obj = create_obj()
+print(obj.df)
