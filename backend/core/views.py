@@ -19,7 +19,7 @@ obj = create_obj()
 
 
 @api_view(['GET', 'POST'])
-def test_list(request):
+def test_manage(request):
     if request.method == 'GET':
         data = Test.objects.all()
 
@@ -31,8 +31,10 @@ def test_list(request):
         obj.generate()
         data = obj.df
         for index, row in data.iterrows():
-            test = Test(id=index, title=row['input'], topic=row['topic'], label=row['output'])
-            test.save()
+
+            if row['topic'].__contains__("suggestions"): 
+                test = Test(id=index, title=row['input'], topic=row['topic'], label=row['output'])
+                test.save()
             # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
             #     pass
             # else:
@@ -41,6 +43,16 @@ def test_list(request):
         serializer = TestSerializer(testData, context={'request': request}, many=True)
         return Response(serializer.data)
 
+@api_view(['DELETE'])
+def clear_tests(request): 
+    tests = Test.objects.all()
+    for test in tests:
+        if test.topic.__contains__('suggestions'):  
+            test.delete()
+    return Response("All tests cleared")
+@api_view(['DELETE'])
+def delete_test(request): 
+    pass
 
 class ReactView(APIView):
     serializer_class = ReactSerializer
