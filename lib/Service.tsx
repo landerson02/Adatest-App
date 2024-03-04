@@ -1,6 +1,6 @@
 
 export async function getTests() {
-  const url = 'core/tests';
+  const url = 'core/tests/get';
   try {
     const res = await fetch(url, {
       cache: "no-store",
@@ -17,10 +17,23 @@ export async function getTests() {
 }
 
 export async function generateTests() {
-  const url = 'core/tests';
+  const url = 'core/tests/post';
   try {
      await fetch(url, {
       method: 'POST',
+      cache: "no-store",
+    });
+    return await getTests();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function clearTests() {
+  const url = 'core/tests/clear';
+  try {
+    await fetch(url, {
+      method: 'DELETE',
       cache: "no-store",
     });
     return await getTests();
