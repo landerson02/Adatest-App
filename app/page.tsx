@@ -66,23 +66,25 @@ export default function Home() {
 
 
   return (
-    <TestContextProvider>
-      <main className="flex h-screen flex-col items-center p-8">
-        <div className={'flex justify-between w-full h-60 border-gray-500 border-2'}>
-          <TaskGraph />
-          <Options onGroupByFunc={onGroupBy}/>
+      <TestContextProvider>
+        <div className={'grid grid-cols-4 gap-4'}>
+          <div className={'col-span-1 p-4 h-screen justify-between w-full border-gray-500 border-2'}>
+            <Options onGroupByFunc={onGroupBy}/>
+            <TaskGraph/>
+          </div>
+          <main className="col-span-3 p-4 flex w-full h-screen flex-col items-center">
+            <div className={'w-[30%] h-8 flex justify-between items-center'}>
+              {isGenerating ?
+                  <div className={'text-yellow-600'}>Generating...</div>
+                  : <GenerateButton onClickFunc={onGenerate}/>
+              }
+              <button onClick={onClear} className={'w-24 h-8 bg-red-600 hover:bg-red-800'}>Clear</button>
+            </div>
+            {/*<GenerateButton onClickFunc={onGenerate}/>*/}
+            {groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}
+            {/*<TestList tests={tests} />*/}
+          </main>
         </div>
-        <div className={'w-[30%] h-8 flex justify-between items-center'}>
-          {isGenerating ?
-            <div className={'text-yellow-600'}>Generating...</div>
-            : <GenerateButton onClickFunc={onGenerate}/>
-          }
-          <button onClick={onClear} className={'w-24 h-8 bg-red-600 hover:bg-red-800'}>Clear</button>
-        </div>
-        {/*<GenerateButton onClickFunc={onGenerate}/>*/}
-        {groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}
-        {/*<TestList tests={tests} />*/}
-      </main>
-    </TestContextProvider>
+      </TestContextProvider>
   );
 }

@@ -13,8 +13,8 @@ const Options = ({onGroupByFunc} : optionsProps) => {
     onGroupByFunc(newChoice);
   }
   return (
-    <div className={'w-full h-full flex flex-col items-center'}>
-      <label htmlFor="grouping">Group By:</label>
+    <div className={'w-full h-1/4 flex flex-col items-center'}>
+      <label htmlFor="grouping">Filter:</label>
       <select
         name="grouping"
         id="grouping"
