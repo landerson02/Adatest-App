@@ -4,11 +4,12 @@ import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
 import {useState, useEffect, useContext} from "react";
-import {approveTest, clearTests, generateTests, getTests, approveTests, denyTests, trashTest} from "@/lib/Service";
+import {generateTests, getTests, approveTests, denyTests, trashTests} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestDecisionsProvider, TestDecisionsContext} from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
+import SubmitButton from "@/app/components/SubmitButton";
 
 export default function Home() {
   const [tests, setTests] = useState<testType[]>([]);
@@ -42,18 +43,27 @@ export default function Home() {
     async function fetchTests() {
       // TODO: Fix to load in tests based on topic
       // const data: testType[] = await getTests();
-      if(currentTopic === 'PE') {
-        const data = await getTests('PE');
-        setTestsPE(data);
-      } else if(currentTopic === 'KE') {
-        const data = await getTests('KE');
-        setTestsKE(data);
-      } else if(currentTopic === 'LCE') {
-        const data = await getTests('LCE');
-        setTestsLCE(data);
-      } else {
-        console.error('No topic selected');
-      }
+      // if(currentTopic === 'PE') {
+      //   const data = await getTests('PE');
+      //   setTestsPE(data);
+      // } else if(currentTopic === 'KE') {
+      //   const data = await getTests('KE');
+      //   setTestsKE(data);
+      // } else if(currentTopic === 'LCE') {
+      //   const data = await getTests('LCE');
+      //   setTestsLCE(data);
+      // } else {
+      //   console.error('No topic selected');
+      // }
+
+      // Load in all tests
+      const PEdata = await getTests('PE');
+      setTestsPE(PEdata);
+      const KEdata = await getTests('KE');
+      setTestsKE(KEdata);
+      const LCEdata = await getTests('LCE');
+      setTestsLCE(LCEdata);
+
       console.log('pe:');
       console.log(testsPE);
       console.log('ke:');
@@ -72,7 +82,7 @@ export default function Home() {
   // Function for when the generate button is clicked
   async function onGenerate() {
     setIsGenerating(true);
-    await generateTests();
+    await generateTests(currentTopic);
     setIsCurrent(false);
     setIsGenerating(false);
   }
@@ -86,9 +96,13 @@ export default function Home() {
     setIsSubmitting(false);
     // TODO: Fix submitting tests?
 
-    await approveTests(tests);
-    await denyTests(tests);
-    // await trashTests(tests);
+    const at = await approveTests(tests, currentTopic);
+    console.log(1232);
+    console.log(at);
+    await denyTests(tests, currentTopic);
+    await trashTests(tests, currentTopic);
+
+    await generateTests(currentTopic);
 
     console.log('submitting');
     // approveTests()
@@ -132,16 +146,17 @@ export default function Home() {
             <TaskGraph/>
           </div>
           <main className="col-span-3 p-4 flex w-full h-screen flex-col items-center">
-            <div className={'w-[30%] h-8 flex justify-between items-center'}>
-              {isGenerating ?
+            <div className={'w-full h-16 flex justify-between gap-2 items-center text-3xl py-3 font-light'}>
+              Topic:
+              <div className={'flex w-[75%] justify-start'}>
+                <span className={'text-black'}> <RadioButtons/> </span>
+              </div>
+              <div className={'w-[25%] flex justify-end'}>
+                {isGenerating ?
                   <div className={'text-yellow-600'}>Generating...</div>
-                  : <GenerateButton onClickFunc={onGenerate}/>
-              }
-              <button onClick={onClear} className={'w-24 h-8 bg-red-600 hover:bg-red-800'}>Clear</button>
-            </div>
-            <div className={'w-full h-16 flex justify-center gap-2 items-center text-3xl py-3 font-light'}>
-              Current Topic:
-              <span className={'text-black'}> <RadioButtons> </RadioButtons></span>
+                  : <SubmitButton onClickFunc={onSubmitTests}/>
+                }
+              </div>
             </div>
             {/*<GenerateButton onClickFunc={onGenerate}/>*/}
             {/*{groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}*/}

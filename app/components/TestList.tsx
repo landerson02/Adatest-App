@@ -88,10 +88,10 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
           </div>
         </div>
       {selectedGrouping === '' ?
-        tests.map((test: testType, index: number) => {
+        tests && tests.map((test: testType, index: number) => {
           return <Row key={index} test={test}/>
         }) :
-        groupedTests.map((test: testType, index: number) => {
+        groupedTests && groupedTests.map((test: testType, index: number) => {
           return <Row key={index} test={test}/>
         })
       }
