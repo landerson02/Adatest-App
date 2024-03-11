@@ -14,5 +14,10 @@ urlpatterns = [
     path('core/tests/clear', views.test_clear),
     path('core/tests/delete/<str:pk>', views.test_delete), 
     path('core/tests/init', views.init_database), 
-    path('core/tests/all', views.get_all)
+    path('core/tests/all', views.get_all), 
+    path('core/tests/approve/<str:topic>', views.approve_list), 
+    path('core/tests/deny/<str:topic>', views.deny_list), 
+    path('core/tests/invalidate/<str:topic>', views.invalidate_list), 
 ]
+
+
