@@ -41,7 +41,6 @@ export default function Home() {
 
   // Load in new tests when they are changed
   useEffect(() => {
-    console.log('loading tests');
     async function fetchTests() {
       // TODO: Fix to load in tests based on topic
       // const data: testType[] = await getTests();
@@ -66,13 +65,6 @@ export default function Home() {
       const LCEdata = await getTests('LCE');
       setTestsLCE(LCEdata);
 
-      console.log('pe:');
-      console.log(testsPE);
-      console.log('ke:');
-      console.log(testsKE);
-      console.log('lce:');
-      console.log(testsLCE);
-
       // console.log(data);
       // setTests(data);
       setIsCurrent(true);
@@ -88,14 +80,9 @@ export default function Home() {
     } else if(displayedTopic === 'LCE') {
       setCurrentTests(testsLCE);
     }
-    console.log(currentTests);
-    console.log(123);
-    console.log(currentTopic);
   }, [currentTopic, isCurrent, displayedTopic]);
 
-  useEffect(() => {
-    console.log('current topic: ' + currentTopic);
-  }, [currentTopic]);
+
 
 
   // Function for when the generate button is clicked
@@ -121,8 +108,8 @@ export default function Home() {
 
     await generateTests(displayedTopic);
 
-    console.log('submitting');
     setIsSubmitting(false);
+    setIsCurrent(false);
     // approveTests()
   }
 
