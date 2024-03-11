@@ -8,9 +8,11 @@ type testListProps = {
   tests: testType[],
   groupByFunc: (groupBy: string) => void,
   grouping: string,
+  currentTopic: string,
+  setCurrentTopic: (topic: string) => void,
 }
 
-const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
+const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic } : testListProps) => {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [selectedGrouping, setSelectedGrouping] = useState<string>('');
   const [groupedTests, setGroupedTests] = useState<testType[]>([]);
@@ -38,7 +40,7 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
   }
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll'}>
-        <div className={'sticky top-0 border-black border-b-2 w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-300'}>
+        <div className={'sticky top-0 border-black border-b w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200'}>
           <div className={'text-xl w-[60%] text-center'}>AI Generated Test</div>
           <div className={'ml-auto flex w-[40%] justify-between pr-2'}>
             <div className={'w-[50%] flex justify-center items-center'}>
@@ -80,7 +82,7 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
                 }
               </div>
             </div>
-            <div className={'text-xl w-[40%] flex justify-between'}>
+            <div className={'text-xl w-[47%] flex justify-between'}>
               <p>Approve</p>
               <p>Deny</p>
               <p>Trash</p>
@@ -89,10 +91,10 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
         </div>
       {selectedGrouping === '' ?
         tests && tests.map((test: testType, index: number) => {
-          return <Row key={index} test={test}/>
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic}/>
         }) :
         groupedTests && groupedTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test}/>
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} />
         })
       }
     </div>

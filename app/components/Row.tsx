@@ -4,11 +4,13 @@ import {CiCircleCheck, CiCircleRemove} from "react-icons/ci";
 
 type rowProps = {
   test: testType,
+  currentTopic: string,
+  setCurrentTopic: (topic: string) => void,
 }
 
-const Row = ({ test } : rowProps) => {
+const Row = ({ test, currentTopic, setCurrentTopic } : rowProps) => {
   return (
-    <div className={'border-gray-500 border-b-2 w-full min-h-16 items-center flex justify-between pr-4'}>
+    <div className={'border-gray-500 border-b w-full min-h-16 items-center flex justify-between pr-4'}>
       <div className={'text-md font-light w-[60%]'}>{test.title}</div>
       <div className={'ml-auto flex w-[40%] justify-between'}>
           {
@@ -27,7 +29,7 @@ const Row = ({ test } : rowProps) => {
                   </div>
           }
           <div className={'w-[40%]'}>
-              <Buttons test={test}/>
+              <Buttons test={test} currentTopic={currentTopic} setCurrentTopic={setCurrentTopic}/>
           </div>
       </div>
     </div>

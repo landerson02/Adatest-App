@@ -18,6 +18,8 @@ export default function Home() {
   const [testsPE, setTestsPE] = useState<testType[]>([]);
   const [testsKE, setTestsKE] = useState<testType[]>([]);
   const [testsLCE, setTestsLCE] = useState<testType[]>([]);
+  const [currentTests, setCurrentTests] = useState<testType[]>([]);
+  const [displayedTopic, setDisplayedTopic] = useState<string>('PE');
 
   // Whether tests are most recent
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
@@ -76,7 +78,24 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent, currentTopic]);
+  }, [isCurrent]);
+
+  useEffect(() => {
+    if(displayedTopic === 'PE') {
+      setCurrentTests(testsPE);
+    } else if(displayedTopic === 'KE') {
+      setCurrentTests(testsKE);
+    } else if(displayedTopic === 'LCE') {
+      setCurrentTests(testsLCE);
+    }
+    console.log(currentTests);
+    console.log(123);
+    console.log(currentTopic);
+  }, [currentTopic, isCurrent, displayedTopic]);
+
+  useEffect(() => {
+    console.log('current topic: ' + currentTopic);
+  }, [currentTopic]);
 
 
   // Function for when the generate button is clicked
@@ -88,23 +107,22 @@ export default function Home() {
   }
 
   async function onClear() {
-    await clearTests();
+    // await clearTests();
     setIsCurrent(false);
   }
 
   async function onSubmitTests() {
-    setIsSubmitting(false);
+    setIsSubmitting(true);
     // TODO: Fix submitting tests?
 
-    const at = await approveTests(tests, currentTopic);
-    console.log(1232);
-    console.log(at);
-    await denyTests(tests, currentTopic);
-    await trashTests(tests, currentTopic);
+    const at = await approveTests(tests, displayedTopic);
+    await denyTests(tests, displayedTopic);
+    await trashTests(tests, displayedTopic);
 
-    await generateTests(currentTopic);
+    await generateTests(displayedTopic);
 
     console.log('submitting');
+    setIsSubmitting(false);
     // approveTests()
   }
 
@@ -141,7 +159,7 @@ export default function Home() {
   return (
       <TestDecisionsProvider>
         <div className={'grid grid-cols-4 gap-2'}>
-          <div className={'col-span-1 p-4 h-screen justify-between w-full border-gray-500 border-2'}>
+          <div className={'col-span-1 p-4 h-screen justify-between w-full border-gray-500 border'}>
             <Options onGroupByFunc={onGroupBy} />
             <TaskGraph/>
           </div>
@@ -149,10 +167,10 @@ export default function Home() {
             <div className={'w-full h-16 flex justify-between gap-2 items-center text-3xl py-3 font-light'}>
               Topic:
               <div className={'flex w-[75%] justify-start'}>
-                <span className={'text-black'}> <RadioButtons/> </span>
+                <span className={'text-black'}> <RadioButtons t={displayedTopic} setT={setDisplayedTopic}/> </span>
               </div>
               <div className={'w-[25%] flex justify-end'}>
-                {isGenerating ?
+                {isSubmitting ?
                   <div className={'text-yellow-600'}>Generating...</div>
                   : <SubmitButton onClickFunc={onSubmitTests}/>
                 }
@@ -160,9 +178,10 @@ export default function Home() {
             </div>
             {/*<GenerateButton onClickFunc={onGenerate}/>*/}
             {/*{groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}*/}
-            {currentTopic === 'PE' ? <TestList tests={testsPE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
-            {currentTopic === 'KE' ? <TestList tests={testsKE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
-            {currentTopic === 'LCE' ? <TestList tests={testsLCE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
+            {/*{currentTopic === 'PE' ? <TestList tests={testsPE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            {/*{currentTopic === 'KE' ? <TestList tests={testsKE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            {/*{currentTopic === 'LCE' ? <TestList tests={testsLCE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            <TestList tests={currentTests} groupByFunc={onGroupBy} grouping={groupedBy} setCurrentTopic={setDisplayedTopic} currentTopic={displayedTopic}/>
             {/*<TestList tests={tests} />*/}
           </main>
         </div>
