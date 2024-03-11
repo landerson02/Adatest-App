@@ -13,6 +13,8 @@ import {
   denyTests,
   trashTests
 } from "@/lib/Service";
+import React, {useState, useEffect, useContext} from "react";
+import {approveTest, clearTests, generateTests, getTests, approveTests, denyTests, trashTest} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestDecisionsProvider, TestDecisionsContext} from "@/lib/TestContext";
@@ -154,22 +156,15 @@ export default function Home() {
             <TaskGraph/>
           </div>
           <main className="col-span-3 p-4 flex w-full h-screen flex-col items-center">
-            <div className={'w-[30%] h-8 flex justify-between items-center'}>
-              {isGenerating ?
-                  <div className={'text-yellow-600'}>Generating...</div>
-                  : <GenerateButton onClickFunc={onGenerate}/>
-              }
-              <button onClick={onClear} className={'w-24 h-8 bg-red-600 hover:bg-red-800'}>Clear</button>
-            </div>
             <div className={'w-full h-16 flex justify-between gap-2 items-center text-3xl py-3 font-light'}>
               Topic:
               <div className={'flex w-[75%] justify-start'}>
-                <span className={'text-black'}> <RadioButtons> </RadioButtons></span>
+                <span className={'text-black'}> <RadioButtons/> </span>
               </div>
               <div className={'w-[25%] flex justify-end'}>
                 {isGenerating ?
                   <div className={'text-yellow-600'}>Generating...</div>
-                  : <SubmitButton onClickFunc={onSubmitTests}></SubmitButton>
+                  : <SubmitButton onClickFunc={onSubmitTests}/>
                 }
               </div>
             </div>

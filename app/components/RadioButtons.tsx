@@ -32,7 +32,7 @@ function RadioButton({ id, value, label, selectedOption, setSelectedOption }: Ra
 }
 
 function RadioButtons() {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>("PE");
   return (
     <div className={'flex gap-2 w-24'}>
       <RadioButton
