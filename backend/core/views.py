@@ -15,10 +15,24 @@ def index(request):
 
 # Create your views here.
 
-obj = create_obj()
+obj_lce = create_obj()
+obj_pe = create_obj()
+obj_ke = create_obj()
+
+
+@api_view(['POST'])
+def init_database(request):
+    data = obj_lce.df 
+    for index, row in data.iterrows():
+        obj = Test(id=index, title=row['input'], topic = row['topic'], label = row['output'])
+        if Test.objects.filter(title=obj.title).exists(): # does not work with get
+            pass
+        else: 
+            obj.save()
 
 
 
+    
 
 @api_view(['GET'])
 def test_get(request):
@@ -30,8 +44,8 @@ def test_get(request):
 
 @api_view(['POST'])
 def test_generate(request): 
-    obj.generate()
-    data = obj.df
+    obj_lce.generate()
+    data = obj_lce.df
     for index, row in data.iterrows():
         if row['topic'].__contains__("suggestions"): 
             test = Test(id=index, title=row['input'], topic=row['topic'], label=row['output'])
@@ -47,12 +61,18 @@ def test_generate(request):
 @api_view(['POST'])
 def test_update_approved(request, pk): 
     Test.objects.get(id = pk).update(validity = "Approved")
+    testData = Test.objects.all()
+    serializer = TestSerializer(testData, context={'request': request}, many=True)
+    return Response(serializer.data)
 
 
 
 @api_view(['POST'])
 def test_update_label(request, pk): 
     Test.objects.get(id = pk).update(validity = "Mislabeled")
+    testData = Test.objects.all()
+    serializer = TestSerializer(testData, context={'request': request}, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['DELETE'])
@@ -62,6 +82,14 @@ def test_clear(request):
         if test.topic.__contains__('suggestions'):  
             test.delete()
     return Response("All tests cleared!")
+
+@api_view(['DELETE'])
+def all_clear(request): 
+    tests = Test.objects.all()
+    for test in tests:
+      test.delete()            
+    return Response("All tests cleared!")
+
 
 
 

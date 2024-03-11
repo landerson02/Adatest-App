@@ -111,9 +111,9 @@ class AdaClass():
 
 
 
-def create_obj(): 
+def create_obj(type="LCE"): 
 
-    csv_filename = os.path.join(os.path.dirname(__file__), 'NTX_Test.csv')
+    csv_filename = os.path.join(os.path.dirname(__file__), f'NTX_{type}_Test.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
     lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
@@ -127,5 +127,5 @@ def create_obj():
 
     return obj
 
-# obj = create_obj()
-# print(obj.df)
+
+
