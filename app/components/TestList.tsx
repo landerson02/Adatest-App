@@ -2,7 +2,7 @@
 import {testType} from "@/lib/Types";
 import Row from "@/app/components/Row";
 import { RiFilterLine, RiFilterFill } from "react-icons/ri";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
 type testListProps = {
   tests: testType[],
@@ -13,10 +13,28 @@ type testListProps = {
 const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [selectedGrouping, setSelectedGrouping] = useState<string>('');
+  const [groupedTests, setGroupedTests] = useState<testType[]>([]);
   const handleSelectChange = (newChoice: string) => {
     groupByFunc(newChoice);
     setSelectedGrouping(newChoice);
     setIsSelecting(false);
+  }
+
+  useEffect(() => {
+    setGroupedTests(tests);
+    groupTests(grouping);
+  }, [selectedGrouping]);
+
+  const groupTests = (grouping: string) => {
+    if(grouping === '') {
+      setGroupedTests(tests);
+    } else if(grouping === 'acceptable') {
+      setGroupedTests(tests.filter((test: testType) => test.label === 'acceptable'));
+    } else if(grouping === 'unacceptable') {
+      setGroupedTests(tests.filter((test: testType) => test.label === 'unacceptable'));
+    } else {
+      console.error('Invalid grouping: ' + grouping)
+    }
   }
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll'}>
@@ -69,9 +87,14 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
             </div>
           </div>
         </div>
-      {tests && tests.map((test: testType, index: number) => {
-        return <Row key={index} test={test}/>
-      })}
+      {selectedGrouping === '' ?
+        tests.map((test: testType, index: number) => {
+          return <Row key={index} test={test}/>
+        }) :
+        groupedTests.map((test: testType, index: number) => {
+          return <Row key={index} test={test}/>
+        })
+      }
     </div>
   );
 }
