@@ -8,7 +8,7 @@ type rowProps = {
 
 const Row = ({ test } : rowProps) => {
   return (
-    <div className={'border-gray-500 border-b-2 w-full min-h-16 items-center flex justify-between'}>
+    <div className={'border-gray-500 border-b-2 w-full min-h-16 items-center flex justify-between pr-4'}>
       <div className={'text-md font-light w-[60%]'}>{test.title}</div>
       <div className={'ml-auto flex w-[40%] justify-between'}>
           {

@@ -1,5 +1,7 @@
-import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
-import { BsTrash } from "react-icons/bs";
+import { BsTrash, BsFillTrashFill } from "react-icons/bs";
+import { IoIosCheckmarkCircleOutline, IoIosCheckmarkCircle } from "react-icons/io";
+import { IoCloseCircleOutline, IoCloseCircle } from "react-icons/io5";
+
 import { TestDecisionsContext } from "@/lib/TestContext";
 import {testType} from "@/lib/Types";
 import {useContext, useState} from "react";
@@ -19,7 +21,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   //   trashedTests
   // } = useTestContext();
 
-  const {testDecisions, setTestDecisions, currentTopic, setCurrentTopic} = useContext(TestDecisionsContext);
+  const {testDecisions, setTestDecisions, currentTopic} = useContext(TestDecisionsContext);
 
   const [decision, setDecision] = useState<string>('');
 
@@ -76,6 +78,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is approved, add it to the approved list of the current topic
   // and remove it from the denied and trashed lists
   const handleApprove = () => {
+    if(decision === 'approve') return;
     if(currentTopic=='PE') {
       let oldApproved = testDecisions.PE.approved;
       oldApproved.push(test);
@@ -117,6 +120,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is denied, add it to the denied list of the current topic
   // and remove it from the approved and trashed lists
   const handleDeny = () => {
+    if (decision === 'deny') return;
     if(currentTopic=='PE') {
       let oldDenied = testDecisions.PE.denied;
       oldDenied.push(test);
@@ -155,6 +159,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is trashed, add it to the trashed list of the current topic
   // and remove it from the approved and denied lists
   const handleTrash = () => {
+    if (decision === 'trash') return;
     if(currentTopic=='PE') {
       let oldTrashed = testDecisions.PE.trashed;
       oldTrashed.push(test);
@@ -193,16 +198,22 @@ const Buttons = ({ test }: ButtonsProps) => {
   return (
     <div className={'flex justify-between'}>
       <button className={'w-8 h-8'} onClick={handleApprove}>
-        {decision == 'approve' ? <CiCircleCheck className={'h-8 w-8 text-black'}/> : <CiCircleCheck className={'h-8 w-8 text-green-600 hover:scale-125'}/>}
-        {/*<CiCircleCheck className={'h-8 w-8 text-green-600 hover:scale-125'}/>*/}
+        {decision === 'approve' ?
+          <IoIosCheckmarkCircle className={'h-8 w-8 text-green-600 hover:scale-125'}/> :
+          <IoIosCheckmarkCircleOutline className={'h-8 w-8 text-green-600 hover:scale-125'}/>
+        }
       </button>
       <button className={'w-8 h-8'} onClick={handleDeny}>
-        {decision == 'deny' ? <CiCircleRemove className={'h-8 w-8 text-black'}/> : <CiCircleRemove className={'h-8 w-8 text-red-600 hover:scale-125'}/>}
-        {/*<CiCircleRemove className={'h-8 w-8 text-red-600 hover:scale-125'}/>*/}
+        {decision === 'deny' ?
+          <IoCloseCircle className={'h-8 w-8 text-red-600 hover:scale-125'}/> :
+          <IoCloseCircleOutline className={'h-8 w-8 text-red-600 hover:scale-125'}/>
+        }
       </button>
       <button className={'w-8 h-8'} onClick={handleTrash}>
-        {decision == 'trash' ? <BsTrash className={'w-8 h-8 text-black'}/> : <BsTrash className={'w-8 h-8 text-red-600 hover:scale-125'}/>}
-        {/*<BsTrash className={'w-8 h-8 text-red-600 hover:scale-125'}/>*/}
+        {decision === 'trash' ?
+          <BsFillTrashFill className={'h-8 w-8 text-black hover:scale-125'}/> :
+          <BsTrash className={'h-8 w-8 text-black hover:scale-125'}/>
+        }
       </button>
     </div>
   )
