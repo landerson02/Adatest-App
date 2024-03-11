@@ -21,7 +21,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   //   trashedTests
   // } = useTestContext();
 
-  const {testDecisions, setTestDecisions, currentTopic, setCurrentTopic} = useContext(TestDecisionsContext);
+  const {testDecisions, setTestDecisions, currentTopic} = useContext(TestDecisionsContext);
 
   const [decision, setDecision] = useState<string>('');
 
