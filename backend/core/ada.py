@@ -121,7 +121,7 @@ def create_obj(type = "LCE"):
 
     OPENAI_API_KEY = "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"
     generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
-    browser = test_tree.adapt(lce_pipeline, generator)
+    browser = test_tree.adapt(lce_pipeline, generator, max_suggestions = 20)
     df1 = browser.test_tree._tests
     obj = AdaClass(browser)
 

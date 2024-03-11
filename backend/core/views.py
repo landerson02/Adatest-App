@@ -125,10 +125,10 @@ def approve_list(request, topic):
 def deny_list(request, topic): 
     body_unicode = request.body.decode('utf-8')
     df = json.loads(body_unicode)
-    for index, row in df.iterrows(): 
-        test = Test.objects.get(id = row['id'])
-        test.validity = "Denied"
-        test.topic = "/deny"
+    # for index, row in df.iterrows(): 
+    #     test = Test.objects.get(id = row['id'])
+    #     test.validity = "Denied"
+    #     test.topic = "/deny"
         
 @api_view(['DELETE'])
 def invalidate_list(request): 
