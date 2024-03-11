@@ -7,3 +7,21 @@ export interface testType {
   validity: string, // Accepted
   choice: 'approve' | 'deny' | 'trash' | '' | null,
 }
+
+export type TestDecisionsType = {
+  PE: {
+    approved: testType[],
+    denied: testType[],
+    trashed: testType[],
+  },
+  KE: {
+    approved: testType[],
+    denied: testType[],
+    trashed: testType[],
+  },
+  LCE: {
+    approved: testType[],
+    denied: testType[],
+    trashed: testType[],
+  }
+}
