@@ -22,6 +22,9 @@ const TaskGraph = () => {
     const restPE = testDecisions.PE.denied.length + testDecisions.PE.trashed.length;
     const restKE = testDecisions.KE.denied.length + testDecisions.KE.trashed.length;
     const restLCE = testDecisions.LCE.denied.length + testDecisions.LCE.trashed.length;
+    const totalTests = testDecisions.KE.approved.length + restKE
+            + testDecisions.PE.approved.length + restPE
+            + testDecisions.LCE.approved.length + restLCE;
 
     const data_topic = {
         labels: ['PE', 'KE', 'LCE'],
@@ -76,7 +79,13 @@ const TaskGraph = () => {
 
     return (
         <div className={'float-end border-gray-600 w-full h-3/4 justify-start items-center flex flex-col'}>
-            <h2 className={'align-middle'}> Visualization </h2>
+            <div className={'bg-gray-100 w-full h-12 justify-center items-center flex border-b border-gray-200'}>
+                <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
+            </div>
+            <div className={'justify-center p-7 float-start w-full'}>
+                <p> Graded Essays in Total </p>
+                <p className={'text-4xl font-serif'}> {totalTests} </p>
+            </div>
             <Bar data={data_topic} options={options}> </Bar>
             <Bar data={data_acceptable} options={options}> </Bar>
         </div>

@@ -25,8 +25,8 @@ function RadioButton({ id, value, label, selectedOption, setSelectedOption }: Ra
         className="hidden"
       />
       <span className={selectedOption === value ?
-          'font-bold border gap-2 border-black bg-gray-300 px-2 rounded-md' :
-          'hover:bg-gray-300 border border-black px-2 rounded-md'}>{label}</span>
+          'font-bold border-2 border-black bg-gray-300 px-2 rounded-md font-sans' :
+          'hover:bg-gray-300 border-2 border-black px-2 rounded-md font-sans'}>{label}</span>
     </label>
   );
 }
