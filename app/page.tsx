@@ -4,7 +4,15 @@ import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
 import {useState, useEffect, useContext} from "react";
-import {approveTest, clearTests, generateTests, getTests, approveTests, denyTests, trashTest} from "@/lib/Service";
+import {
+  approveTest,
+  clearTests,
+  generateTests,
+  getTests,
+  approveTests,
+  denyTests,
+  trashTests
+} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestDecisionsProvider, TestDecisionsContext} from "@/lib/TestContext";
@@ -43,18 +51,27 @@ export default function Home() {
     async function fetchTests() {
       // TODO: Fix to load in tests based on topic
       // const data: testType[] = await getTests();
-      if(currentTopic === 'PE') {
-        const data = await getTests('PE');
-        setTestsPE(data);
-      } else if(currentTopic === 'KE') {
-        const data = await getTests('KE');
-        setTestsKE(data);
-      } else if(currentTopic === 'LCE') {
-        const data = await getTests('LCE');
-        setTestsLCE(data);
-      } else {
-        console.error('No topic selected');
-      }
+      // if(currentTopic === 'PE') {
+      //   const data = await getTests('PE');
+      //   setTestsPE(data);
+      // } else if(currentTopic === 'KE') {
+      //   const data = await getTests('KE');
+      //   setTestsKE(data);
+      // } else if(currentTopic === 'LCE') {
+      //   const data = await getTests('LCE');
+      //   setTestsLCE(data);
+      // } else {
+      //   console.error('No topic selected');
+      // }
+
+      // Load in all tests
+      const PEdata = await getTests('PE');
+      setTestsPE(PEdata);
+      const KEdata = await getTests('KE');
+      setTestsKE(KEdata);
+      const LCEdata = await getTests('LCE');
+      setTestsLCE(LCEdata);
+
       console.log('pe:');
       console.log(testsPE);
       console.log('ke:');
@@ -73,7 +90,7 @@ export default function Home() {
   // Function for when the generate button is clicked
   async function onGenerate() {
     setIsGenerating(true);
-    await generateTests();
+    await generateTests(currentTopic);
     setIsCurrent(false);
     setIsGenerating(false);
   }
@@ -87,9 +104,13 @@ export default function Home() {
     setIsSubmitting(false);
     // TODO: Fix submitting tests?
 
-    await approveTests(tests);
-    await denyTests(tests);
-    // await trashTests(tests);
+    const at = await approveTests(tests, currentTopic);
+    console.log(1232);
+    console.log(at);
+    await denyTests(tests, currentTopic);
+    await trashTests(tests, currentTopic);
+
+    await generateTests(currentTopic);
 
     console.log('submitting');
     // approveTests()
