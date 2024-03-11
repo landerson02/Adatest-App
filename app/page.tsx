@@ -4,17 +4,7 @@ import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
 import {useState, useEffect, useContext} from "react";
-import {
-  approveTest,
-  clearTests,
-  generateTests,
-  getTests,
-  approveTests,
-  denyTests,
-  trashTests
-} from "@/lib/Service";
-import React, {useState, useEffect, useContext} from "react";
-import {approveTest, clearTests, generateTests, getTests, approveTests, denyTests, trashTest} from "@/lib/Service";
+import {generateTests, getTests, approveTests, denyTests, trashTests} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
 import {TestDecisionsProvider, TestDecisionsContext} from "@/lib/TestContext";
