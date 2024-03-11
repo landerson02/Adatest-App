@@ -8,9 +8,11 @@ type testListProps = {
   tests: testType[],
   groupByFunc: (groupBy: string) => void,
   grouping: string,
+  currentTopic: string,
+  setCurrentTopic: (topic: string) => void,
 }
 
-const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
+const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic } : testListProps) => {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [selectedGrouping, setSelectedGrouping] = useState<string>('');
   const [groupedTests, setGroupedTests] = useState<testType[]>([]);
@@ -89,10 +91,10 @@ const TestList = ({ tests, groupByFunc, grouping } : testListProps) => {
         </div>
       {selectedGrouping === '' ?
         tests && tests.map((test: testType, index: number) => {
-          return <Row key={index} test={test}/>
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic}/>
         }) :
         groupedTests && groupedTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test}/>
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} />
         })
       }
     </div>

@@ -31,15 +31,21 @@ function RadioButton({ id, value, label, selectedOption, setSelectedOption }: Ra
   );
 }
 
-function RadioButtons() {
+type RadioButtonsProps = {
+  setT: (topic: string) => void;
+  t: string;
+}
+function RadioButtons({t, setT}: RadioButtonsProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>("PE");
   const {currentTopic, setCurrentTopic} = useContext(TestDecisionsContext);
 
   const handleTopicChange = (topic: string) => () => {
     setCurrentTopic(topic);
     console.log(topic)
-    console.log('top' + currentTopic);
+    setT(topic);
+    console.log(currentTopic)
   }
+
   return (
     // <div className={'flex gap-2 w-24'}>
     //   <RadioButton

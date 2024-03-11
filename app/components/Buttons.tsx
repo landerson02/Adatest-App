@@ -9,9 +9,11 @@ import {approveTest} from "@/lib/Service";
 
 type ButtonsProps = {
   test: testType;
+  currentTopic: string;
+  setCurrentTopic: (topic: string) => void;
 }
 
-const Buttons = ({ test }: ButtonsProps) => {
+const Buttons = ({ test, currentTopic, setCurrentTopic }: ButtonsProps) => {
   // const {
   //   setApprovedTests,
   //   setDeniedTests,
@@ -21,7 +23,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   //   trashedTests
   // } = useTestContext();
 
-  const {testDecisions, setTestDecisions, currentTopic} = useContext(TestDecisionsContext);
+  const {testDecisions, setTestDecisions} = useContext(TestDecisionsContext);
 
   const [decision, setDecision] = useState<string>('');
 
