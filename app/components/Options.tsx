@@ -24,7 +24,6 @@ const Options = ({onGroupByFunc} : optionsProps) => {
         <option value={''}>None</option>
         <option value={'acceptable'}>Acceptable</option>
         <option value={'unacceptable'}>Unacceptable</option>
-        <option value={'/__suggestions'}>Suggestions</option>
       </select>
     </div>
   )

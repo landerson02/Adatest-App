@@ -1,7 +1,7 @@
 import {testType} from "@/lib/Types";
 
-export async function getTests() {
-  const url = 'core/tests/get';
+export async function getTests(topic?: string) {
+  const url = 'core/tests/get' + (topic ? `?topic=${topic}` : '');
   try {
     const res = await fetch(url, {
       cache: "no-store",
@@ -17,8 +17,8 @@ export async function getTests() {
   }
 }
 
-export async function generateTests() {
-  const url = 'core/tests/post';
+export async function generateTests(topic?: string) {
+  const url = 'core/tests/post' + (topic ? `?topic=${topic}` : '');
   try {
      await fetch(url, {
       method: 'POST',
@@ -113,4 +113,9 @@ export async function trashTest(id: string) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function trashTests(tests: testType[]) {
+  const url = 'core/tests/delete/'
+  // TODO: Finish functionality
 }
