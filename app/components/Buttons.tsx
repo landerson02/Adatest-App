@@ -78,6 +78,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is approved, add it to the approved list of the current topic
   // and remove it from the denied and trashed lists
   const handleApprove = () => {
+    if(decision === 'approve') return;
     if(currentTopic=='PE') {
       let oldApproved = testDecisions.PE.approved;
       oldApproved.push(test);
@@ -119,6 +120,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is denied, add it to the denied list of the current topic
   // and remove it from the approved and trashed lists
   const handleDeny = () => {
+    if (decision === 'deny') return;
     if(currentTopic=='PE') {
       let oldDenied = testDecisions.PE.denied;
       oldDenied.push(test);
@@ -157,6 +159,7 @@ const Buttons = ({ test }: ButtonsProps) => {
   // When a test is trashed, add it to the trashed list of the current topic
   // and remove it from the approved and denied lists
   const handleTrash = () => {
+    if (decision === 'trash') return;
     if(currentTopic=='PE') {
       let oldTrashed = testDecisions.PE.trashed;
       oldTrashed.push(test);

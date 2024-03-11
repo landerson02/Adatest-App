@@ -5,11 +5,13 @@ from ..ada import *
 
 def create_data(apps, schema_editor):
     Test = apps.get_model('core', 'Test')
-    obj = create_obj()
+    obj_lce = create_obj()
 
-    data = obj.df
+    data_lce = obj_lce.df
 
-    for index, row in data.iterrows():
+
+
+    for index, row in data_lce.iterrows():
         obj = Test(id=index, title=row['input'], topic = row['topic'], label = row['output'])
         if Test.objects.filter(title=obj.title).exists(): # does not work with get
             pass
