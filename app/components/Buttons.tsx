@@ -190,7 +190,6 @@ const Buttons = ({ test }: ButtonsProps) => {
     }
   }
 
-
   return (
     <div className={'flex justify-between'}>
       <button className={'w-8 h-8'} onClick={handleApprove}>
