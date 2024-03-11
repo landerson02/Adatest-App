@@ -18,6 +18,7 @@ export default function Home() {
   const [testsPE, setTestsPE] = useState<testType[]>([]);
   const [testsKE, setTestsKE] = useState<testType[]>([]);
   const [testsLCE, setTestsLCE] = useState<testType[]>([]);
+  const [currentTests, setCurrentTests] = useState<testType[]>([]);
 
   // Whether tests are most recent
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
@@ -76,7 +77,19 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent, currentTopic]);
+  }, [isCurrent]);
+
+  useEffect(() => {
+    if(currentTopic === 'PE') {
+      setCurrentTests(testsPE);
+    } else if(currentTopic === 'KE') {
+      setCurrentTests(testsKE);
+    } else if(currentTopic === 'LCE') {
+      setCurrentTests(testsLCE);
+    }
+    console.log(currentTests);
+    console.log(123);
+  }, [currentTopic]);
 
 
   // Function for when the generate button is clicked
@@ -88,7 +101,7 @@ export default function Home() {
   }
 
   async function onClear() {
-    await clearTests();
+    // await clearTests();
     setIsCurrent(false);
   }
 
@@ -97,8 +110,6 @@ export default function Home() {
     // TODO: Fix submitting tests?
 
     const at = await approveTests(tests, currentTopic);
-    console.log(1232);
-    console.log(at);
     await denyTests(tests, currentTopic);
     await trashTests(tests, currentTopic);
 
@@ -160,9 +171,10 @@ export default function Home() {
             </div>
             {/*<GenerateButton onClickFunc={onGenerate}/>*/}
             {/*{groupedBy === '' ? <TestList tests={tests}/> : <TestList tests={groupedTests}/>}*/}
-            {currentTopic === 'PE' ? <TestList tests={testsPE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
-            {currentTopic === 'KE' ? <TestList tests={testsKE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
-            {currentTopic === 'LCE' ? <TestList tests={testsLCE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}
+            {/*{currentTopic === 'PE' ? <TestList tests={testsPE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            {/*{currentTopic === 'KE' ? <TestList tests={testsKE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            {/*{currentTopic === 'LCE' ? <TestList tests={testsLCE} groupByFunc={onGroupBy} grouping={groupedBy}/> : null}*/}
+            <TestList tests={currentTests} groupByFunc={onGroupBy} grouping={groupedBy}/>
             {/*<TestList tests={tests} />*/}
           </main>
         </div>
