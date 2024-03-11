@@ -1,3 +1,4 @@
+import {testType} from "@/lib/Types";
 
 export async function getTests() {
   const url = 'core/tests/get';
@@ -56,6 +57,22 @@ export async function approveTest(id: string) {
   }
 }
 
+export async function approveTests(tests: testType[]) {
+  const url = `core/tests/approve/`;
+  for(let test of tests) {
+    try {
+      console.log('approving: ');
+      console.log(test);
+      await fetch(url + test.id, {
+        method: 'POST',
+        cache: 'no-store'
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+}
+
 export async function denyTest(id: string) {
   const url = `core/tests/deny/${id}`;
   try {
@@ -67,6 +84,20 @@ export async function denyTest(id: string) {
     // return await getTests();
   } catch (error) {
     console.log(error);
+  }
+}
+
+export async function denyTests(tests: testType[]) {
+  const url = 'core/tests/deny/'
+  for(let test of tests) {
+    try {
+      await fetch(url + test.id, {
+        method: 'POST',
+        cache: "no-store",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

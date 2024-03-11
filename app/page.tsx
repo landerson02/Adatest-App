@@ -3,11 +3,11 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
-import { useState, useEffect } from "react";
-import {clearTests, generateTests, getTests} from "@/lib/Service";
+import {useState, useEffect, useContext} from "react";
+import {approveTest, clearTests, generateTests, getTests, approveTests} from "@/lib/Service";
 import {testType} from "@/lib/Types";
 import GenerateButton from "@/app/components/GenerateButton";
-import {TestContextProvider} from "@/lib/TestContext";
+import {TestDecisionsProvider, TestDecisionsContext} from "@/lib/TestContext";
 
 export default function Home() {
   const [tests, setTests] = useState<testType[]>([]);
@@ -18,10 +18,17 @@ export default function Home() {
   const [testsKE, setTestsKE] = useState<testType[]>([]);
   const [testsLCE, setTestsLCE] = useState<testType[]>([]);
 
-  const [isCurrent, setIsCurrent] = useState<boolean>(false);
+  const [isCurrent, setIsCurrent] = useState<boolean>(false); // Whether or not tests are most recent
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+
+  // Current grouped tests
   const [groupedBy, setGroupedBy] = useState<string>('');
   const [groupedTests, setGroupedTests] = useState<testType[]>([]);
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Load test decision context
+  const testDecisions = useContext(TestDecisionsContext);
 
   // Load in new tests when they are changed
   useEffect(() => {
@@ -48,6 +55,12 @@ export default function Home() {
     setIsCurrent(false);
   }
 
+  async function onSubmitTests() {
+    setIsSubmitting(false);
+    console.log('submitting');
+    // approveTests()
+  }
+
   useEffect(() => {
     let oldTests = tests;
     // Filter tests based on how they are grouped
@@ -66,7 +79,7 @@ export default function Home() {
 
 
   return (
-      <TestContextProvider>
+      <TestDecisionsProvider>
         <div className={'grid grid-cols-4 gap-4'}>
           <div className={'col-span-1 p-4 h-screen justify-between w-full border-gray-500 border-2'}>
             <Options onGroupByFunc={onGroupBy}/>
@@ -85,6 +98,6 @@ export default function Home() {
             {/*<TestList tests={tests} />*/}
           </main>
         </div>
-      </TestContextProvider>
+      </TestDecisionsProvider>
   );
 }
