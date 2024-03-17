@@ -114,30 +114,60 @@ def test_generate(request, topic):
 
 @api_view(['POST'])
 def approve_list(request, topic): 
-    body_unicode = request.body.decode('utf-8')
-    df = json.loads(body_unicode)
-    for index, row in df.iterrows(): 
-        test = Test.objects.get(id = row['id'])
-        test.validity = "Approved"
-        test.topic = topic
+    byte_string = request.body 
+
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+
+    for obj in data: 
+        id = obj["id"]
+        testData = Test.objects.get(id = id)
+        testData.validity = "Approved"
+
+
+    allTests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    return Response(serializer.data)
+
    
 @api_view(['POST'])
 def deny_list(request, topic): 
-    body_unicode = request.body.decode('utf-8')
-    df = json.loads(body_unicode)
-    # for index, row in df.iterrows(): 
-    #     test = Test.objects.get(id = row['id'])
-    #     test.validity = "Denied"
-    #     test.topic = "/deny"
-        
-@api_view(['DELETE'])
-def invalidate_list(request): 
-    body_unicode = request.body.decode('utf-8')
-    df = json.loads(body_unicode)
-    for index, row in df.iterrows(): 
-        test = Test.objects.get(id = row['id'])
-        test.delete()
+    byte_string = request.body 
 
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+
+    for obj in data: 
+        id = obj["id"]
+        testData = Test.objects.get(id = id)
+        testData.validity = "Denied"
+
+
+    allTests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    return Response(serializer.data)
+
+
+
+
+@api_view(['DELETE'])
+def invalidate_list(request, topic): 
+    byte_string = request.body 
+
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+
+    for obj in data: 
+        id = obj["id"]
+        testData = Test.objects.get(id = id)
+        testData.delete()
+
+    allTests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    return Response(serializer.data)
 
 @api_view(['DELETE'])
 def test_clear(request): 
