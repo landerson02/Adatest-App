@@ -5,7 +5,6 @@ import { IoCloseCircleOutline, IoCloseCircle } from "react-icons/io5";
 import { TestDecisionsContext } from "@/lib/TestContext";
 import {testType} from "@/lib/Types";
 import {useContext, useState} from "react";
-import {approveTest} from "@/lib/Service";
 
 type ButtonsProps = {
   test: testType;
@@ -14,68 +13,12 @@ type ButtonsProps = {
 }
 
 const Buttons = ({ test, currentTopic, setCurrentTopic }: ButtonsProps) => {
-  // const {
-  //   setApprovedTests,
-  //   setDeniedTests,
-  //   setTrashedTests,
-  //   approvedTests,
-  //   deniedTests,
-  //   trashedTests
-  // } = useTestContext();
-
+  // Load in test decisions context
   const {testDecisions, setTestDecisions} = useContext(TestDecisionsContext);
 
+  // decision for the current test
   const [decision, setDecision] = useState<string>('');
 
-  async function waitForApprove(id: string) {
-    await approveTest(id);
-    console.log('Approved');
-  }
-
-  // const handleApprove = () => {
-  //   let oldApproved = approvedTests;
-  //   oldApproved.push(test);
-  //   setApprovedTests(oldApproved);
-  //   let oldDenied = deniedTests;
-  //   let oldTrashed = trashedTests;
-  //   oldDenied = oldDenied.filter((t: testType) => t !== test);
-  //   oldTrashed = oldTrashed.filter((t: testType) => t !== test);
-  //   setDeniedTests(oldDenied);
-  //   setTrashedTests(oldTrashed);
-  //   setDecision('approve');
-  //   // console.log(approvedTests)
-  //   // console.log(deniedTests)
-  //   // console.log(trashedTests)
-  //
-  //   // waitForApprove(test.id);
-  //   approveTest(test.id).then((data) => console.log(data));
-  // }
-  //
-  // const handleDeny = () => {
-  //   let oldDenied = deniedTests;
-  //   oldDenied.push(test);
-  //   setDeniedTests(oldDenied);
-  //   let oldApproved = approvedTests;
-  //   let oldTrashed = trashedTests;
-  //   oldApproved = oldApproved.filter((t: testType) => t !== test);
-  //   oldTrashed = oldTrashed.filter((t: testType) => t !== test);
-  //   setApprovedTests(oldApproved);
-  //   setTrashedTests(oldTrashed);
-  //   setDecision('deny');
-  // }
-  //
-  // const handleTrash = () => {
-  //   let oldTrashed = trashedTests;
-  //   oldTrashed.push(test);
-  //   setTrashedTests(oldTrashed);
-  //   let oldApproved = approvedTests;
-  //   let oldDenied = deniedTests;
-  //   oldApproved = oldApproved.filter((t: testType) => t !== test);
-  //   oldDenied = oldDenied.filter((t: testType) => t !== test);
-  //   setApprovedTests(oldApproved);
-  //   setDeniedTests(oldDenied);
-  //   setDecision('trash');
-  // }
 
   // When a test is approved, add it to the approved list of the current topic
   // and remove it from the denied and trashed lists
@@ -91,7 +34,6 @@ const Buttons = ({ test, currentTopic, setCurrentTopic }: ButtonsProps) => {
       oldTrashed = oldTrashed.filter((t: testType) => t !== test);
       setTestDecisions({...testDecisions, PE: {...testDecisions.PE, denied: oldDenied, trashed: oldTrashed}});
       setDecision('approve');
-      // waitForApprove(test.id);
     } else if (currentTopic == 'KE') {
       let oldApproved = testDecisions.KE.approved;
       oldApproved.push(test);
@@ -102,7 +44,6 @@ const Buttons = ({ test, currentTopic, setCurrentTopic }: ButtonsProps) => {
       oldTrashed = oldTrashed.filter((t: testType) => t !== test);
       setTestDecisions({...testDecisions, KE: {...testDecisions.KE, denied: oldDenied, trashed: oldTrashed}});
       setDecision('approve');
-      // waitForApprove(test.id);
     } else if (currentTopic == 'LCE') {
       let oldApproved = testDecisions.LCE.approved;
       oldApproved.push(test);
@@ -113,7 +54,6 @@ const Buttons = ({ test, currentTopic, setCurrentTopic }: ButtonsProps) => {
       oldTrashed = oldTrashed.filter((t: testType) => t !== test);
       setTestDecisions({...testDecisions, LCE: {...testDecisions.LCE, denied: oldDenied, trashed: oldTrashed}});
       setDecision('approve');
-      // waitForApprove(test.id);
     } else {
       throw new Error('Invalid topic');
     }

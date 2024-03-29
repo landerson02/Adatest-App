@@ -1,5 +1,10 @@
-import {testType} from "@/lib/Types";
+import { testType } from "@/lib/Types";
 
+/**
+  * Gets an array of tests based off of the topic
+  * @param topic PE, KE, or LCE
+  * @returns An array of tests
+  */
 export async function getTests(topic: string) {
   const url = `core/tests/get/${topic}`;
   try {
@@ -17,13 +22,18 @@ export async function getTests(topic: string) {
   }
 }
 
+/**
+  * Generates tests for the given topic
+  * @param topic PE, KE, or LCE
+  * @returns all tests for the topic
+  */
 export async function generateTests(topic: string) {
   const url = `core/tests/post/${topic}`
   try {
-     await fetch(url, {
-       method: 'POST',
-       cache: "no-store",
-       body: JSON.stringify({topic}),
+    await fetch(url, {
+      method: 'POST',
+      cache: "no-store",
+      body: JSON.stringify({ topic }),
     });
     return await getTests(topic);
   } catch (error) {
@@ -31,89 +41,52 @@ export async function generateTests(topic: string) {
   }
 }
 
-// export async function clearTests() {
-//   const url = 'core/tests/clear';
-//   try {
-//     await fetch(url, {
-//       method: 'DELETE',
-//       cache: "no-store",
-//     });
-//     return await getTests();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-export async function approveTest(id: string) {
-  const url = `core/tests/approve/${id}`;
-  try {
-    await fetch(url, {
-      method: 'POST',
-      cache: "no-store",
-      // body: JSON.stringify(id)
-    });
-    // return await getTests();
-  } catch (error) {
-    console.log(error);
-  }
-}
-
+/** 
+  * Approves a list of tests
+  * @param tests List of tests to be approved
+  * @param topic PE, KE, LCE
+  */
 export async function approveTests(tests: testType[], topic: string) {
+  if (tests.length === 0) return;
   const url = `core/tests/approve/${topic}`;
-    try {
-      await fetch(url, {
-        method: 'POST',
-        cache: 'no-store',
-        body: JSON.stringify(tests),
-      });
-    } catch (e) {
-      console.log(e);
-    }
-}
-
-export async function denyTest(id: string) {
-  const url = `core/tests/deny/${id}`;
   try {
     await fetch(url, {
       method: 'POST',
-      cache: "no-store",
-      // body: JSON.stringify(id)
+      cache: 'no-store',
+      body: JSON.stringify(tests),
     });
-    // return await getTests();
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    console.log(e);
   }
 }
 
+/** 
+  * Denies a list of tests
+  * @param tests List of tests to be denied
+  * @param topic PE, KE, LCE
+  */
 export async function denyTests(tests: testType[], topic: string) {
+  if (tests.length === 0) return;
   const url = `core/tests/deny/${topic}`
-    try {
-      await fetch(url, {
-        method: 'POST',
-        cache: "no-store",
-        body: JSON.stringify(tests),
-      });
-    } catch (error) {
-      console.log(error);
-    }
-}
-
-export async function trashTest(id: string) {
-  const url = `core/tests/delete/${id}`;
   try {
     await fetch(url, {
       method: 'POST',
       cache: "no-store",
-      // body: JSON.stringify(id)
+      body: JSON.stringify(tests),
     });
-    // return await getTests();
   } catch (error) {
     console.log(error);
   }
 }
 
+/** 
+  * Trashes a list of tests
+  * @param tests List of tests to be trashed
+  * @param topic PE, KE, LCE
+  */
 export async function trashTests(tests: testType[], topic: string) {
-  const url = `core/tests/delete/${topic}`
+  if (tests.length === 0) return;
+  const url = `core/tests/invalidate/${topic}`
   try {
     await fetch(url, {
       method: 'POST',

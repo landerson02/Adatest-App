@@ -5,6 +5,5 @@ DS_Store
 .env.local
 .env
 .next
+__pycache__
 
-
-db.sqlite3

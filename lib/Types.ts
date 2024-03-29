@@ -4,7 +4,7 @@ export interface testType {
   label: string, // Acceptable or Unacceptable
   title: string, // Actual test
   topic: string, // Concept - PE, KE, LCE
-  validity: string, // Accepted
+  validity: string,
 }
 
 export type TestDecisionsType = {
