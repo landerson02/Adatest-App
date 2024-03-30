@@ -83,9 +83,7 @@ const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic 
             </div>
           </div>
           <div className={'text-xl w-[47%] flex justify-between'}>
-            <p>Approve</p>
-            <p>Deny</p>
-            <p>Trash</p>
+            <div>Capability</div>
           </div>
         </div>
       </div>

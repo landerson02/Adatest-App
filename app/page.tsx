@@ -30,6 +30,9 @@ export default function Home() {
   // boolean for if submitting tests to backend
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+  // Tests with check box clicked
+  const [checkedTests, setCheckedTests] = useState<testType[]>([]);
+
   // Load test decision context
   const {
     testDecisions,
