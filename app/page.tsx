@@ -106,6 +106,13 @@ export default function Home() {
     setGroupedBy(groupBy);
   }
 
+  // Toggle if a test is included in checkedTests
+  function toggleCheck(test: testType) {
+    let oldtests = checkedTests;
+    oldtests.push(test);
+    setCheckedTests(oldtests);
+  }
+
 
   return (
     <TestDecisionsProvider>
@@ -133,6 +140,7 @@ export default function Home() {
             grouping={groupedBy}
             setCurrentTopic={setDisplayedTopic}
             currentTopic={displayedTopic}
+            toggleCheck={toggleCheck}
           />
         </main>
       </div>

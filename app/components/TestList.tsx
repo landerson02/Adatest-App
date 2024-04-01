@@ -10,9 +10,10 @@ type testListProps = {
   grouping: string,
   currentTopic: string,
   setCurrentTopic: (topic: string) => void,
+  toggleCheck: (test: testType) => void,
 }
 
-const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic }: testListProps) => {
+const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic, toggleCheck }: testListProps) => {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [selectedGrouping, setSelectedGrouping] = useState<string>('');
   const [groupedTests, setGroupedTests] = useState<testType[]>([]);
@@ -41,7 +42,9 @@ const TestList = ({ tests, groupByFunc, grouping, currentTopic, setCurrentTopic 
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll'}>
       <div className={'sticky top-0 border-black border-b w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200'}>
-        <div className={'text-xl w-[60%] text-center'}>AI Generated Test</div>
+        {/* TODO: Add Checkbox */}
+        <div className={''}>Select All</div>
+        <div className={'text-xl w-[60%] text-center'}>Essays</div>
         <div className={'ml-auto flex w-[40%] justify-between pr-2'}>
           <div className={'w-[50%] flex justify-center items-center'}>
             <div className={'text-xl'}>AI Grade</div>
