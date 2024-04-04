@@ -8,17 +8,22 @@ export interface testType {
 }
 
 export type TestDecisionsType = {
-  PE: {
-    approved: testType[],
-    denied: testType[],
-    trashed: testType[],
-  },
-  KE: {
-    approved: testType[],
-    denied: testType[],
-    trashed: testType[],
-  },
-  LCE: {
+  // PE: {
+  //   approved: testType[],
+  //   denied: testType[],
+  //   trashed: testType[],
+  // },
+  // KE: {
+  //   approved: testType[],
+  //   denied: testType[],
+  //   trashed: testType[],
+  // },
+  // LCE: {
+  //   approved: testType[],
+  //   denied: testType[],
+  //   trashed: testType[],
+  // }
+  [key: string]: {
     approved: testType[],
     denied: testType[],
     trashed: testType[],
