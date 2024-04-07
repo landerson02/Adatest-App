@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { TestDecisionsContext } from "@/lib/TestContext";
 import { testType } from "@/lib/Types";
 import { useContext } from "react";
@@ -10,24 +9,29 @@ type newButtonsProps = {
   setCheckedTests: (tests: testType[]) => void,
   currentTopic: string,
   setCurrentTopic: (topic: string) => void,
+  isGenerating: boolean,
+  setIsGenerating: (isGenerating: boolean) => void,
 }
 
-export default function NewButtons({ checkedTests, currentTopic, setCurrentTopic }: newButtonsProps) {
+export default function NewButtons({ checkedTests, setCheckedTests, currentTopic, isGenerating, setIsGenerating }: newButtonsProps) {
   const { testDecisions } = useContext(TestDecisionsContext);
-
-  const [isGenerating, setIsGenerating] = useState(false);
 
   async function approveHandler() {
     testDecisions[currentTopic].approved.push(...checkedTests);
     await approveTests(checkedTests, currentTopic);
+    setCheckedTests([]);
   }
 
   async function denyHandler() {
+    testDecisions[currentTopic].denied.push(...checkedTests);
     await denyTests(checkedTests, currentTopic);
+    setCheckedTests([]);
   }
 
   async function trashHandler() {
+    testDecisions[currentTopic].trashed.push(...checkedTests);
     await trashTests(checkedTests, currentTopic);
+    setCheckedTests([]);
   }
 
   async function generateHandler() {

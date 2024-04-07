@@ -4,7 +4,7 @@ import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import Options from "@/app/components/Options";
 import { useState, useEffect, useContext } from "react";
-import { generateTests, getTests, approveTests, denyTests, trashTests as trashTests } from "@/lib/Service";
+import { generateTests, getTests, approveTests, denyTests, trashTests } from "@/lib/Service";
 import { testType } from "@/lib/Types";
 import { TestDecisionsProvider, TestDecisionsContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
@@ -28,12 +28,11 @@ export default function Home() {
   // Current grouped tests
   const [groupedBy, setGroupedBy] = useState<string>('');
 
-  // boolean for if submitting tests to backend
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Tests with check box clicked
   const [checkedTests, setCheckedTests] = useState<testType[]>([]);
   const [checkedTestsSet, setCheckedTestsSet] = useState<Set<testType>>(new Set<testType>());
+
   // If all tests are selected boolean
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
@@ -57,8 +56,8 @@ export default function Home() {
 
 
   /**
-    * Toggle if a test is checked
-    * @param test: testType
+   * Toggle if a test is checked
+   * @param test test to toggle
    */
   function toggleCheck(test: testType) {
     let oldTests = new Set(checkedTestsSet);
@@ -109,37 +108,34 @@ export default function Home() {
   }, [currentTopic, isCurrent, displayedTopic]);
 
 
-  /**
-   * Submit button handler
-   */
-  async function onSubmitTests() {
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    // Approve/deny/trash current set of tests
-    switch (displayedTopic) {
-      case 'PE':
-        await approveTests(testDecisions.PE.approved, displayedTopic);
-        await denyTests(testDecisions.PE.denied, displayedTopic);
-        await trashTests(testDecisions.PE.trashed, displayedTopic);
-        break;
-      case 'KE':
-        await approveTests(testDecisions.KE.approved, displayedTopic);
-        await denyTests(testDecisions.KE.denied, displayedTopic);
-        await trashTests(testDecisions.KE.trashed, displayedTopic);
-        break;
-      case 'LCE':
-        await approveTests(testDecisions.LCE.approved, displayedTopic);
-        await denyTests(testDecisions.LCE.denied, displayedTopic);
-        await trashTests(testDecisions.LCE.trashed, displayedTopic);
-        break;
-    }
-
-    await generateTests(displayedTopic);
-    setIsSubmitting(false);
-    setIsCurrent(false);
-  }
+  // async function onSubmitTests() 
+  //   if (isSubmitting) return;
+  //
+  //   setIsSubmitting(true);
+  //
+  //   // Approve/deny/trash current set of tests
+  //   switch (displayedTopic) {
+  //     case 'PE':
+  //       await approveTests(testDecisions.PE.approved, displayedTopic);
+  //       await denyTests(testDecisions.PE.denied, displayedTopic);
+  //       await trashTests(testDecisions.PE.trashed, displayedTopic);
+  //       break;
+  //     case 'KE':
+  //       await approveTests(testDecisions.KE.approved, displayedTopic);
+  //       await denyTests(testDecisions.KE.denied, displayedTopic);
+  //       await trashTests(testDecisions.KE.trashed, displayedTopic);
+  //       break;
+  //     case 'LCE':
+  //       await approveTests(testDecisions.LCE.approved, displayedTopic);
+  //       await denyTests(testDecisions.LCE.denied, displayedTopic);
+  //       await trashTests(testDecisions.LCE.trashed, displayedTopic);
+  //       break;
+  //   }
+  //
+  //   await generateTests(displayedTopic);
+  //   setIsSubmitting(false);
+  //   setIsCurrent(false);
+  // }
 
   async function onGenerateTests() {
     setIsGenerating(true);
@@ -166,7 +162,7 @@ export default function Home() {
           <div className={'px-4 w-full h-16 flex justify-between gap-2 items-center text-3xl py-3 font-light'}>
             Topic:
             <div className={'flex w-[75%] justify-start'}>
-              <span className={'text-black'}> <RadioButtons t={displayedTopic} setT={setDisplayedTopic} /> </span>
+              <span className={'text-black'}> <RadioButtons setTopic={setDisplayedTopic} /> </span>
             </div>
 
 
@@ -193,6 +189,8 @@ export default function Home() {
             setCheckedTests={setCheckedTests}
             currentTopic={displayedTopic}
             setCurrentTopic={setDisplayedTopic}
+            isGenerating={isGenerating}
+            setIsGenerating={setIsGenerating}
           />
         </main>
       </div>

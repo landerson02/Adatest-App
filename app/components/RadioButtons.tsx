@@ -1,75 +1,24 @@
-import React, {useContext, useState} from 'react';
-import {TestDecisionsContext} from "@/lib/TestContext";
+import React, { useContext } from 'react';
+import { TestDecisionsContext } from "@/lib/TestContext";
 
-interface RadioButtonProps {
-  id: string;
-  value: string;
-  label: string;
-  selectedOption: string | null;
-  setSelectedOption: React.Dispatch<React.SetStateAction<string | null>>;
-}
-
-function RadioButton({ id, value, label, selectedOption, setSelectedOption }: RadioButtonProps) {
-  const {currentTopic, setCurrentTopic} = useContext(TestDecisionsContext)
-  return (
-    <label htmlFor={id} className="cursor-pointer">
-      <input
-        type="radio"
-        id={id}
-        value={value}
-        checked={selectedOption === value}
-        onChange={() => {
-            setSelectedOption(value)
-            setCurrentTopic(value)
-        }}
-        className="hidden"
-      />
-      <span className={selectedOption === value ?
-          'font-bold border-2 border-black bg-gray-300 px-2 rounded-md font-sans' :
-          'hover:bg-gray-300 border-2 border-black px-2 rounded-md font-sans'}>{label}</span>
-    </label>
-  );
-}
 
 type RadioButtonsProps = {
-  setT: (topic: string) => void;
-  t: string;
+  setTopic: (topic: string) => void;
 }
-function RadioButtons({t, setT}: RadioButtonsProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>("PE");
-  const {currentTopic, setCurrentTopic} = useContext(TestDecisionsContext);
+
+/**
+ * Radio buttons to select topic
+ * @param setT: function to set topic
+ */
+function RadioButtons({ setTopic: setTopic }: RadioButtonsProps) {
+  const { currentTopic, setCurrentTopic } = useContext(TestDecisionsContext);
 
   const handleTopicChange = (topic: string) => () => {
     setCurrentTopic(topic);
-    console.log(topic)
-    setT(topic);
-    console.log(currentTopic)
+    setTopic(topic);
   }
 
   return (
-    // <div className={'flex gap-2 w-24'}>
-    //   <RadioButton
-    //     id="PE"
-    //     value="PE"
-    //     label="PE"
-    //     selectedOption={selectedOption}
-    //     setSelectedOption={setSelectedOption}
-    //   />
-    //   <RadioButton
-    //     id="KE"
-    //     value="KE"
-    //     label="KE"
-    //     selectedOption={selectedOption}
-    //     setSelectedOption={setSelectedOption}
-    //   />
-    //   <RadioButton
-    //     id="LCE"
-    //     value="LCE"
-    //     label="LCE"
-    //     selectedOption={selectedOption}
-    //     setSelectedOption={setSelectedOption}
-    //   />
-    // </div>
     <div className={'flex gap-2 w-24'}>
       <div
         onClick={handleTopicChange('PE')}
