@@ -114,20 +114,28 @@ def test_generate(request, topic):
 
 @api_view(['POST'])
 def approve_list(request, topic): 
+    
     byte_string = request.body 
 
     body = byte_string.decode("utf-8")
+
+    
 
     data = json.loads(body)
 
     for obj in data: 
         id = obj["id"]
         testData = Test.objects.get(id = id)
+        
+     
         testData.validity = "Approved"
+      
+        testData.save()
 
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    
     return Response(serializer.data)
 
    
@@ -142,7 +150,9 @@ def deny_list(request, topic):
     for obj in data: 
         id = obj["id"]
         testData = Test.objects.get(id = id)
+        
         testData.validity = "Denied"
+        testData.save()
 
 
     allTests = Test.objects.filter(topic__icontains=topic)
@@ -163,7 +173,9 @@ def invalidate_list(request, topic):
     for obj in data: 
         id = obj["id"]
         testData = Test.objects.get(id = id)
+        print(testData)
         testData.delete()
+        
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)

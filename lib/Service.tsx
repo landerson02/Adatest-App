@@ -52,6 +52,9 @@ export async function approveTests(tests: testType[], topic: string) {
   try {
     await fetch(url, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       cache: 'no-store',
       body: JSON.stringify(tests),
     });
@@ -72,6 +75,9 @@ export async function denyTests(tests: testType[], topic: string) {
     await fetch(url, {
       method: 'POST',
       cache: "no-store",
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(tests),
     });
   } catch (error) {
@@ -91,6 +97,9 @@ export async function trashTests(tests: testType[], topic: string) {
     await fetch(url, {
       method: 'POST',
       cache: "no-store",
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(tests),
     });
   } catch (error) {
