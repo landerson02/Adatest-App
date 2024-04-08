@@ -1,4 +1,5 @@
 from django_nextjs.render import render_nextjs_page_sync
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -160,7 +161,22 @@ def deny_list(request, topic):
     return Response(serializer.data)
 
 
+@api_view(['POST'])
+def log_action(request):
+    byte_string = request.body
+    body = byte_string.decode("utf-8")
+    body_dict = json.loads(body)
+    print(body_dict)
+    essay = body_dict['data']['essay']
+    action = body_dict['data']['action']
 
+    log = Log(essay=essay, action=action)
+    try:
+        log.save()
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response("Log Successfully Added!")
 
 @api_view(['DELETE'])
 def invalidate_list(request, topic): 
@@ -188,8 +204,12 @@ def test_clear(request):
         test.delete()
     return Response("All tests cleared!")
 
-
-
+@api_view(['DELETE'])
+def log_clear(request):
+    logs = Log.objects.all()
+    for log in logs:
+        log.delete()
+    return Response("All logs cleared!")
 
 @api_view(['DELETE'])
 def test_delete(request, pk): 
@@ -197,6 +217,7 @@ def test_delete(request, pk):
     test.delete()
 
     return Response('Test Successfully Deleted!')
+
 
 class ReactView(APIView):
     serializer_class = ReactSerializer
