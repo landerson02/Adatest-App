@@ -2,6 +2,7 @@ import { testType } from "@/lib/Types";
 import { useState } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import {logAction} from "@/lib/Service";
 
 type rowProps = {
   test: testType,
@@ -15,6 +16,7 @@ const Row = ({ test, toggleCheck, isSelected }: rowProps) => {
 
   function toggle() {
     toggleCheck(test);
+    isSelected ? logAction(test.title, `Checkmark unchecked`) : logAction(test.title, `Checkmark checked`);
   }
 
   return (

@@ -7,6 +7,12 @@ class TestSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'topic', 'validity', 'label')
 
 
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Log
+        fields = ('test_id', 'action', 'timestamp', 'id')
+
+
 class ReactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test

@@ -1,7 +1,7 @@
 import { TestDecisionsContext } from "@/lib/TestContext";
 import { testType } from "@/lib/Types";
 import { useContext } from "react";
-import { approveTests, denyTests, generateTests, trashTests } from "@/lib/Service";
+import {approveTests, denyTests, generateTests, logAction, trashTests} from "@/lib/Service";
 
 
 type newButtonsProps = {
@@ -18,18 +18,21 @@ export default function NewButtons({ checkedTests, setCheckedTests, currentTopic
 
   async function approveHandler() {
     testDecisions[currentTopic].approved.push(...checkedTests);
+    await logAction("null", "Agree With AI Grade");
     await approveTests(checkedTests, currentTopic);
     setCheckedTests([]);
   }
 
   async function denyHandler() {
     testDecisions[currentTopic].denied.push(...checkedTests);
+    await logAction("null", "Disagree With AI Grade");
     await denyTests(checkedTests, currentTopic);
     setCheckedTests([]);
   }
 
   async function trashHandler() {
     testDecisions[currentTopic].trashed.push(...checkedTests);
+    await logAction("null", "Trash Essays");
     await trashTests(checkedTests, currentTopic);
     setCheckedTests([]);
   }
@@ -37,6 +40,7 @@ export default function NewButtons({ checkedTests, setCheckedTests, currentTopic
   async function generateHandler() {
     if (isGenerating) return;
     setIsGenerating(true);
+    await logAction("null", "Generate Essays");
     await generateTests(currentTopic);
     setIsGenerating(false);
   }
