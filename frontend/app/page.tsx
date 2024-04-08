@@ -55,6 +55,7 @@ export default function Home() {
   }, [checkedTestsSet]);
 
 
+
   /**
    * Toggle if a test is checked
    * @param test test to toggle
@@ -108,35 +109,6 @@ export default function Home() {
   }, [currentTopic, isCurrent, displayedTopic]);
 
 
-  // async function onSubmitTests() 
-  //   if (isSubmitting) return;
-  //
-  //   setIsSubmitting(true);
-  //
-  //   // Approve/deny/trash current set of tests
-  //   switch (displayedTopic) {
-  //     case 'PE':
-  //       await approveTests(testDecisions.PE.approved, displayedTopic);
-  //       await denyTests(testDecisions.PE.denied, displayedTopic);
-  //       await trashTests(testDecisions.PE.trashed, displayedTopic);
-  //       break;
-  //     case 'KE':
-  //       await approveTests(testDecisions.KE.approved, displayedTopic);
-  //       await denyTests(testDecisions.KE.denied, displayedTopic);
-  //       await trashTests(testDecisions.KE.trashed, displayedTopic);
-  //       break;
-  //     case 'LCE':
-  //       await approveTests(testDecisions.LCE.approved, displayedTopic);
-  //       await denyTests(testDecisions.LCE.denied, displayedTopic);
-  //       await trashTests(testDecisions.LCE.trashed, displayedTopic);
-  //       break;
-  //   }
-  //
-  //   await generateTests(displayedTopic);
-  //   setIsSubmitting(false);
-  //   setIsCurrent(false);
-  // }
-
   async function onGenerateTests() {
     setIsGenerating(true);
     await generateTests(displayedTopic);
@@ -153,8 +125,8 @@ export default function Home() {
   return (
     <TestDecisionsProvider>
       <div className={'grid grid-cols-4'}>
-        <div className={'col-span-1 p-4 h-screen justify-between w-full border-gray-500 border'}>
-          <Options onGroupByFunc={onGroupBy} />
+        <div className={'col-span-1 p-4 h-screen flex flex-col justify-center w-full border-gray-500 border'}>
+          {/* <Options onGroupByFunc={onGroupBy} /> */}
           <TaskGraph />
         </div>
         <main className="col-span-3 flex w-full h-screen flex-col items-center">
@@ -165,20 +137,13 @@ export default function Home() {
               <span className={'text-black'}> <RadioButtons setTopic={setDisplayedTopic} /> </span>
             </div>
 
-
-
-            {/* TODO: Remove */}
-            <button onClick={() => { console.log(checkedTests) }}>
-              print
-            </button>
-
           </div>
           <TestList
             tests={currentTests}
             groupByFunc={onGroupBy}
             grouping={groupedBy}
-            setCurrentTopic={setDisplayedTopic}
             currentTopic={displayedTopic}
+            setCurrentTopic={setDisplayedTopic}
             toggleCheck={toggleCheck}
             toggleSelectAll={toggleSelectAll}
             isAllSelected={isAllSelected}
@@ -191,6 +156,8 @@ export default function Home() {
             setCurrentTopic={setDisplayedTopic}
             isGenerating={isGenerating}
             setIsGenerating={setIsGenerating}
+            genTests={onGenerateTests}
+            setIsCurrent={setIsCurrent}
           />
         </main>
       </div>

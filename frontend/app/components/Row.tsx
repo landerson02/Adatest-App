@@ -1,5 +1,5 @@
 import { testType } from "@/lib/Types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import {logAction} from "@/lib/Service";
@@ -20,7 +20,7 @@ const Row = ({ test, toggleCheck, isSelected }: rowProps) => {
   }
 
   return (
-    <div className={'border-gray-500 border-b w-full px-4 min-h-16 items-center flex pr-4'}>
+    test.validity === 'Unapproved' && <div className={'border-gray-500 border-b w-full px-4 min-h-16 items-center flex pr-4'}>
       {/* CheckBox */}
       <div className="w-8 h-8" onClick={toggle}>
         {isSelected ? (
