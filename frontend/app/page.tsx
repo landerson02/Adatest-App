@@ -152,6 +152,7 @@ export default function Home() {
           <NewButtons
             checkedTests={checkedTests}
             setCheckedTests={setCheckedTests}
+            setCheckedTestsSet={setCheckedTestsSet}
             currentTopic={displayedTopic}
             setCurrentTopic={setDisplayedTopic}
             isGenerating={isGenerating}

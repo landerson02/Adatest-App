@@ -13,9 +13,10 @@ type newButtonsProps = {
   setIsGenerating: (isGenerating: boolean) => void,
   genTests: () => void,
   setIsCurrent: (isCurrent: boolean) => void,
+  setCheckedTestsSet: (checkedTestsSet: Set<testType>) => void,
 }
 
-export default function NewButtons({ checkedTests, setCheckedTests, currentTopic, isGenerating, setIsGenerating, genTests, setIsCurrent }: newButtonsProps) {
+export default function NewButtons({ checkedTests, setCheckedTests, currentTopic, isGenerating, setIsGenerating, genTests, setIsCurrent, setCheckedTestsSet }: newButtonsProps) {
   const { testDecisions } = useContext(TestDecisionsContext);
 
   async function approveHandler() {
@@ -23,6 +24,7 @@ export default function NewButtons({ checkedTests, setCheckedTests, currentTopic
     await logAction("null", "Agree With AI Grade");
     await approveTests(checkedTests, currentTopic);
     setCheckedTests([]);
+    setCheckedTestsSet(new Set());
     setIsCurrent(false);
   }
 
@@ -31,6 +33,7 @@ export default function NewButtons({ checkedTests, setCheckedTests, currentTopic
     await logAction("null", "Disagree With AI Grade");
     await denyTests(checkedTests, currentTopic);
     setCheckedTests([]);
+    setCheckedTestsSet(new Set());
     setIsCurrent(false);
   }
 
@@ -39,6 +42,7 @@ export default function NewButtons({ checkedTests, setCheckedTests, currentTopic
     await logAction("null", "Trash Essays");
     await trashTests(checkedTests, currentTopic);
     setCheckedTests([]);
+    setCheckedTestsSet(new Set());
     setIsCurrent(false);
   }
 
