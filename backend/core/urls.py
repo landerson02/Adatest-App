@@ -17,7 +17,9 @@ urlpatterns = [
     path('core/tests/all', views.get_all), 
     path('core/tests/approve/<str:topic>', views.approve_list), 
     path('core/tests/deny/<str:topic>', views.deny_list), 
-    path('core/tests/invalidate/<str:topic>', views.invalidate_list), 
+    path('core/tests/invalidate/<str:topic>', views.invalidate_list),
+    path('core/logs/add', views.log_action),
+    path('core/logs/clear', views.log_clear),
 ]
 
 

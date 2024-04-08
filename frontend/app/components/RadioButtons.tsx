@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { TestDecisionsContext } from "@/lib/TestContext";
+import {logAction} from "@/lib/Service";
 
 
 type RadioButtonsProps = {
@@ -14,6 +15,7 @@ function RadioButtons({ setTopic: setTopic }: RadioButtonsProps) {
   const { currentTopic, setCurrentTopic } = useContext(TestDecisionsContext);
 
   const handleTopicChange = (topic: string) => () => {
+    logAction("null", `Change Topic to ${topic}`).then();
     setCurrentTopic(topic);
     setTopic(topic);
   }
