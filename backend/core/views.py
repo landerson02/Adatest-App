@@ -178,7 +178,7 @@ def log_action(request):
 
     return Response("Log Successfully Added!")
 
-@api_view(['DELETE'])
+@api_view(['POST'])
 def invalidate_list(request, topic): 
     byte_string = request.body 
 
@@ -189,9 +189,10 @@ def invalidate_list(request, topic):
     for obj in data: 
         id = obj["id"]
         testData = Test.objects.get(id = id)
-        print(testData)
-        testData.delete()
         
+        testData.validity = "Invalid"
+        testData.save()
+
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
