@@ -2,29 +2,22 @@
 import { testType } from "@/lib/Types";
 import Row from "@/app/components/Row";
 import { RiFilterLine, RiFilterFill } from "react-icons/ri";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import { TestDataContext } from "@/lib/TestContext";
 
 type testListProps = {
-  tests: testType[],
   groupByFunc: (groupBy: string) => void,
   grouping: string,
-  currentTopic: string,
-  setCurrentTopic: (topic: string) => void,
   toggleCheck: (test: testType) => void,
-  checkedTestsSet: Set<testType>,
   toggleSelectAll: () => void,
   isAllSelected: boolean,
 }
 
 const TestList = ({
-  tests,
   groupByFunc,
   grouping,
-  currentTopic,
-  setCurrentTopic,
   toggleCheck,
-  checkedTestsSet,
   toggleSelectAll,
   isAllSelected,
 }: testListProps) => {
@@ -37,18 +30,22 @@ const TestList = ({
     setIsSelecting(false);
   }
 
+  const { testData, setCurrentTopic, currentTopic } = useContext(TestDataContext);
+
   useEffect(() => {
-    setGroupedTests(tests);
+    setGroupedTests(testData.currentTests);
     groupTests(grouping);
   }, [selectedGrouping]);
 
   const groupTests = (grouping: string) => {
+    console.log(currentTopic);
+    console.log(testData.currentTests);
     if (grouping === '') {
-      setGroupedTests(tests);
+      setGroupedTests(testData.currentTests);
     } else if (grouping === 'acceptable') {
-      setGroupedTests(tests.filter((test: testType) => test.label.toLowerCase() === 'acceptable'));
+      setGroupedTests(testData.currentTests.filter((test: testType) => test.label.toLowerCase() === 'acceptable'));
     } else if (grouping === 'unacceptable') {
-      setGroupedTests(tests.filter((test: testType) => test.label.toLowerCase() === 'unacceptable'));
+      setGroupedTests(testData.currentTests.filter((test: testType) => test.label.toLowerCase() === 'unacceptable'));
     } else {
       console.error('Invalid grouping: ' + grouping)
     }
@@ -112,11 +109,11 @@ const TestList = ({
         </div>
       </div>
       {selectedGrouping === '' ?
-        tests && tests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} isSelected={checkedTestsSet.has(test)} />
+        testData && testData.currentTests.map((test: testType, index: number) => {
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
         }) :
         groupedTests && groupedTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} isSelected={checkedTestsSet.has(test)} />
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
         })
       }
     </div>

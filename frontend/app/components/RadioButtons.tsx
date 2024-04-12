@@ -1,23 +1,20 @@
-import React, { useContext } from 'react';
-import { TestDecisionsContext } from "@/lib/TestContext";
-import {logAction} from "@/lib/Service";
+import { logAction } from "@/lib/Service";
 
 
 type RadioButtonsProps = {
-  setTopic: (topic: string) => void;
+  currentTopic: string;
+  setCurrentTopic: (topic: string) => void;
 }
 
 /**
  * Radio buttons to select topic
  * @param setT: function to set topic
  */
-function RadioButtons({ setTopic: setTopic }: RadioButtonsProps) {
-  const { currentTopic, setCurrentTopic } = useContext(TestDecisionsContext);
+function RadioButtons({ currentTopic, setCurrentTopic }: RadioButtonsProps) {
 
   const handleTopicChange = (topic: string) => () => {
-    logAction("null", `Change Topic to ${topic}`).then();
+    logAction("null", `Change Topic to ${topic}`);
     setCurrentTopic(topic);
-    setTopic(topic);
   }
 
   return (

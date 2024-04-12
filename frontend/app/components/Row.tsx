@@ -1,29 +1,38 @@
+'use client';
 import { testType } from "@/lib/Types";
-import { useEffect, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import {logAction} from "@/lib/Service";
+import { logAction } from "@/lib/Service";
+import { TestDataContext } from "@/lib/TestContext";
 
 type rowProps = {
   test: testType,
   currentTopic: string,
   setCurrentTopic: (topic: string) => void,
   toggleCheck: (test: testType) => void,
-  isSelected: boolean,
 }
 
-const Row = ({ test, toggleCheck, isSelected }: rowProps) => {
+const Row = ({ test, toggleCheck }: rowProps) => {
+  const { testData } = useContext(TestDataContext);
+
+  const [isChecked, setIsChecked] = useState<boolean>(test.isChecked);
+
+  // useEffect(() => {
+  //   setIsChecked(test.isChecked);
+  // }, [testData.currentTests]);
 
   function toggle() {
     toggleCheck(test);
-    isSelected ? logAction(test.title, `Checkmark unchecked`) : logAction(test.title, `Checkmark checked`);
+    setIsChecked(!isChecked);
+    test.isChecked ? logAction(test.title, `Checkmark unchecked`) : logAction(test.title, `Checkmark checked`);
   }
 
   return (
     test.validity === 'Unapproved' && <div className={'border-gray-500 border-b w-full px-4 min-h-16 items-center flex pr-4'}>
       {/* CheckBox */}
       <div className="w-8 h-8" onClick={toggle}>
-        {isSelected ? (
+        {isChecked ? (
           <MdOutlineCheckBox className={'w-8 h-8 cursor-pointer'} />
         ) : (
           <MdOutlineCheckBoxOutlineBlank className={'w-8 h-8 cursor-pointer'} />
