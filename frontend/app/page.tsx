@@ -82,14 +82,15 @@ export default function Home() {
   // Load in new tests when they are changed
   useEffect(() => {
     async function fetchTests() {
-      // TODO: Fix to load in tests based on topic
-
       // Load in all tests and set them accordingly
-      const PEdata = await getTests('PE');
+      let PEdata = await getTests('PE');
+      PEdata = PEdata.reverse();
       setTestsPE(PEdata);
-      const KEdata = await getTests('KE');
+      let KEdata = await getTests('KE');
+      KEdata = KEdata.reverse();
       setTestsKE(KEdata);
-      const LCEdata = await getTests('LCE');
+      let LCEdata = await getTests('LCE');
+      LCEdata = LCEdata.reverse();
       setTestsLCE(LCEdata);
 
       setIsCurrent(true);
