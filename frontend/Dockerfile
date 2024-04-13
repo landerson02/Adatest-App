@@ -1,5 +1,5 @@
 # node base image
-FROM node:21-alpine
+FROM node:latest
 
 # copy all files to a docker directory at /app
 COPY . /app
