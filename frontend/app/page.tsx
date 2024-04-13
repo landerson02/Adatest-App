@@ -11,14 +11,6 @@ import NewButtons from "@/app/components/NewButtons";
 
 export default function Home() {
 
-  // list of tests grouped by topic
-  // const [testsPE, setTestsPE] = useState<testType[]>([]);
-  // const [testsKE, setTestsKE] = useState<testType[]>([]);
-  // const [testsLCE, setTestsLCE] = useState<testType[]>([]);
-  // Current tests being displayed
-  // const [currentTests, setCurrentTests] = useState<testType[]>([]);
-
-
   // Whether tests are most recent
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
 
@@ -26,54 +18,26 @@ export default function Home() {
   const [filteredBy, setFilteredBy] = useState<string>('');
 
 
-  // Tests with check box clicked
-  // const [checkedTests, setCheckedTests] = useState<testType[]>([]);
-  // const [checkedTestsSet, setCheckedTestsSet] = useState<Set<testType>>(new Set<testType>());
-
-  // If all tests are selected boolean
-  const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
-
-  /*
-    * Toggle if all tests are selected
-   */
-  function toggleSelectAll() {
-    setIsAllSelected(!isAllSelected);
-    if (!isAllSelected) {
-      // setCheckedTestsSet(new Set(currentTests));
-      let newTD = testData;
-      newTD.currentTests.forEach((test: testType) => {
-        test.isChecked = true;
-      })
-      setTestData(newTD);
-    } else {
-      let newTD = testData;
-      newTD.currentTests.forEach((test: testType) => {
-        test.isChecked = false;
-      })
-      setTestData(newTD);
-    }
-  }
-
-  // Update checked tests when set is changed
-  // useEffect(() => {
-  //   let newTests = Array.from(checkedTestsSet);
-  //   setCheckedTests(newTests);
-  // }, [checkedTestsSet]);
-
-
-
   /**
    * Toggle if a test is checked
    * @param test test to toggle
    */
-  function toggleCheck(test: testType) {
-    let newTD = testData;
-    newTD.currentTests.forEach((t: testType) => {
-      if (t.id === test.id) {
-        t.isChecked = !t.isChecked;
+  function toggleCheck(t: testType) {
+    const updatedTests = testData.currentTests.map((test: testType) => {
+      if (test.id === t.id) {
+        return { ...test, isChecked: !test.isChecked };
       }
+      return test;
     });
-    setTestData(newTD);
+
+    // Create the new test data object
+    let newData: testDataType = {
+      tests: testData.tests,
+      currentTests: updatedTests,
+      decisions: testData.decisions,
+    }
+
+    setTestData(newData);
   }
 
   // Boolean for if the tests are being generated
@@ -93,102 +57,63 @@ export default function Home() {
   useEffect(() => {
     async function fetchTests() {
       // Load in all tests and set them accordingly
-      let PEdata = await getTests('PE');
+      let PEdata: testType[] = await getTests('PE');
       PEdata = PEdata.reverse();
       PEdata.forEach((test: testType) => { test.isChecked = false });
-      PEdata.filter((test: testType) => test.validity === 'Unapproved');
-      // setTestsPE(PEdata);
-      let KEdata = await getTests('KE');
+      PEdata = PEdata.filter((test: testType) => test.validity === 'Unapproved');
+
+      let KEdata: testType[] = await getTests('KE');
       KEdata = KEdata.reverse();
       KEdata.forEach((test: testType) => { test.isChecked = false });
-      KEdata.filter((test: testType) => test.validity === 'Unapproved');
-      // setTestsKE(KEdata);
-      let LCEdata = await getTests('LCE');
+      KEdata = KEdata.filter((test: testType) => test.validity === 'Unapproved');
+
+      let LCEdata: testType[] = await getTests('LCE');
       LCEdata = LCEdata.reverse();
       LCEdata.forEach((test: testType) => { test.isChecked = false });
-      LCEdata.filter((test: testType) => test.validity === 'Unapproved');
-      // setTestsLCE(LCEdata);
+      LCEdata = LCEdata.filter((test: testType) => test.validity === 'Unapproved');
+
       let newTestData: testDataType = {
         tests: {
           PE: PEdata,
           KE: KEdata,
           LCE: LCEdata,
         },
-        currentTests: testData.currentTests,
+        currentTests: currentTopic === 'PE' ? PEdata : currentTopic === 'KE' ? KEdata : LCEdata,
         decisions: testData.decisions,
       }
       setTestData(newTestData);
-
 
       setIsCurrent(true);
     }
     fetchTests();
   }, [isCurrent]);
 
-  // Update current tests state based on topic
-  // useEffect(() => {
-  //   if (displayedTopic === 'PE') {
-  //     setCurrentTests(testsPE);
-  //   } else if (displayedTopic === 'KE') {
-  //     setCurrentTests(testsKE);
-  //   } else if (displayedTopic === 'LCE') {
-  //     setCurrentTests(testsLCE);
-  //   }
-  // }, [currentTopic, isCurrent, displayedTopic]);
-  //
   useEffect(() => {
-    changeCurrentTests(currentTopic);
+    changeCurrentTests();
   }, [currentTopic, isCurrent]);
 
-  function changeCurrentTests(topic: string) {
-    console.log('changing to: ' + topic);
-    if (topic === 'PE') {
-      // setCurrentTests(testData.tests.PE);
-      let newTestData: testDataType = {
-        tests: {
-          PE: testData.tests.PE,
-          KE: testData.tests.KE,
-          LCE: testData.tests.LCE,
-        },
-        currentTests: testData.tests.PE,
-        decisions: testData.decisions,
-      }
-      setTestData(newTestData);
-    } else if (topic === 'KE') {
-      // setCurrentTests(testData.tests.KE);
-      let newTestData: testDataType = {
-        tests: {
-          PE: testData.tests.PE,
-          KE: testData.tests.KE,
-          LCE: testData.tests.LCE,
-        },
-        currentTests: testData.tests.KE,
-        decisions: testData.decisions,
-      }
-      setTestData(newTestData);
-    } else if (topic === 'LCE') {
-      // setCurrentTests(testData.tests.LCE);
-      let newTestData: testDataType = {
-        tests: {
-          PE: testData.tests.PE,
-          KE: testData.tests.KE,
-          LCE: testData.tests.LCE,
-        },
-        currentTests: testData.tests.LCE,
-        decisions: testData.decisions,
-      }
-      setTestData(newTestData);
+  /**
+   * Change the current tests to the current topic
+  */
+  function changeCurrentTests() {
+    console.log(currentTopic);
+    let newTestsData: testDataType = {
+      tests: testData.tests,
+      currentTests: testData.tests[currentTopic],
+      decisions: testData.decisions,
     }
+    setTestData(newTestsData);
   }
 
-
+  /**
+   * Generate tests for the current topic
+   */
   async function onGenerateTests() {
     setIsGenerating(true);
     await generateTests(currentTopic);
     setIsGenerating(false);
     return;
   }
-
 
   function onFilter(filterBy: string) {
     setFilteredBy(filterBy);
@@ -213,7 +138,8 @@ export default function Home() {
               />
             </span>
 
-            <button className='absolute top-0 right-0' onClick={() => { console.log(testData) }}>print</button>
+            <button className={'absolute top-0 right-0'} onClick={() => { console.log(testData) }}>print</button>
+            <button className={'absolute top-10 right-0'} onClick={() => { console.log(testData.currentTests.filter(test => test.isChecked).length) }}>count</button>
 
 
           </div>
@@ -223,8 +149,6 @@ export default function Home() {
           groupByFunc={onFilter}
           grouping={filteredBy}
           toggleCheck={toggleCheck}
-          toggleSelectAll={toggleSelectAll}
-          isAllSelected={isAllSelected}
         />
         <NewButtons
           currentTopic={currentTopic}
@@ -232,6 +156,7 @@ export default function Home() {
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
           genTests={onGenerateTests}
+          isCurrent={isCurrent}
           setIsCurrent={setIsCurrent}
         />
       </main>

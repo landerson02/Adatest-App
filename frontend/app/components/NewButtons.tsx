@@ -12,52 +12,59 @@ type newButtonsProps = {
   isGenerating: boolean,
   setIsGenerating: (isGenerating: boolean) => void,
   genTests: () => void,
+  isCurrent: boolean
   setIsCurrent: (isCurrent: boolean) => void,
 }
 
-export default function NewButtons({ currentTopic, isGenerating, setIsGenerating, genTests, setIsCurrent }: newButtonsProps) {
+export default function NewButtons({ currentTopic, isGenerating, setIsGenerating, genTests, isCurrent, setIsCurrent }: newButtonsProps) {
   const { testData } = useContext(TestDataContext);
 
-  const [isAnyChecked, setIsAnyChecked] = useState<boolean>(false);
 
-  useEffect(() => {
-    setIsAnyChecked(testData.currentTests.some((test: testType) => test.isChecked));
-  }, [testData.currentTests]);
-
+  /**
+   * Approve the checked tests
+   * Update decisions + remove tests
+  */
   async function approveHandler() {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
     testData.decisions[currentTopic].approved.push(...checkedTests);
     await logAction("null", "Agree With AI Grade");
-    console.log('APP');
-    console.log(checkedTests);
-    console.log(currentTopic);
     await approveTests(checkedTests, currentTopic);
+    console.log(testData.currentTests.filter((test: testType) => test.isChecked));
     setIsCurrent(false);
-
-    // testData.decisions[currentTopic].approved.push(...checkedTests);
-    // await logAction("null", "Agree With AI Grade");
-    // await approveTests(checkedTests, currentTopic);
-    // setCheckedTests([]);
-    // setCheckedTestsSet(new Set());
-    // setIsCurrent(false);
   }
 
+  /**
+   * Deny the checked tests
+   * Update decisions + remove tests
+  */
   async function denyHandler() {
-    // testData.decisions[currentTopic].denied.push(...checkedTests);
-    // await logAction("null", "Disagree With AI Grade");
-    // await denyTests(checkedTests, currentTopic);
-    // setCheckedTests([]);
-    // setCheckedTestsSet(new Set());
-    // setIsCurrent(false);
+    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
+    testData.decisions[currentTopic].denied.push(...checkedTests);
+    await logAction('null', 'Disagree with AI Grade');
+    await denyTests(checkedTests, currentTopic);
+    setIsCurrent(false);
   }
 
+  /**
+   * Trash the checked tests
+   * Update decisions + remove tests
+  */
   async function trashHandler() {
-    // testData.decisions[currentTopic].trashed.push(...checkedTests);
-    // await logAction("null", "Trash Essays");
-    // await trashTests(checkedTests, currentTopic);
-    // setCheckedTests([]);
-    // setCheckedTestsSet(new Set());
-    // setIsCurrent(false);
+    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
+    testData.decisions[currentTopic].trashed.push(...checkedTests);
+    await logAction("null", "Trash Essays");
+    await trashTests(checkedTests, currentTopic);
+    setIsCurrent(false);
+  }
+
+  async function decisionHandler(decision: "approved" | "denied" | "trashed") {
+    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
+    testData.decisions[currentTopic][decision].push(...checkedTests);
+    await logAction("null", decision);
+    if (decision === "approved") await approveTests(checkedTests, currentTopic);
+    if (decision === "denied") await denyTests(checkedTests, currentTopic);
+    else await trashTests(checkedTests, currentTopic);
+    setIsCurrent(false);
   }
 
   async function generateHandler() {
@@ -71,19 +78,19 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
     <div className="w-full px-4 h-48 flex justify-between items-center bg-gray-200 border-t border-black">
       {/* Trash / Generate */}
       <div className="w-[25%] flex flex-col gap-4">
-        {!isAnyChecked ? (
+        {testData.currentTests.some((test: testType) => test.isChecked) ? (
+          <button
+            className="w-48 h-8 bg-blue-700 flex justify-center items-center text-white font-light hover:bg-blue-900 rounded-md"
+            onClick={decisionHandler.bind(null, "trashed")}
+          >
+            Trash Selected Essays
+          </button>
+        ) : (
           <div
             className="w-48 h-8 bg-blue-900 opacity-50 flex justify-center items-center text-white font-light hover:bg-blue-900 rounded-md"
           >
             Trash Selected Essays
           </div>
-        ) : (
-          <button
-            className="w-48 h-8 bg-blue-700 flex justify-center items-center text-white font-light hover:bg-blue-900 rounded-md"
-            onClick={trashHandler}
-          >
-            Trash Selected Essays
-          </button>
         )}
         {isGenerating ? (
           <div
@@ -103,20 +110,7 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
 
       {/* Agree / Disagree */}
       <div className="ml-auto w-[25%] flex flex-col gap-4">
-        {testData.currentTests.some(test => test.isChecked) ? (
-          <>
-            <div
-              className="w-48 h-12 bg-green-300 border-2 border-green-700 rounded-2xl flex justify-center items-center transition ease-in-out opacity-50"
-            >
-              Agree with AI Grade
-            </div>
-            <div
-              className="w-48 h-12 bg-red-300 border-2 border-red-700 rounded-2xl flex justify-center items-center transition ease-in-out opacity-50"
-            >
-              Disagree with AI Grade
-            </div>
-          </>
-        ) : (
+        {testData.currentTests.some((test: testType) => test.isChecked) ? (
           <>
             <button
               className="w-48 h-12 bg-green-300 border-2 border-green-700 rounded-2xl flex justify-center items-center hover:bg-green-400 transition ease-in-out"
@@ -130,6 +124,19 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
             >
               Disagree with AI Grade
             </button>
+          </>
+        ) : (
+          <>
+            <div
+              className="w-48 h-12 bg-green-300 border-2 border-green-700 rounded-2xl flex justify-center items-center transition ease-in-out opacity-50"
+            >
+              Agree with AI Grade
+            </div>
+            <div
+              className="w-48 h-12 bg-red-300 border-2 border-red-700 rounded-2xl flex justify-center items-center transition ease-in-out opacity-50"
+            >
+              Disagree with AI Grade
+            </div>
           </>
         )}
       </div>

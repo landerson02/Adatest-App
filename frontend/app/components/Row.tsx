@@ -32,7 +32,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
     test.validity === 'Unapproved' && <div className={'border-gray-500 border-b w-full px-4 min-h-16 items-center flex pr-4'}>
       {/* CheckBox */}
       <div className="w-8 h-8" onClick={toggle}>
-        {isChecked ? (
+        {test.isChecked ? (
           <MdOutlineCheckBox className={'w-8 h-8 cursor-pointer'} />
         ) : (
           <MdOutlineCheckBoxOutlineBlank className={'w-8 h-8 cursor-pointer'} />

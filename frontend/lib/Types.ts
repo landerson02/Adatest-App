@@ -24,3 +24,9 @@ export type testDataType = {
   currentTests: testType[];
   decisions: TestDecisionsType;
 };
+
+enum Decision {
+  Approved = "approved",
+  Denied = "denied",
+  Trashed = "trashed"
+}

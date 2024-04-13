@@ -1,5 +1,5 @@
 'use client'
-import { testType } from "@/lib/Types";
+import { testDataType, testType } from "@/lib/Types";
 import Row from "@/app/components/Row";
 import { RiFilterLine, RiFilterFill } from "react-icons/ri";
 import { useEffect, useState, useContext } from "react";
@@ -10,16 +10,12 @@ type testListProps = {
   groupByFunc: (groupBy: string) => void,
   grouping: string,
   toggleCheck: (test: testType) => void,
-  toggleSelectAll: () => void,
-  isAllSelected: boolean,
 }
 
 const TestList = ({
   groupByFunc,
   grouping,
   toggleCheck,
-  toggleSelectAll,
-  isAllSelected,
 }: testListProps) => {
   const [isSelecting, setIsSelecting] = useState<boolean>(false);
   const [selectedGrouping, setSelectedGrouping] = useState<string>('');
@@ -30,12 +26,39 @@ const TestList = ({
     setIsSelecting(false);
   }
 
-  const { testData, setCurrentTopic, currentTopic } = useContext(TestDataContext);
+  const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
+
+  const { testData, setTestData, setCurrentTopic, currentTopic } = useContext(TestDataContext);
 
   useEffect(() => {
     setGroupedTests(testData.currentTests);
     groupTests(grouping);
   }, [selectedGrouping]);
+
+  useEffect(() => {
+    setIsAllSelected(testData.currentTests.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
+  });
+
+  function toggleSelectAll() {
+    setIsAllSelected(!isAllSelected);
+    if (!isAllSelected) {
+      let newTests = testData.currentTests.map((test: testType) => {
+        test.isChecked = true;
+        return test;
+      });
+      let newTD: testDataType = {
+        ...testData,
+        currentTests: newTests
+      }
+      setTestData(newTD);
+    } else {
+      let newTD = testData;
+      newTD.currentTests.forEach((test: testType) => {
+        test.isChecked = false;
+      })
+      setTestData(newTD);
+    }
+  }
 
   const groupTests = (grouping: string) => {
     console.log(currentTopic);
