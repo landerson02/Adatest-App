@@ -126,7 +126,7 @@ export default function Home() {
   return (
     <TestDecisionsProvider>
       <div className={'grid grid-cols-4'}>
-        <div className={'col-span-1 p-4 h-screen flex flex-col justify-center w-full border-gray-500 border'}>
+        <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
           {/* <Options onGroupByFunc={onGroupBy} /> */}
           <TaskGraph />
         </div>
