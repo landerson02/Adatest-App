@@ -55,7 +55,7 @@ const TaskGraph = () => {
     };
 
     const options = {
-        indexAxis: 'y',
+        // indexAxis: 'y',
         scales: {
             x: {
                 stacked: true,
@@ -74,7 +74,7 @@ const TaskGraph = () => {
             }
         },
         responsive: true,
-        maintainAspectRatio: true
+        maintainAspectRatio: false
     };
 
     return (
@@ -87,7 +87,7 @@ const TaskGraph = () => {
                 <p className={'text-4xl font-serif'}> {totalTests} </p>
             </div>
             <Bar data={data_topic} options={options}> </Bar>
-            <Bar data={data_acceptable} options={options}> </Bar>
+            {/*<Bar data={data_acceptable} options={options}> </Bar>*/}
         </div>
     )
 }
