@@ -20,6 +20,7 @@ urlpatterns = [
     path('core/tests/invalidate/<str:topic>', views.invalidate_list),
     path('core/logs/add', views.log_action),
     path('core/logs/clear', views.log_clear),
+    path('core/logs/save', views.save_log),
 ]
 
 

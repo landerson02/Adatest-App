@@ -55,7 +55,7 @@ const TaskGraph = () => {
     };
 
     const options = {
-        indexAxis: 'y',
+        // indexAxis: 'y',
         scales: {
             x: {
                 stacked: true,
@@ -74,7 +74,7 @@ const TaskGraph = () => {
             }
         },
         responsive: true,
-        maintainAspectRatio: true
+        maintainAspectRatio: false
     };
 
     return (

@@ -1,3 +1,8 @@
+import os
+import sqlite3
+
+import pandas as pd
+from django.core.management import call_command
 from django_nextjs.render import render_nextjs_page_sync
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -10,6 +15,7 @@ from .models import *
 from .serializer import ReactSerializer, TestSerializer
 import json
 
+
 def index(request):
     return render_nextjs_page_sync(request)
     # return HttpResponse("Hello, world. You're at the polls index.")
@@ -18,46 +24,43 @@ def index(request):
 # Create your views here.
 
 obj_lce = create_obj()
-obj_pe = create_obj(type = "PE")
-obj_ke = create_obj(type = "KE")
+obj_pe = create_obj(type="PE")
+obj_ke = create_obj(type="KE")
 
 
 @api_view(['POST'])
 def init_database(request):
-    data = obj_lce.df 
+    data = obj_lce.df
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic = "LCE", label = row['output'])
-        if Test.objects.filter(title=obj.title).exists(): # does not work with get
+        obj = Test(id=index, title=row['input'], topic="LCE", label=row['output'])
+        if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
-        else: 
+        else:
             obj.save()
-
 
     data = obj_pe.df
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic = "PE", label = row['output'])
-        if Test.objects.filter(title=obj.title).exists(): # does not work with get
+        obj = Test(id=index, title=row['input'], topic="PE", label=row['output'])
+        if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
-        else: 
+        else:
             obj.save()
 
     data = obj_ke.df
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic = "KE", label = row['output'])
-        if Test.objects.filter(title=obj.title).exists(): # does not work with get
+        obj = Test(id=index, title=row['input'], topic="KE", label=row['output'])
+        if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
-        else: 
+        else:
             obj.save()
 
 
-
-    
-
 @api_view(['GET'])
 def test_get(request, my_topic):
-    data = Test.objects.filter(topic__icontains = my_topic)
+    data = Test.objects.filter(topic__icontains=my_topic)
     serializer = TestSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
+
 
 @api_view(['GET'])
 def get_all(request):
@@ -66,16 +69,13 @@ def get_all(request):
     return Response(serializer.data)
 
 
-
-
 @api_view(['POST'])
-def test_generate(request, topic): 
-
-    if topic == "KE": 
+def test_generate(request, topic):
+    if topic == "KE":
         obj_ke.generate()
         data = obj_ke.df
         for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"): 
+            if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_KE", label=row['output'])
                 test.save()
                 # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
@@ -83,11 +83,11 @@ def test_generate(request, topic):
                 # else:
                 #     test.save()
 
-    elif topic == "PE": 
+    elif topic == "PE":
         obj_pe.generate()
         data = obj_pe.df
         for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"): 
+            if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_PE", label=row['output'])
                 test.save()
                 # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
@@ -95,11 +95,11 @@ def test_generate(request, topic):
                 # else:
                 #     test.save()
 
-    else: 
+    else:
         obj_lce.generate()
         data = obj_lce.df
         for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"): 
+            if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_LCE", label=row['output'])
                 test.save()
                 # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
@@ -112,49 +112,42 @@ def test_generate(request, topic):
     return Response(serializer.data)
 
 
-
 @api_view(['POST'])
-def approve_list(request, topic): 
-    
-    byte_string = request.body 
+def approve_list(request, topic):
+    byte_string = request.body
 
     body = byte_string.decode("utf-8")
 
-    
-
     data = json.loads(body)
 
-    for obj in data: 
+    for obj in data:
         id = obj["id"]
-        testData = Test.objects.get(id = id)
-
+        testData = Test.objects.get(id=id)
 
         testData.validity = "Approved"
-      
-        testData.save()
 
+        testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
-    
+
     return Response(serializer.data)
 
-   
+
 @api_view(['POST'])
-def deny_list(request, topic): 
-    byte_string = request.body 
+def deny_list(request, topic):
+    byte_string = request.body
 
     body = byte_string.decode("utf-8")
 
     data = json.loads(body)
 
-    for obj in data: 
+    for obj in data:
         id = obj["id"]
-        testData = Test.objects.get(id = id)
-        
+        testData = Test.objects.get(id=id)
+
         testData.validity = "Denied"
         testData.save()
-
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
@@ -178,32 +171,45 @@ def log_action(request):
 
     return Response("Log Successfully Added!")
 
+
 @api_view(['POST'])
-def invalidate_list(request, topic): 
-    byte_string = request.body 
+def save_log(request):
+    dir = os.path.dirname(os.getcwd())
+    conn = sqlite3.connect('db.sqlite3', isolation_level=None,
+                           detect_types=sqlite3.PARSE_COLNAMES)
+    db_df = pd.read_sql_query("SELECT * FROM core_log", conn)
+    db_df.to_csv('log.csv', index=False)
+
+    return Response("Data saved to CSV successfully!")
+
+
+@api_view(['POST'])
+def invalidate_list(request, topic):
+    byte_string = request.body
 
     body = byte_string.decode("utf-8")
 
     data = json.loads(body)
 
-    for obj in data: 
+    for obj in data:
         id = obj["id"]
-        testData = Test.objects.get(id = id)
-        
+        testData = Test.objects.get(id=id)
+
         testData.validity = "Invalid"
         testData.save()
-
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
     return Response(serializer.data)
 
+
 @api_view(['DELETE'])
-def test_clear(request): 
+def test_clear(request):
     tests = Test.objects.all()
     for test in tests:
         test.delete()
     return Response("All tests cleared!")
+
 
 @api_view(['DELETE'])
 def log_clear(request):
@@ -212,8 +218,9 @@ def log_clear(request):
         log.delete()
     return Response("All logs cleared!")
 
+
 @api_view(['DELETE'])
-def test_delete(request, pk): 
+def test_delete(request, pk):
     test = Test.objects.get(id=pk)
     test.delete()
 
@@ -239,5 +246,3 @@ class ReactView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-
-
