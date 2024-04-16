@@ -7,33 +7,36 @@ import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md
 import { TestDataContext } from "@/lib/TestContext";
 
 type testListProps = {
-  groupByFunc: (groupBy: string) => void,
-  grouping: string,
+  setFilteredBy: (groupBy: string) => void,
+  filteredBy: string,
   toggleCheck: (test: testType) => void,
+  isCurrent: boolean,
 }
 
-const TestList = ({
-  groupByFunc,
-  grouping,
-  toggleCheck,
-}: testListProps) => {
-  const [isSelecting, setIsSelecting] = useState<boolean>(false);
-  const [selectedGrouping, setSelectedGrouping] = useState<string>('');
-  const [groupedTests, setGroupedTests] = useState<testType[]>([]);
+const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testListProps) => {
+
+  // Filtering states
+  const [isSelectingFilter, setIsSelectingFilter] = useState<boolean>(false);
+
+  /**
+   * Handle change of new filtering
+   * @param newChoice new choice to filter by
+   */
   const handleSelectChange = (newChoice: string) => {
-    groupByFunc(newChoice);
-    setSelectedGrouping(newChoice);
-    setIsSelecting(false);
+    setFilteredBy(newChoice);
+    setIsSelectingFilter(false);
   }
 
+  // Boolean for select all checkbox
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
+  // Load in test data
   const { testData, setTestData, setCurrentTopic, currentTopic } = useContext(TestDataContext);
 
+  // Update current tests when the grouping changes
   useEffect(() => {
-    setGroupedTests(testData.currentTests);
-    groupTests(grouping);
-  }, [selectedGrouping]);
+    filterTests(filteredBy);
+  }, [filteredBy, isCurrent]);
 
   useEffect(() => {
     setIsAllSelected(testData.currentTests.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
@@ -42,7 +45,7 @@ const TestList = ({
   function toggleSelectAll() {
     setIsAllSelected(!isAllSelected);
     if (!isAllSelected) {
-      let newTests = testData.currentTests.map((test: testType) => {
+      let newTests = [...testData.currentTests].map((test: testType) => {
         test.isChecked = true;
         return test;
       });
@@ -52,27 +55,29 @@ const TestList = ({
       }
       setTestData(newTD);
     } else {
-      let newTD = testData;
+      let newTD: testDataType = { ...testData };
       newTD.currentTests.forEach((test: testType) => {
         test.isChecked = false;
-      })
+      });
       setTestData(newTD);
     }
   }
 
-  const groupTests = (grouping: string) => {
-    console.log(currentTopic);
-    console.log(testData.currentTests);
+  const filterTests = (grouping: string) => {
+
+    let newTests;
     if (grouping === '') {
-      setGroupedTests(testData.currentTests);
-    } else if (grouping === 'acceptable') {
-      setGroupedTests(testData.currentTests.filter((test: testType) => test.label.toLowerCase() === 'acceptable'));
-    } else if (grouping === 'unacceptable') {
-      setGroupedTests(testData.currentTests.filter((test: testType) => test.label.toLowerCase() === 'unacceptable'));
+      newTests = [...testData.tests[currentTopic]];
     } else {
-      console.error('Invalid grouping: ' + grouping)
+      newTests = [...testData.tests[currentTopic]].filter((test: testType) => test.label.toLowerCase() === grouping);
     }
+    let newTD: testDataType = {
+      ...testData,
+      currentTests: newTests
+    }
+    setTestData(newTD);
   }
+
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll overflow-x-hidden'}>
       {/* HEADER */}
@@ -89,14 +94,14 @@ const TestList = ({
         <div className={'ml-auto flex w-[25%] justify-center items-center pr-2'}>
           <div className={'text-2xl whitespace-nowrap'}>AI Grade</div>
           <div>
-            {grouping === '' ?
-              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelecting(!isSelecting)} /> :
-              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelecting(!isSelecting)} />
+            {filteredBy === '' ?
+              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingFilter(!isSelectingFilter)} /> :
+              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingFilter(!isSelectingFilter)} />
             }
-            {isSelecting &&
+            {isSelectingFilter &&
               <div className="absolute z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
                 <ul className="text-gray-700">
-                  {grouping === '' ?
+                  {filteredBy === '' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleSelectChange('')}>None
                     </li> :
@@ -104,7 +109,7 @@ const TestList = ({
                       onClick={() => handleSelectChange('')}>None
                     </li>
                   }
-                  {grouping === 'acceptable' ?
+                  {filteredBy === 'acceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleSelectChange('acceptable')}>Acceptable
                     </li> :
@@ -112,7 +117,7 @@ const TestList = ({
                       onClick={() => handleSelectChange('acceptable')}>Acceptable
                     </li>
                   }
-                  {grouping === 'unacceptable' ?
+                  {filteredBy === 'unacceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleSelectChange('unacceptable')}>Unacceptable
                     </li> :
@@ -131,14 +136,17 @@ const TestList = ({
           {/*</div> */}
         </div>
       </div>
-      {selectedGrouping === '' ?
-        testData && testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
-        }) :
-        groupedTests && groupedTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
-        })
-      }
+      {/*{selectedGrouping === '' ?*/}
+      {/*  testData && testData.currentTests.map((test: testType, index: number) => {*/}
+      {/*    return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />*/}
+      {/*  }) :*/}
+      {/*  groupedTests && groupedTests.map((test: testType, index: number) => {*/}
+      {/*    return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />*/}
+      {/*  })*/}
+      {/*}*/}
+      {testData && testData.currentTests.map((test: testType, index: number) => {
+        return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
+      })}
     </div>
   );
 }

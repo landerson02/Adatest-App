@@ -25,8 +25,3 @@ export type testDataType = {
   decisions: TestDecisionsType;
 };
 
-enum Decision {
-  Approved = "approved",
-  Denied = "denied",
-  Trashed = "trashed"
-}

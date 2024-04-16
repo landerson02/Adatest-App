@@ -8,17 +8,15 @@ import test from "node:test";
 
 type newButtonsProps = {
   currentTopic: string,
-  setCurrentTopic: (topic: string) => void,
   isGenerating: boolean,
-  setIsGenerating: (isGenerating: boolean) => void,
   genTests: () => void,
-  isCurrent: boolean
   setIsCurrent: (isCurrent: boolean) => void,
 }
 
-export default function NewButtons({ currentTopic, isGenerating, setIsGenerating, genTests, isCurrent, setIsCurrent }: newButtonsProps) {
-  const { testData } = useContext(TestDataContext);
+export default function NewButtons({ currentTopic, isGenerating, genTests, setIsCurrent }: newButtonsProps) {
 
+  // Get the test data
+  const { testData } = useContext(TestDataContext);
 
   /**
    * Approve the checked tests
@@ -57,13 +55,18 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
     setIsCurrent(false);
   }
 
+  /**
+   * Updates decisions for the checked tests
+   * @param decision "approved" | "denied" | "trashed" The decision to make
+   */
   async function decisionHandler(decision: "approved" | "denied" | "trashed") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
     testData.decisions[currentTopic][decision].push(...checkedTests);
     await logAction("null", decision);
     if (decision === "approved") await approveTests(checkedTests, currentTopic);
-    if (decision === "denied") await denyTests(checkedTests, currentTopic);
-    else await trashTests(checkedTests, currentTopic);
+    else if (decision === "denied") await denyTests(checkedTests, currentTopic);
+    else if (decision === "trashed") await trashTests(checkedTests, currentTopic);
+    else console.error("Invalid decision");
     setIsCurrent(false);
   }
 
@@ -81,7 +84,7 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
         {testData.currentTests.some((test: testType) => test.isChecked) ? (
           <button
             className="w-48 h-8 bg-blue-700 flex justify-center items-center text-white font-light hover:bg-blue-900 rounded-md"
-            onClick={decisionHandler.bind(null, "trashed")}
+            onClick={() => decisionHandler("trashed")}
           >
             Trash Selected Essays
           </button>
@@ -114,13 +117,13 @@ export default function NewButtons({ currentTopic, isGenerating, setIsGenerating
           <>
             <button
               className="w-48 h-12 bg-green-300 border-2 border-green-700 rounded-2xl flex justify-center items-center hover:bg-green-400 transition ease-in-out"
-              onClick={approveHandler}
+              onClick={() => decisionHandler("approved")}
             >
               Agree with AI Grade
             </button>
             <button
               className="w-48 h-12 bg-red-300 border-2 border-red-700 rounded-2xl flex justify-center items-center hover:bg-red-400 transition ease-in-out"
-              onClick={denyHandler}
+              onClick={() => decisionHandler("denied")}
             >
               Disagree with AI Grade
             </button>

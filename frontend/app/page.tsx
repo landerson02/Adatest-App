@@ -14,9 +14,20 @@ export default function Home() {
   // Whether tests are most recent
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
 
-  // Current grouped tests
+  // Boolean for if the tests are being generated
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
   const [filteredBy, setFilteredBy] = useState<string>('');
 
+
+  // Load test decision context
+  const {
+    testData,
+    setTestData,
+    currentTopic,
+    setCurrentTopic,
+  } = useContext(TestDataContext);
 
   /**
    * Toggle if a test is checked
@@ -40,17 +51,6 @@ export default function Home() {
     setTestData(newData);
   }
 
-  // Boolean for if the tests are being generated
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  // Load test decision context
-  const {
-    testData,
-    setTestData,
-    currentTopic,
-    setCurrentTopic,
-  } = useContext(TestDataContext);
-
   /**
    * Load in new tests when they are changed
    */
@@ -58,19 +58,31 @@ export default function Home() {
     async function fetchTests() {
       // Load in all tests and set them accordingly
       let PEdata: testType[] = await getTests('PE');
-      PEdata = PEdata.reverse();
-      PEdata.forEach((test: testType) => { test.isChecked = false });
-      PEdata = PEdata.filter((test: testType) => test.validity === 'Unapproved');
+      if (PEdata && PEdata.length > 0) {
+        PEdata = PEdata.reverse();
+        PEdata.forEach((test: testType) => { test.isChecked = false });
+        PEdata = PEdata.filter((test: testType) => test.validity === 'Unapproved');
+      }
 
       let KEdata: testType[] = await getTests('KE');
-      KEdata = KEdata.reverse();
-      KEdata.forEach((test: testType) => { test.isChecked = false });
-      KEdata = KEdata.filter((test: testType) => test.validity === 'Unapproved');
+      if (KEdata && KEdata.length > 0) {
+        KEdata = KEdata.reverse();
+        KEdata.forEach((test: testType) => { test.isChecked = false });
+        KEdata = KEdata.filter((test: testType) => test.validity === 'Unapproved');
+      }
 
       let LCEdata: testType[] = await getTests('LCE');
-      LCEdata = LCEdata.reverse();
-      LCEdata.forEach((test: testType) => { test.isChecked = false });
-      LCEdata = LCEdata.filter((test: testType) => test.validity === 'Unapproved');
+      if (LCEdata && LCEdata.length > 0) {
+        LCEdata = LCEdata.reverse();
+        LCEdata.forEach((test: testType) => { test.isChecked = false });
+        LCEdata = LCEdata.filter((test: testType) => test.validity === 'Unapproved');
+      }
+
+      let curTests: testType[] = currentTopic === 'PE' ? [...PEdata] : currentTopic === 'KE' ? [...KEdata] : [...LCEdata];
+      if (filteredBy !== '') {
+        curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filteredBy);
+      }
+      if (curTests.length > 0) curTests[0].isChecked = true;
 
       let newTestData: testDataType = {
         tests: {
@@ -78,7 +90,7 @@ export default function Home() {
           KE: KEdata,
           LCE: LCEdata,
         },
-        currentTests: currentTopic === 'PE' ? PEdata : currentTopic === 'KE' ? KEdata : LCEdata,
+        currentTests: curTests,
         decisions: testData.decisions,
       }
       setTestData(newTestData);
@@ -86,8 +98,11 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent]);
+  }, [isCurrent, currentTopic, filteredBy]);
 
+  /**
+   * Update displayed tests
+   */
   useEffect(() => {
     changeCurrentTests();
   }, [currentTopic, isCurrent]);
@@ -96,7 +111,6 @@ export default function Home() {
    * Change the current tests to the current topic
   */
   function changeCurrentTests() {
-    console.log(currentTopic);
     let newTestsData: testDataType = {
       tests: testData.tests,
       currentTests: testData.tests[currentTopic],
@@ -115,11 +129,6 @@ export default function Home() {
     return;
   }
 
-  function onFilter(filterBy: string) {
-    setFilteredBy(filterBy);
-  }
-
-
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
@@ -137,26 +146,18 @@ export default function Home() {
                 setCurrentTopic={setCurrentTopic}
               />
             </span>
-
-            <button className={'absolute top-0 right-0'} onClick={() => { console.log(testData) }}>print</button>
-            <button className={'absolute top-10 right-0'} onClick={() => { console.log(testData.currentTests.filter(test => test.isChecked).length) }}>count</button>
-
-
           </div>
-
         </div>
         <TestList
-          groupByFunc={onFilter}
-          grouping={filteredBy}
+          setFilteredBy={setFilteredBy}
+          filteredBy={filteredBy}
           toggleCheck={toggleCheck}
+          isCurrent={isCurrent}
         />
         <NewButtons
           currentTopic={currentTopic}
-          setCurrentTopic={setCurrentTopic}
           isGenerating={isGenerating}
-          setIsGenerating={setIsGenerating}
           genTests={onGenerateTests}
-          isCurrent={isCurrent}
           setIsCurrent={setIsCurrent}
         />
       </main>
