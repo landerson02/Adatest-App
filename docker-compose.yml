@@ -4,7 +4,7 @@ services:
   frontend:
     build: ./frontend
     restart: unless-stopped
-    container_name: frontend
+    container_name: ada_frontend
     ports:
       - 3000:3000
     networks:
@@ -13,7 +13,7 @@ services:
       - ./frontend:/app
   backend:
     build: ./backend
-    container_name: backend
+    container_name: ada_backend
     restart: unless-stopped
     volumes:
       - ./backend:/code
