@@ -136,17 +136,20 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
           {/*</div> */}
         </div>
       </div>
-      {/*{selectedGrouping === '' ?*/}
-      {/*  testData && testData.currentTests.map((test: testType, index: number) => {*/}
-      {/*    return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />*/}
-      {/*  }) :*/}
-      {/*  groupedTests && groupedTests.map((test: testType, index: number) => {*/}
-      {/*    return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />*/}
-      {/*  })*/}
-      {/*}*/}
-      {testData && testData.currentTests.map((test: testType, index: number) => {
-        return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
-      })}
+
+      {(testData && testData.currentTests.length > 0) ? (
+        testData.currentTests.map((test: testType, index: number) => {
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
+        })
+      ) : (filteredBy !== '') ? (
+        <div className={'text-2xl text-center text-gray-500 pt-8'}>
+          There are no '{filteredBy}' essays to show. <br />Either generate more essays or select a different filter.
+        </div>
+      ) : (
+        <div className={'text-2xl text-center text-gray-500 pt-8'}>
+          Please Select 'Generate More Essays' to Continue
+        </div>
+      )}
     </div>
   );
 }

@@ -13,47 +13,10 @@ type newButtonsProps = {
   setIsCurrent: (isCurrent: boolean) => void,
 }
 
-export default function NewButtons({ currentTopic, isGenerating, genTests, setIsCurrent }: newButtonsProps) {
+export default ({currentTopic, isGenerating, genTests, setIsCurrent}: newButtonsProps) => {
 
   // Get the test data
   const { testData } = useContext(TestDataContext);
-
-  /**
-   * Approve the checked tests
-   * Update decisions + remove tests
-  */
-  async function approveHandler() {
-    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testData.decisions[currentTopic].approved.push(...checkedTests);
-    await logAction("null", "Agree With AI Grade");
-    await approveTests(checkedTests, currentTopic);
-    console.log(testData.currentTests.filter((test: testType) => test.isChecked));
-    setIsCurrent(false);
-  }
-
-  /**
-   * Deny the checked tests
-   * Update decisions + remove tests
-  */
-  async function denyHandler() {
-    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testData.decisions[currentTopic].denied.push(...checkedTests);
-    await logAction('null', 'Disagree with AI Grade');
-    await denyTests(checkedTests, currentTopic);
-    setIsCurrent(false);
-  }
-
-  /**
-   * Trash the checked tests
-   * Update decisions + remove tests
-  */
-  async function trashHandler() {
-    let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testData.decisions[currentTopic].trashed.push(...checkedTests);
-    await logAction("null", "Trash Essays");
-    await trashTests(checkedTests, currentTopic);
-    setIsCurrent(false);
-  }
 
   /**
    * Updates decisions for the checked tests
