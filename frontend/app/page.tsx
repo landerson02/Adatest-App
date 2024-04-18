@@ -144,6 +144,7 @@ export default function Home() {
           <RadioButtons
             isAutoCheck={isAutoCheck}
             setIsAutoCheck={setIsAutoSelect}
+            setIsCurrent={setIsCurrent}
           />
         </div>
         <TestList
