@@ -106,3 +106,23 @@ export async function trashTests(tests: testType[], topic: string) {
     console.log(error);
   }
 }
+
+export async function logAction(essay: string, action: string) {
+    const url = `core/logs/add`;
+    const data = {
+      essay: essay,
+      action: action
+    }
+    try {
+        await fetch(url, {
+        method: 'POST',
+        cache: "no-store",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data }),
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}

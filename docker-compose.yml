@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    container_name: ada_frontend
+    ports:
+      - 3000:3000
+    networks:
+      - app_net
+    volumes:
+      - ./frontend:/app
+  backend:
+    build: ./backend
+    container_name: ada_backend
+    restart: unless-stopped
+    volumes:
+      - ./backend:/code
+    ports:
+      - 8000:8000
+    networks:
+      - app_net
+
+
+networks:
+  app_net:
+    driver: bridge
