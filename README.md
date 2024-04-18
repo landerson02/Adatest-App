@@ -1,4 +1,5 @@
 This branch is the Adatest integration using Mistral-7b-Instruct-v0.2 model
+Requires ~8GB VRAM to run. 
 
 ## Getting Started
 
