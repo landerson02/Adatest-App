@@ -3,7 +3,7 @@ Requires ~8GB VRAM to run.
 
 ## Getting Started
 
-1. Run the development server:
+1. Run the development server: (if first time, run cmd line: 'npm install')
 cd frontend/ folder
 ```bash
 npm run dev
