@@ -2,8 +2,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
-
+1. Run the development server:
+cd frontend/ folder
 ```bash
 npm run dev
 # or
@@ -12,6 +12,12 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+2. In a separate terminal, run :
+cd backend/ folder
+```bash
+# run the following command
+python3 manage.py runserver
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
