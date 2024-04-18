@@ -160,16 +160,6 @@ class AdaClass():
     def approve(self, test):
         self.df.loc[self.df['Input'] == test]["Validity"] = "Approved"
 
-
-def create_obj(type="LCE"):
-    csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
-    test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
-
-    lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_{type}_v2')
-    lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
-
-    # OPENAI_API_KEY = "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"
-    # generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
     model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
     nf4_config = BitsAndBytesConfig(  # quantization 4-bit
         load_in_4bit=True,
