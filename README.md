@@ -23,5 +23,5 @@ python3 manage.py runserver
 
 Open [http://localhost:8000](http://localhost:8000) with your browser to see the application.
 
-3. Clear the old tests using: [http://localhost:8000/core/tests/clear]
-4. Initialize new tests from NTX_test.csv files: [http://localhost:8000/core/tests/init]
+3. Clear the old tests using: [http://localhost:8000/core/tests/clear](http://localhost:8000/core/tests/clear)
+4. Initialize new tests from NTX_test.csv files: [http://localhost:8000/core/tests/init](http://localhost:8000/core/tests/init)
