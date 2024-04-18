@@ -13,7 +13,7 @@ pnpm dev
 # or
 bun dev
 ```
-2. In a separate terminal, run :
+2. In a separate terminal:
 cd backend/ folder
 ```bash
 # run the following command
