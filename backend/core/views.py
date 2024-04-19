@@ -1,19 +1,24 @@
+import json
 import os
 import sqlite3
 
 import pandas as pd
-from django.core.management import call_command
+import torch
+from adatest import *
+from core.ada import *
+from django.db.models.lookups import *
 from django_nextjs.render import render_nextjs_page_sync
+from peft import PeftModel  # for fine-tuning
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models.lookups import *
+from transformers import AutoTokenizer
+from transformers import BitsAndBytesConfig, AutoModelForCausalLM
 
-from core.ada import *
+from .ada import MistralPipeline
 from .models import *
 from .serializer import ReactSerializer, TestSerializer
-import json
 
 
 def index(request):
@@ -22,11 +27,31 @@ def index(request):
 
 
 # Create your views here.
+model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+nf4_config = BitsAndBytesConfig(  # quantization 4-bit
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
+model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+                                                 device_map="auto",
+                                                 trust_remote_code=False,
+                                                 quantization_config=nf4_config,
+                                                 revision="main")
 
-obj_lce = create_obj()
-obj_pe = create_obj(type="PE")
-obj_ke = create_obj(type="KE")
+tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
+    # load in LORA fine-tune for student answer examples
+lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
+model = PeftModel.from_pretrained(
+        model, lora_model_path, torch_dtype=torch.float16, force_download=True,
+    )
+mistral_pipeline = MistralPipeline(model, tokenizer)
+
+obj_lce = create_obj(mistral=mistral_pipeline)
+obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
+obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
 
 @api_view(['POST'])
 def init_database(request):
@@ -114,6 +139,7 @@ def test_generate(request, topic):
 
 @api_view(['POST'])
 <<<<<<< HEAD
+<<<<<<< HEAD
 def approve_list(request, topic): 
     
     byte_string = request.body 
@@ -121,15 +147,18 @@ def approve_list(request, topic):
 def approve_list(request, topic):
     byte_string = request.body
 >>>>>>> main
+=======
+def approve_list(request, topic):
+    byte_string = request.body
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     body = byte_string.decode("utf-8")
-
-    
 
     data = json.loads(body)
 
     for obj in data:
         id = obj["id"]
+<<<<<<< HEAD
 <<<<<<< HEAD
         testData = Test.objects.get(id = id)
         
@@ -138,19 +167,25 @@ def approve_list(request, topic):
         testData = Test.objects.get(id=id)
 
 >>>>>>> main
+=======
+        testData = Test.objects.get(id=id)
+
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData.validity = "Approved"
-      
-        testData.save()
 
         testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
 <<<<<<< HEAD
+<<<<<<< HEAD
     
 =======
 
 >>>>>>> main
+=======
+
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
     return Response(serializer.data)
 
 
@@ -165,17 +200,23 @@ def deny_list(request, topic):
     for obj in data:
         id = obj["id"]
 <<<<<<< HEAD
+<<<<<<< HEAD
         testData = Test.objects.get(id = id)
         
         testData.validity = "Denied"
         testData.save()
 
 =======
+=======
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData = Test.objects.get(id=id)
 
         testData.validity = "Denied"
         testData.save()
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
@@ -222,16 +263,22 @@ def invalidate_list(request, topic):
     for obj in data:
         id = obj["id"]
 <<<<<<< HEAD
+<<<<<<< HEAD
         testData = Test.objects.get(id = id)
         print(testData)
         testData.delete()
         
 =======
+=======
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData = Test.objects.get(id=id)
 
         testData.validity = "Invalid"
         testData.save()
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
