@@ -250,6 +250,13 @@ def test_delete(request, pk):
     test.delete()
 
     return Response('Test Successfully Deleted!')
+@api_view(['POST'])
+def add_test(request):
+    pass 
+
+@api_view(['POST'])
+def edit_test(request, pk): 
+    pass 
 
 
 class ReactView(APIView):
