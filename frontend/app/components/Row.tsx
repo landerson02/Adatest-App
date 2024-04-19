@@ -1,11 +1,13 @@
 'use client';
 import { perturbedTestType, testType } from "@/lib/Types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { logAction } from "@/lib/Service";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import PerturbRow from "@/app/components/PerturbRow";
+import { TestDataContext } from "@/lib/TestContext";
+import { testDataType } from "@/lib/Types";
 
 
 type rowProps = {
@@ -16,6 +18,9 @@ type rowProps = {
 }
 
 const Row = ({ test, toggleCheck }: rowProps) => {
+
+  // Get test data
+  const { setTestData, testData, currentTopic } = useContext(TestDataContext);
 
   // if the perturbation dropdown is showing
   const [isShowingPerts, setIsShowingPerts] = useState<boolean>(false);
@@ -46,6 +51,26 @@ const Row = ({ test, toggleCheck }: rowProps) => {
     test.isChecked ? logAction(test.title, `Checkmark unchecked`) : logAction(test.title, `Checkmark checked`);
   }
 
+  // Update the test essay in the context
+  function onEssayChange(text: string) {
+    // logAction(test.title, `Title changed to ${newTitle}`);
+    const updatedTests = testData.currentTests.map((t: testType) => {
+      if (test.id === t.id) {
+        return { ...t, title: text };
+      }
+      return t;
+    });
+
+    // Create the new test data object
+    let newData: testDataType = {
+      tests: testData.tests,
+      currentTests: updatedTests,
+      decisions: testData.decisions,
+    }
+
+    setTestData(newData);
+  }
+
   return (
     test.validity === 'Unapproved' && <div className={' border-gray-500 border-b w-full px-4 items-center flex flex-col pr-4'}>
       <div className={'w-full px-4 min-h-16 items-center flex pr-4'}>
@@ -59,7 +84,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
         </div>
 
         {/* Test Essay */}
-        <div className={'text-md font-light w-[55%] pl-2'}>{test.title}</div>
+        <textarea className={'text-md font-light w-[55%] pl-2 h-16'} value={test.title} onChange={(e) => onEssayChange(e.target.value)} />
 
         {/* AI Grade */}
         <div className={'ml-auto w-[25%] items-center'}>
