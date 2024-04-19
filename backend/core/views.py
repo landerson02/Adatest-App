@@ -138,19 +138,8 @@ def test_generate(request, topic):
 
 
 @api_view(['POST'])
-<<<<<<< HEAD
-<<<<<<< HEAD
-def approve_list(request, topic): 
-    
-    byte_string = request.body 
-=======
 def approve_list(request, topic):
     byte_string = request.body
->>>>>>> main
-=======
-def approve_list(request, topic):
-    byte_string = request.body
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     body = byte_string.decode("utf-8")
 
@@ -158,34 +147,15 @@ def approve_list(request, topic):
 
     for obj in data:
         id = obj["id"]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        testData = Test.objects.get(id = id)
-        
-     
-=======
         testData = Test.objects.get(id=id)
 
->>>>>>> main
-=======
-        testData = Test.objects.get(id=id)
-
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData.validity = "Approved"
 
         testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> main
-=======
-
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
     return Response(serializer.data)
 
 
@@ -199,24 +169,10 @@ def deny_list(request, topic):
 
     for obj in data:
         id = obj["id"]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        testData = Test.objects.get(id = id)
-        
-        testData.validity = "Denied"
-        testData.save()
-
-=======
-=======
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData = Test.objects.get(id=id)
 
         testData.validity = "Denied"
         testData.save()
-<<<<<<< HEAD
->>>>>>> main
-=======
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
@@ -262,23 +218,10 @@ def invalidate_list(request, topic):
 
     for obj in data:
         id = obj["id"]
-<<<<<<< HEAD
-<<<<<<< HEAD
-        testData = Test.objects.get(id = id)
-        print(testData)
-        testData.delete()
-        
-=======
-=======
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
         testData = Test.objects.get(id=id)
 
         testData.validity = "Invalid"
         testData.save()
-<<<<<<< HEAD
->>>>>>> main
-=======
->>>>>>> a61de0f47e51c47077f6028ba209afdb63aa54e7
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
