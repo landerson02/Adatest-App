@@ -160,29 +160,9 @@ class AdaClass():
     def approve(self, test):
         self.df.loc[self.df['Input'] == test]["Validity"] = "Approved"
 
-model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
-nf4_config = BitsAndBytesConfig(  # quantization 4-bit
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16
-    )
-model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                 device_map="auto",
-                                                 trust_remote_code=False,
-                                                 quantization_config=nf4_config,
-                                                 revision="main")
 
-tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
-    # load in LORA fine-tune for student answer examples
-lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
-model = PeftModel.from_pretrained(
-        model, lora_model_path, torch_dtype=torch.float16, force_download=True,
-    )
-mistral_pipeline = MistralPipeline(model, tokenizer)
-
-def create_obj(type="LCE"):
+def create_obj(mistral, type="LCE"):
     csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
@@ -192,14 +172,15 @@ def create_obj(type="LCE"):
     # OPENAI_API_KEY = "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"
     # generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
  
-    generator = generators.Pipelines(mistral_pipeline, sep=". ", quote="")
+    generator = generators.Pipelines(mistral, sep=". ", quote="")
     browser = test_tree.adapt(lce_pipeline, generator, max_suggestions=20)
     df1 = browser.test_tree._tests
     obj = AdaClass(browser)
 
     return obj
 
-# obj = create_obj("PE")
+#obj = create_obj("PE")
 # obj.generate()
-# print(obj.df)
+#print(obj.df)
 
+ 

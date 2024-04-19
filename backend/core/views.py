@@ -160,6 +160,15 @@ def approve_list(request, topic):
 
 
 @api_view(['POST'])
+def edit_test(request, pk): 
+    pass 
+
+
+@api_view(["POST"])
+def add_test(request, topic): 
+    pass
+
+@api_view(['POST'])
 def deny_list(request, topic):
     byte_string = request.body
 
@@ -172,6 +181,13 @@ def deny_list(request, topic):
         testData = Test.objects.get(id=id)
 
         testData.validity = "Denied"
+
+        if testData.label == "Unacceptable": 
+            testData.label = "Acceptable"
+
+        else: 
+            testData.label = "Unacceptable"
+        
         testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
