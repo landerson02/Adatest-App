@@ -13,7 +13,7 @@ type RadioButtonsProps = {
 function RadioButtons({ currentTopic, setCurrentTopic }: RadioButtonsProps) {
 
   const handleTopicChange = (topic: string) => () => {
-    logAction("null", `Change Topic to ${topic}`);
+    logAction(["null"], `Change Topic to ${topic}`);
     setCurrentTopic(topic);
   }
 

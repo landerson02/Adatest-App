@@ -25,7 +25,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
   function toggle() {
     toggleCheck(test);
     setIsChecked(!isChecked);
-    test.isChecked ? logAction(test.title, `Checkmark unchecked`) : logAction(test.title, `Checkmark checked`);
+    test.isChecked ? logAction([test.id], `Checkmark unchecked`) : logAction([test.id], `Checkmark checked`);
   }
 
   return (

@@ -14,18 +14,15 @@ class Test(models.Model):
 
 
 class Log(models.Model):
-    essay = models.CharField(max_length=50)
+    test_ids = models.TextField()
     action = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(max_length=50, primary_key=True, default=uuid.uuid4, editable=False)
-
-    def __str__(self):
-        return self.action
     
 
 class Perturbation(models.Model): 
     test_parent = models.OneToOneField(
-        Test,
+        'Test',
         on_delete=models.PROTECT,
         primary_key=True,
     )

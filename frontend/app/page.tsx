@@ -20,7 +20,6 @@ export default function Home() {
   // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
   const [filteredBy, setFilteredBy] = useState<string>('');
 
-
   // Load test decision context
   const {
     testData,

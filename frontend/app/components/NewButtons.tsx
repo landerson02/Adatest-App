@@ -25,7 +25,8 @@ export default ({currentTopic, isGenerating, genTests, setIsCurrent}: newButtons
   async function decisionHandler(decision: "approved" | "denied" | "trashed") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
     testData.decisions[currentTopic][decision].push(...checkedTests);
-    await logAction("null", decision);
+    let test_ids = checkedTests.map((test: testType) => test.id);
+    await logAction(test_ids, decision);
     if (decision === "approved") await approveTests(checkedTests, currentTopic);
     else if (decision === "denied") await denyTests(checkedTests, currentTopic);
     else if (decision === "trashed") await trashTests(checkedTests, currentTopic);
@@ -36,7 +37,7 @@ export default ({currentTopic, isGenerating, genTests, setIsCurrent}: newButtons
   async function generateHandler() {
     if (isGenerating) return;
     await genTests();
-    await logAction("null", "Generate Essays");
+    await logAction(["null"], "Generate Essays");
     setIsCurrent(false);
   }
 

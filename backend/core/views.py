@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models.lookups import *
 
-from core.ada import *
+from .ada import *
 from .models import *
 from .serializer import ReactSerializer, TestSerializer
 import json
@@ -234,10 +234,10 @@ def log_action(request):
     body = byte_string.decode("utf-8")
     body_dict = json.loads(body)
     print(body_dict)
-    essay = body_dict['data']['essay']
+    test_ids = body_dict['data']['test_ids']
     action = body_dict['data']['action']
 
-    log = Log(essay=essay, action=action)
+    log = Log(test_ids=test_ids, action=action)
     try:
         log.save()
     except Exception as e:
