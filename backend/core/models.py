@@ -34,5 +34,3 @@ class Perturbation(models.Model):
     id = models.UUIDField(max_length=50, default=uuid.uuid4, editable=False)
     title = models.TextField()
 
-
-
