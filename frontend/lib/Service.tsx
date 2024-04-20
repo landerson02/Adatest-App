@@ -107,10 +107,16 @@ export async function trashTests(tests: testType[], topic: string) {
   }
 }
 
-export async function logAction(essay: string, action: string) {
+export async function logAction(test_ids: string[], action: string) {
     const url = `core/logs/add`;
+    console.log(test_ids);
+    let tests = ""
+    console.log(tests);
+    test_ids.forEach((test_id) => {
+      tests += test_id + ","
+    });
     const data = {
-      essay: essay,
+      test_ids: tests,
       action: action
     }
     try {
@@ -125,4 +131,24 @@ export async function logAction(essay: string, action: string) {
     } catch (error) {
         console.log(error);
     }
+}
+
+
+/**
+ * Reset the tests in the database
+ * Calls clear then init
+ */
+export async function resetDB() {
+  try {
+    await fetch('core/tests/clear', {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+    await fetch('core/tests/init', {
+      method: 'POST',
+      cache: 'no-store'
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
