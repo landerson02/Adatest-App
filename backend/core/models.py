@@ -21,3 +21,18 @@ class Log(models.Model):
 
     def __str__(self):
         return self.action
+    
+
+class Perturbation(models.Model): 
+    test_parent = models.OneToOneField(
+        Test,
+        on_delete=models.PROTECT,
+        primary_key=True,
+    )
+
+    label = models.CharField(max_length=20, default="Unacceptable")
+    id = models.UUIDField(max_length=50, default=uuid.uuid4, editable=False)
+    title = models.TextField()
+
+
+
