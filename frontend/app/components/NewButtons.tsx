@@ -1,7 +1,7 @@
 'use client';
 import { TestDataContext } from "@/lib/TestContext";
 import { testType } from "@/lib/Types";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { approveTests, denyTests, logAction, trashTests } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 
@@ -40,6 +40,16 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent }: newButto
     setIsCurrent(false);
   }
 
+  const [isPerturbing, setIsPerturbing] = useState(false);
+
+  async function perturbHandler() {
+    if (isPerturbing) return;
+    setIsPerturbing(true);
+    await logAction("null", "Perturb Essays");
+    // TODO: Add perturbation logic
+    setIsPerturbing(false);
+  }
+
   return (
     <div className="flex h-48 w-full items-center justify-between border-t border-black bg-gray-200 px-4">
       {/* Trash / Generate */}
@@ -73,6 +83,24 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent }: newButto
           </button>
         )}
       </div>
+
+      {/* Generate Perturbations */}
+      {isPerturbing ? (
+        <div
+          className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+        >
+          <ThreeDots className="h-3 w-8" />
+        </div>
+      ) : (
+        <button
+          className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
+          onClick={perturbHandler}
+        >
+          Perturb Essays
+        </button>
+      )}
+
+
 
       {/* Agree / Disagree */}
       <div className="ml-auto flex w-[25%] flex-col gap-4">
