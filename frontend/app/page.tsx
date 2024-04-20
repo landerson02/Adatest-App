@@ -20,12 +20,15 @@ export default function Home() {
   // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
   const [filteredBy, setFilteredBy] = useState<string>('');
 
+  // Boolean for if first checkbox is auto-selected
+  const [isAutoCheck, setIsAutoSelect] = useState<boolean>(true);
+
+
   // Load test decision context
   const {
     testData,
     setTestData,
     currentTopic,
-    setCurrentTopic,
   } = useContext(TestDataContext);
 
   /**
@@ -81,7 +84,7 @@ export default function Home() {
       if (filteredBy !== '') {
         curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filteredBy);
       }
-      if (curTests.length > 0) curTests[0].isChecked = true;
+      if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
 
       let newTestData: testDataType = {
         tests: {
@@ -97,7 +100,7 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent, currentTopic, filteredBy]);
+  }, [isCurrent, currentTopic, filteredBy, isAutoCheck]);
 
   /**
    * Update displayed tests
@@ -136,16 +139,13 @@ export default function Home() {
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
-        <div className={'px-4 w-full h-16 flex justify-between gap-2 items-center text-3xl py-3 font-light'}>
-          Topic:
-          <div className={'flex w-[75%] justify-start'}>
-            <span className={'text-black'}>
-              <RadioButtons
-                currentTopic={currentTopic}
-                setCurrentTopic={setCurrentTopic}
-              />
-            </span>
-          </div>
+        <div className={'px-4 w-full h-16 flex gap-2 items-center py-3'}>
+          <span className={'text-3xl font-light'}>Topic:</span>
+          <RadioButtons
+            isAutoCheck={isAutoCheck}
+            setIsAutoCheck={setIsAutoSelect}
+            setIsCurrent={setIsCurrent}
+          />
         </div>
         <TestList
           setFilteredBy={setFilteredBy}
@@ -160,6 +160,6 @@ export default function Home() {
           setIsCurrent={setIsCurrent}
         />
       </main>
-    </div >
+    </div>
   );
 }

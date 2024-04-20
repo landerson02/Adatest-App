@@ -132,3 +132,23 @@ export async function logAction(test_ids: string[], action: string) {
         console.log(error);
     }
 }
+
+
+/**
+ * Reset the tests in the database
+ * Calls clear then init
+ */
+export async function resetDB() {
+  try {
+    await fetch('core/tests/clear', {
+      method: 'DELETE',
+      cache: 'no-store',
+    });
+    await fetch('core/tests/init', {
+      method: 'POST',
+      cache: 'no-store'
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}

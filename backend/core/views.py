@@ -1,20 +1,20 @@
+import json
 import os
 import sqlite3
 import uuid
 
 import pandas as pd
 from django.core.management import call_command
+from django.db.models.lookups import *
 from django_nextjs.render import render_nextjs_page_sync
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models.lookups import *
 
 from .ada import *
 from .models import *
 from .serializer import ReactSerializer, TestSerializer
-import json
 
 
 
@@ -171,7 +171,12 @@ def approve_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
+        print(obj)
+
+        testData.title = obj["title"]
+
         testData.validity = "Approved"
+
 
         testData.save()
 
@@ -193,6 +198,7 @@ def deny_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
+        testData.title = obj["title"]
         testData.validity = "Denied"
         testData.save()
 
@@ -268,6 +274,8 @@ def invalidate_list(request, topic):
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
+
+        testData.title = obj["title"]
 
         testData.validity = "Invalid"
         testData.save()
