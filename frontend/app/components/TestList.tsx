@@ -90,8 +90,8 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
           )}
           Select All
         </div>
-        <div className={'text-2xl text-center w-32'}>Essays</div>
-        <div className={'ml-auto flex w-[25%] justify-center items-center pr-2'}>
+        <div className={'text-2xl text-center w-[55%]'}>Essays</div>
+        <div className={'flex w-[25%] justify-center items-center pr-2'}>
           <div className={'text-2xl whitespace-nowrap'}>AI Grade</div>
           <div>
             {filteredBy === '' ?
@@ -129,12 +129,8 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
               </div>
             }
           </div>
-          {/* TODO: Capability */}
-
-          {/*<div className={'text-xl w-[47%] flex justify-between'}> */}
-          {/*<div>Capability</div> */}
-          {/*</div> */}
         </div>
+        <div className={'w-[10%] text-center font-light'}>List <br /> Perturbations</div>
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (

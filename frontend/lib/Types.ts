@@ -1,3 +1,8 @@
+export type perturbedTestType = {
+  test: testType; // Perturbed test
+  perturbation: string; // Type of perturbation
+};
+
 export interface testType {
   id: string;
   label: string; // Acceptable or Unacceptable
@@ -5,6 +10,7 @@ export interface testType {
   topic: string; // Concept - PE, KE, LCE
   validity: string; // Approved, Denied, Invalid, Unapproved (default)
   isChecked: boolean; // Checkbox state
+  perturbedTests: perturbedTestType[];
 }
 
 export type TestDecisionsType = {
@@ -24,4 +30,3 @@ export type testDataType = {
   currentTests: testType[];
   decisions: TestDecisionsType;
 };
-
