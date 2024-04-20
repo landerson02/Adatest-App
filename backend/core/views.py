@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import uuid
 
 import pandas as pd
 from django.core.management import call_command
@@ -16,6 +17,41 @@ from .serializer import ReactSerializer, TestSerializer
 import json
 
 
+
+## helper objects 
+
+lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_LCE_v2')
+lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
+
+
+pe_model, pe_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_PE_v2')
+pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
+
+
+ke_model, ke_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_KE_v2')
+ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
+
+
+## helper function to output label 
+def check_lab(type, inp):
+    pipeline = None
+    if type == "PE": 
+        pipeline = pe_pipeline
+    elif type == "LCE": 
+        pipeline = lce_pipeline
+
+    else: 
+        pipeline = ke_pipeline
+
+    lab = pipeline(input)
+
+    if lab[0] == 'unacceptable' or 'Unacceptable': 
+        return "Unacceptable"
+    
+    else: 
+        return "Acceptable"
+    
+
 def index(request):
     return render_nextjs_page_sync(request)
     # return HttpResponse("Hello, world. You're at the polls index.")
@@ -23,11 +59,14 @@ def index(request):
 
 # Create your views here.
 
+
+## main dfs for views
 obj_lce = create_obj()
 obj_pe = create_obj(type="PE")
 obj_ke = create_obj(type="KE")
 
 
+## create default vals in db 
 @api_view(['POST'])
 def init_database(request):
     data = obj_lce.df
@@ -55,6 +94,8 @@ def init_database(request):
             obj.save()
 
 
+
+## get all tests for a given topic 
 @api_view(['GET'])
 def test_get(request, my_topic):
     data = Test.objects.filter(topic__icontains=my_topic)
@@ -62,6 +103,8 @@ def test_get(request, my_topic):
     return Response(serializer.data)
 
 
+
+## get all tests overall
 @api_view(['GET'])
 def get_all(request):
     data = Test.objects.all()
@@ -69,6 +112,8 @@ def get_all(request):
     return Response(serializer.data)
 
 
+
+## generate tests using adatest
 @api_view(['POST'])
 def test_generate(request, topic):
     if topic == "KE":
@@ -112,6 +157,8 @@ def test_generate(request, topic):
     return Response(serializer.data)
 
 
+
+## approve a list of tests
 @api_view(['POST'])
 def approve_list(request, topic):
     byte_string = request.body
@@ -133,7 +180,7 @@ def approve_list(request, topic):
 
     return Response(serializer.data)
 
-
+## deny a list of tests 
 @api_view(['POST'])
 def deny_list(request, topic):
     byte_string = request.body
@@ -153,6 +200,33 @@ def deny_list(request, topic):
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
     return Response(serializer.data)
 
+
+@api_view(['POST'])
+def add_test(request, topic): 
+
+    gen_label = check_lab(topic, request['title'])
+    testData = Test(id = request['id'], title = request['title'], topic = topic, label = gen_label)
+    testData.save()
+
+    allTests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    return Response(serializer.data)
+    
+@api_view(['POST'])
+def edit_test(request, topic):
+
+    id_val = request.POST['id']
+    new_title = request.POST['title']
+
+    testData = Test.objects.get(id = id_val)
+
+    testData.title = new_title
+    testData.save()
+
+    allTests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(allTests, context={'request': request}, many=True)
+    return Response(serializer.data)
+    
 
 @api_view(['POST'])
 def log_action(request):
