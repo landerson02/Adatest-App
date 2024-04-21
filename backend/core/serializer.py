@@ -19,3 +19,8 @@ class ReactSerializer(serializers.ModelSerializer):
         fields = ['title', 'topic', 'id', 'validity']
 
 
+class PerturbationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Perturbation
+        fields = ('test_parent', 'label', 'id', 'title')
+

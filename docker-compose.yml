@@ -21,6 +21,8 @@ services:
       - 8000:8000
     networks:
       - app_net
+    env_file:
+      - ./.env
 
 
 networks:

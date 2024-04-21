@@ -1,24 +1,30 @@
 import json
 import os
 import sqlite3
-import uuid
 
-import pandas as pd
-from django.core.management import call_command
-from django.db.models.lookups import *
 from django_nextjs.render import render_nextjs_page_sync
+from dotenv import load_dotenv
+from peft import PeftModel  # for fine-tuning
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .ada import *
+from .ada import MistralPipeline
 from .models import *
-from .serializer import ReactSerializer, TestSerializer
+from .serializer import ReactSerializer, TestSerializer, PerturbationSerializer
+import uuid 
+
+load_dotenv()
+# Check if MODEL is in .env file
+if "MODEL" not in os.environ:
+    raise ValueError("the env file is wrong")
+
+MODEL_TYPE = os.getenv('MODEL')
 
 
-
-## helper objects 
+## helper objects
 
 lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_LCE_v2')
 lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
@@ -32,41 +38,80 @@ ke_model, ke_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 
-## helper function to output label 
+
+def generate_random_id():
+    random_uuid = uuid.uuid4()
+    random_id = random_uuid.hex
+    return random_id
+
+## helper function to output label
 def check_lab(type, inp):
     pipeline = None
-    if type == "PE": 
+    if type == "PE":
         pipeline = pe_pipeline
-    elif type == "LCE": 
+    elif type == "LCE":
         pipeline = lce_pipeline
 
-    else: 
+    else:
         pipeline = ke_pipeline
 
     lab = pipeline(input)
 
-    if lab[0] == 'unacceptable' or 'Unacceptable': 
+    if lab[0] == 'unacceptable' or 'Unacceptable':
         return "Unacceptable"
-    
-    else: 
+
+    else:
         return "Acceptable"
-    
+
 
 def index(request):
     return render_nextjs_page_sync(request)
-    # return HttpResponse("Hello, world. You're at the polls index.")
 
 
-# Create your views here.
+if MODEL_TYPE == "mistral":
+
+    # Create your views here.
+    model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+    nf4_config = BitsAndBytesConfig(  # quantization 4-bit
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16
+        )
+    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+                                                     device_map="auto",
+                                                     trust_remote_code=False,
+                                                     quantization_config=nf4_config,
+                                                     revision="main")
 
 
-## main dfs for views
-obj_lce = create_obj()
-obj_pe = create_obj(type="PE")
-obj_ke = create_obj(type="KE")
+    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
+
+        # load in LORA fine-tune for student answer examples
+    lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
+    model = PeftModel.from_pretrained(
+            model, lora_model_path, torch_dtype=torch.float16, force_download=True,
+        )
+    mistral_pipeline = MistralPipeline(model, tokenizer)
+    spelling_pipeline = MistralPipeline(model, tokenizer, task = "spelling")
+    negation_pipeline = MistralPipeline(model, tokenizer, task = "negation")
+    synonym_pipeline = MistralPipeline(model, tokenizer, task = "synonym")
 
 
-## create default vals in db 
+
+else:
+    mistral_pipeline = None
+    spelling_pipleing = None
+    negation_pipeline = None
+    synonym_pipeline = None
+
+
+obj_lce = create_obj(mistral=mistral_pipeline)
+obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
+obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
+
+
+## create default vals in db
 @api_view(['POST'])
 def init_database(request):
     data = obj_lce.df
@@ -95,7 +140,7 @@ def init_database(request):
 
 
 
-## get all tests for a given topic 
+## get all tests for a given topic
 @api_view(['GET'])
 def test_get(request, my_topic):
     data = Test.objects.filter(topic__icontains=my_topic)
@@ -171,12 +216,10 @@ def approve_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
-        print(obj)
 
         testData.title = obj["title"]
 
         testData.validity = "Approved"
-
 
         testData.save()
 
@@ -185,7 +228,7 @@ def approve_list(request, topic):
 
     return Response(serializer.data)
 
-## deny a list of tests 
+## deny a list of tests
 @api_view(['POST'])
 def deny_list(request, topic):
     byte_string = request.body
@@ -200,6 +243,13 @@ def deny_list(request, topic):
 
         testData.title = obj["title"]
         testData.validity = "Denied"
+
+        if testData.label == "Unacceptable":
+            testData.label = "Acceptable"
+
+        else:
+            testData.label = "Unacceptable"
+
         testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
@@ -208,16 +258,16 @@ def deny_list(request, topic):
 
 
 @api_view(['POST'])
-def add_test(request, topic): 
+def add_test(request, topic):
 
     gen_label = check_lab(topic, request['title'])
-    testData = Test(id = request['id'], title = request['title'], topic = topic, label = gen_label)
+    testData = Test(id = generate_random_id(), title = request['title'], topic = topic, label = gen_label)
     testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
     return Response(serializer.data)
-    
+
 @api_view(['POST'])
 def edit_test(request, topic):
 
@@ -232,7 +282,7 @@ def edit_test(request, topic):
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
     return Response(serializer.data)
-    
+
 
 @api_view(['POST'])
 def log_action(request):
@@ -307,6 +357,54 @@ def test_delete(request, pk):
     test.delete()
 
     return Response('Test Successfully Deleted!')
+
+
+
+
+@api_view('POST')
+def generate_perturbations(request, topic): 
+    byte_string = request.body
+
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+
+    for obj in data:
+        id = obj["id"]
+        type_perturb = obj["type"]
+        testData = Test.objects.get(id=id)
+
+        pipeline = None
+
+        if type_perturb == "spelling" or "Spelling": 
+            pipeline = spelling_pipeline
+        elif type_perturb == "negation" or  "Negation": 
+            pipeline = negation_pipeline
+        else:
+            pipeline = synonym_pipeline
+
+        perturbed_test = pipeline(testData.title)
+
+        perturbed_label = check_lab(perturbed_test)
+
+        perturbed_id = generate_random_id()
+
+        perturbData = Perturbation(test_parent = testData,  label = perturbed_label, id = perturbed_id, title = perturbed_test)
+
+        
+        
+
+    allPerturbs = Perturbation.objects.all()
+    serializer = PerturbationSerializer(allPerturbs, context={'request': request}, many=True)
+    return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def get_perturbations(request): 
+    data = Perturbation.objects.all()
+    serializer = PerturbationSerializer(data, context={'request': request}, many=True)
+    return Response(serializer.data)
 
 
 class ReactView(APIView):
