@@ -18,8 +18,6 @@ if "MODEL" not in os.environ:
 
 MODEL_TYPE = os.getenv('MODEL')
 
-print('mt: ', MODEL_TYPE)
-
 if MODEL_TYPE == "mistral":
     from peft import PeftModel  # for fine-tuning
 

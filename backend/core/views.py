@@ -1,19 +1,19 @@
+import json
+import os
 import sqlite3
+
 from django_nextjs.render import render_nextjs_page_sync
+from dotenv import load_dotenv
 from peft import PeftModel  # for fine-tuning
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import os
 
 from .ada import *
 from .ada import MistralPipeline
 from .models import *
 from .serializer import ReactSerializer, TestSerializer
-import json
-
-from dotenv import load_dotenv
 
 load_dotenv()
 # Check if MODEL is in .env file

@@ -7,7 +7,7 @@ import { generateTests, getTests } from "@/lib/Service";
 import { testType, testDataType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
-import NewButtons from "@/app/components/NewButtons";
+import NewButtons from "@/app/components/Buttons";
 
 export default function Home() {
 
@@ -23,7 +23,6 @@ export default function Home() {
   // Boolean for if first checkbox is auto-selected
   const [isAutoCheck, setIsAutoSelect] = useState<boolean>(true);
 
-
   // Load test decision context
   const {
     testData,
@@ -33,7 +32,7 @@ export default function Home() {
 
   /**
    * Toggle if a test is checked
-   * @param test test to toggle
+   * @param t test to toggle
    */
   function toggleCheck(t: testType) {
     const updatedTests = testData.currentTests.map((test: testType) => {
@@ -58,29 +57,26 @@ export default function Home() {
    */
   useEffect(() => {
     async function fetchTests() {
-      // Load in all tests and set them accordingly
-      let PEdata: testType[] = await getTests('PE');
-      if (PEdata && PEdata.length > 0) {
-        PEdata = PEdata.reverse();
-        PEdata.forEach((test: testType) => { test.isChecked = false });
-        PEdata = PEdata.filter((test: testType) => test.validity === 'Unapproved');
+
+      // Fetch and process tests for the given topic
+      async function fetchAndProcessTests(topic: string): Promise<testType[]> {
+        let data: testType[] = await getTests(topic);
+        if (data && data.length > 0) {
+          data = data.reverse();
+          data.forEach((test: testType) => { test.isChecked = false });
+          data = data.filter((test: testType) => test.validity === 'Unapproved');
+        }
+        return data;
       }
 
-      let KEdata: testType[] = await getTests('KE');
-      if (KEdata && KEdata.length > 0) {
-        KEdata = KEdata.reverse();
-        KEdata.forEach((test: testType) => { test.isChecked = false });
-        KEdata = KEdata.filter((test: testType) => test.validity === 'Unapproved');
+      const topics = ['PE', 'KE', 'LCE'];
+      let testArrays: { [key: string]: testType[] } = {};
+      for (let type of topics) {
+        testArrays[type] = await fetchAndProcessTests(type);
       }
 
-      let LCEdata: testType[] = await getTests('LCE');
-      if (LCEdata && LCEdata.length > 0) {
-        LCEdata = LCEdata.reverse();
-        LCEdata.forEach((test: testType) => { test.isChecked = false });
-        LCEdata = LCEdata.filter((test: testType) => test.validity === 'Unapproved');
-      }
-
-      let curTests: testType[] = currentTopic === 'PE' ? [...PEdata] : currentTopic === 'KE' ? [...KEdata] : [...LCEdata];
+      // curTests are the ones that are currently being displayed
+      let curTests: testType[] = [...testArrays[currentTopic]];
       if (filteredBy !== '') {
         curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filteredBy);
       }
@@ -88,9 +84,9 @@ export default function Home() {
 
       let newTestData: testDataType = {
         tests: {
-          PE: PEdata,
-          KE: KEdata,
-          LCE: LCEdata,
+          PE: testArrays['PE'],
+          KE: testArrays['KE'],
+          LCE: testArrays['LCE'],
         },
         currentTests: curTests,
         decisions: testData.decisions,
@@ -103,23 +99,16 @@ export default function Home() {
   }, [isCurrent, currentTopic, filteredBy, isAutoCheck]);
 
   /**
-   * Update displayed tests
+   * Update displayed tests when the topic changes
    */
   useEffect(() => {
-    changeCurrentTests();
-  }, [currentTopic, isCurrent]);
-
-  /**
-   * Change the current tests to the current topic
-  */
-  function changeCurrentTests() {
     let newTestsData: testDataType = {
       tests: testData.tests,
       currentTests: testData.tests[currentTopic],
       decisions: testData.decisions,
     }
     setTestData(newTestsData);
-  }
+  }, [currentTopic, isCurrent]);
 
   /**
    * Generate tests for the current topic
