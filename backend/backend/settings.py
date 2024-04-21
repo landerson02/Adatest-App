@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 NEXTJS_SETTINGS = {
-    "nextjs_server_url": "http://frontend:3000",
+    "nextjs_server_url": "http://localhost:3000",
 }
 
 # Internationalization
