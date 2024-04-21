@@ -1,28 +1,37 @@
-This branch is the Adatest integration using Mistral-7b-Instruct-v0.2 model
-Requires ~8GB VRAM to run. 
+This is a full stack application built with Next.js and Django implementing the 
+[adatest](https://github.com/microsoft/adaptive-testing) library, to allow for a 
+more user-friendly and complete end-to-end experience.
 
-## Getting Started
+It allows users to generate, grade, and review results of adaptive test cases.
 
-1. Run the development server: (if first time, run cmd line: 'npm install')
-   
-cd frontend/ folder
-```bash
+## Getting started
+Clone the repository
+
+Create a .env file with the following content:
+```angular2html
+MODEL=modelname
+```
+where modelname is the name of the model you want to use. (mistral or openai)
+
+### If using Docker:
+- place the .env in the application root
+- run the following command:
+```
+docker-compose up
+```
+
+### If not using Docker:
+- place the .env in /backend
+- in /backend, run the following command:
+```
+python manage.py runserver
+```
+- in /frontend, run the following command:
+```
+npm i
+# npm i only needs to be run once
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-2. In a separate terminal:
-cd backend/ folder
-```bash
-# run the following command
-python3 manage.py runserver
 ```
 
-Open [http://localhost:8000](http://localhost:8000) with your browser to see the application.
-
-3. Clear the old tests using: [http://localhost:8000/core/tests/clear](http://localhost:8000/core/tests/clear)
-4. Initialize new tests from NTX_test.csv files: [http://localhost:8000/core/tests/init](http://localhost:8000/core/tests/init)
+Docker or not, the application will be available at http://localhost:8000
