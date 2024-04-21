@@ -46,7 +46,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent }: newButto
   async function perturbHandler() {
     if (isPerturbing) return;
     setIsPerturbing(true);
-    await logAction("null", "Perturb Essays");
+    await logAction(["null"], "Perturb Essays");
     // TODO: Add perturbation logic
     setIsPerturbing(false);
   }

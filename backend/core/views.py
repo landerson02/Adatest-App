@@ -1,23 +1,11 @@
-import json
-import os
 import sqlite3
-import uuid
-
-import pandas as pd
-import torch
-from adatest import *
-from core.ada import *
-from django.db.models.lookups import *
-from django.core.management import call_command
-from django.db.models.lookups import *
 from django_nextjs.render import render_nextjs_page_sync
 from peft import PeftModel  # for fine-tuning
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from transformers import AutoTokenizer
-from transformers import BitsAndBytesConfig, AutoModelForCausalLM
+import os
 
 from .ada import *
 from .ada import MistralPipeline
@@ -25,6 +13,14 @@ from .models import *
 from .serializer import ReactSerializer, TestSerializer
 import json
 
+from dotenv import load_dotenv
+
+load_dotenv()
+# Check if MODEL is in .env file
+if "MODEL" not in os.environ:
+    raise ValueError("the env file is wrong")
+
+MODEL_TYPE = os.getenv('MODEL')
 
 
 ## helper objects
@@ -63,40 +59,40 @@ def check_lab(type, inp):
 
 def index(request):
     return render_nextjs_page_sync(request)
-    # return HttpResponse("Hello, world. You're at the polls index.")
 
 
-# Create your views here.
-model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
-nf4_config = BitsAndBytesConfig(  # quantization 4-bit
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16
-    )
-model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                 device_map="auto",
-                                                 trust_remote_code=False,
-                                                 quantization_config=nf4_config,
-                                                 revision="main")
+if MODEL_TYPE == "mistral":
+
+    # Create your views here.
+    model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+    nf4_config = BitsAndBytesConfig(  # quantization 4-bit
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16
+        )
+    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+                                                     device_map="auto",
+                                                     trust_remote_code=False,
+                                                     quantization_config=nf4_config,
+                                                     revision="main")
 
 
-## main dfs for views
-obj_lce = create_obj()
-obj_pe = create_obj(type="PE")
-obj_ke = create_obj(type="KE")
-tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
-    # load in LORA fine-tune for student answer examples
-lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
-model = PeftModel.from_pretrained(
-        model, lora_model_path, torch_dtype=torch.float16, force_download=True,
-    )
-mistral_pipeline = MistralPipeline(model, tokenizer)
+        # load in LORA fine-tune for student answer examples
+    lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
+    model = PeftModel.from_pretrained(
+            model, lora_model_path, torch_dtype=torch.float16, force_download=True,
+        )
+    mistral_pipeline = MistralPipeline(model, tokenizer)
+else:
+    mistral_pipeline = None
 
 obj_lce = create_obj(mistral=mistral_pipeline)
 obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
 obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
+
 
 ## create default vals in db
 @api_view(['POST'])

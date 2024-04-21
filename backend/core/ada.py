@@ -1,15 +1,27 @@
+from dotenv import load_dotenv
 import os
 import re
 
 import pandas as pd
 from adatest import *
 
-from peft import PeftModel  # for fine-tuning
 from transformers import T5ForConditionalGeneration, T5Tokenizer, BitsAndBytesConfig, AutoModelForCausalLM
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from transformers import Pipeline
 import torch
 
+load_dotenv()
+
+# Check if MODEL is in .env file
+if "MODEL" not in os.environ:
+    raise ValueError("the env file is wrong")
+
+MODEL_TYPE = os.getenv('MODEL')
+
+print('mt: ', MODEL_TYPE)
+
+if MODEL_TYPE == "mistral":
+    from peft import PeftModel  # for fine-tuning
 
 def load_model(model_name):
     model = T5ForConditionalGeneration.from_pretrained(model_name)
@@ -162,17 +174,19 @@ class AdaClass():
 
 
 
-def create_obj(mistral, type="LCE"):
+def create_obj(mistral=None, type="LCE"):
     csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
     lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_{type}_v2')
     lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
-    # OPENAI_API_KEY = "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"
-    # generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
- 
-    generator = generators.Pipelines(mistral, sep=". ", quote="")
+    if mistral is None:
+        OPENAI_API_KEY = "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"
+        generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
+    else:
+        generator = generators.Pipelines(mistral, sep=". ", quote="")
+
     browser = test_tree.adapt(lce_pipeline, generator, max_suggestions=20)
     df1 = browser.test_tree._tests
     obj = AdaClass(browser)
