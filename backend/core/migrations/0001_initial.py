@@ -3,6 +3,7 @@
 from django.db import migrations, models
 import uuid
 
+locals()
 
 class Migration(migrations.Migration):
 
@@ -13,15 +14,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Log',
-            fields=[
-                ('essay', models.CharField(max_length=50)),
-                ('action', models.TextField()),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Test',
             fields=[
                 ('id', models.CharField(max_length=50, primary_key=True, serialize=False)),
@@ -31,4 +23,22 @@ class Migration(migrations.Migration):
                 ('label', models.CharField(default='Unacceptable', max_length=20)),
             ],
         ),
+        migrations.CreateModel(
+            name='Log',
+            fields=[
+                ('test_ids', models.TextField()),
+                ('action', models.TextField()),
+                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Perturbation',
+            fields=[
+                ('test_parent',models.OneToOneField('Test', on_delete=models.PROTECT, primary_key=True)),
+                ('label', models.CharField(max_length=20, default="Unacceptable")),
+                ('id', models.UUIDField(max_length=50, default=uuid.uuid4, editable=False)),
+                ('title', models.TextField()),
+            ]
+        )
     ]

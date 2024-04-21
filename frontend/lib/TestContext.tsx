@@ -1,6 +1,5 @@
 'use client'
 import React, { createContext, useState } from 'react';
-import { TestDecisionsType, testType } from "@/lib/Types";
 import { testDataType } from "@/lib/Types";
 
 const initTestData: testDataType = {
@@ -39,8 +38,7 @@ type testDataContextType = {
 
 export const TestDataContext = createContext<testDataContextType>({
   testData: initTestData,
-  setTestData: () => {
-  },
+  setTestData: () => { },
   currentTopic: 'PE',
   setCurrentTopic: () => {
   },
