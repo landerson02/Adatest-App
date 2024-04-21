@@ -88,47 +88,82 @@ class CustomEssayPipeline(Pipeline):
         return kwargs
 
 
-class MistralPipeline(Pipeline):
-    def __init__(self, model, tokenizer):
-        super().__init__(model=model, tokenizer=tokenizer, task="text-generation")
+import checklist
+from checklist.editor import Editor
+from checklist.perturb import Perturb
 
-    # def _sanitize_parameters(self, **kwargs):
-    #     preprocess_kwargs = {}
-    #     if "maybe_arg" in kwargs:
-    #         preprocess_kwargs["maybe_arg"] = kwargs["maybe_arg"]
-    #     return preprocess_kwargs, {}, {}
+class MistralPipeline(Pipeline):
+    def __init__(self, model, tokenizer, task="base"):
+      super().__init__(model=model, tokenizer=tokenizer, task=task)
 
     def preprocess(self, prompt):
-        messages = [
-            {"role": "user",
-             "content": "I will give you a definition of a concept, and you will write a similar sentence defining the same concept. "
-                        "You must only output 1 simple sentence. "
-                        f"Here is definition: \"{prompt}\""}
-        ]
+      messages = [
+        {"role": "user", "content": prompt}
+      ]
 
-        encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
-        input_ids = encodeds.to("cuda")
-        return input_ids
+      encodeds = tokenizer.apply_chat_template(messages, return_tensors="pt")
+      input_ids = encodeds.to("cuda")
+      return input_ids
 
     def _forward(self, model_inputs, do_sample, max_length):
-        outputs = self.model.generate(
+        outputs = model.generate(
             inputs=model_inputs,
             max_length=max_length + 100,
             do_sample=do_sample,
             pad_token_id=self.tokenizer.eos_token_id,
-            num_return_sequences=1)
+            num_return_sequences=1
+            )
         return outputs
 
     def postprocess(self, model_outputs):
-        decoded = self.tokenizer.decode(model_outputs[0])
+        decoded = tokenizer.decode(model_outputs[0])
         result = re.sub(r'\[INST\].*?\[/INST\]', '', decoded)
-        result = re.sub(r'<s> *', '', result)
-        generation = {'generated_text': result}
+        result = re.sub(r'<INST>.*?</INST>', '', result)
+        # result = re.sub(r'<s>', '', result)
+        # result = re.sub(r'</s>', '', result)
+        result = result.replace('<s>', '')
+        result = result.replace('</s>', '')
+
+        result = result.replace('\n', '')
+        result = result.replace('  ', '')
+        generation = {'generated_text' : result}
         return generation
 
-    def __call__(self, essay, do_sample=True, max_length=200, num_return_sequences=0, pad_token_id=0,
-                 stopping_criteria=0):
-        inputs = self.preprocess(essay)
+    ## NORA: changed max_len, maybe change max_length dependentg on the input essay...
+    def __call__(self, essay, do_sample=True, max_length=250, num_return_sequences=0, pad_token_id=tokenizer.eos_token_id, stopping_criteria=0):
+        if (self.task == "spelling"):
+            for i in range(len(essay) // 20):
+                essay = Perturb.add_typos(essay)
+            return [{'generated_text': essay}]
+        if (self.task == "acronyms"):
+            essay = essay.replace("Potential energy", "PE")
+            essay = essay.replace("potential energy", "PE")
+            essay = essay.replace("Kinetic energy", "KE")
+            essay = essay.replace("kinetic energy", "KE")
+            essay = essay.replace("Law of conservation of energy", "LCE")
+            essay = essay.replace("law of conservation of energy", "LCE")
+            return [{'generated_text': essay}]
+
+        if (self.task == "base"):
+            # prompt = f"You are a teenage student that writes in simple sentences. Given the following sentences, I will give you a definition of a concept, and you will write similar sentences defining the same concept. Here are the definitions: {essay}"
+            prompt = f"Write in simple sentences. For each sentence, write similar sentences about the same subject: {essay}"
+
+        # elif (self.task == "spelling"):
+        #     prompt = f"Add typos to the following sentences. Here are the sentences: {essay}"
+        elif (self.task == "paraphrase"):
+            prompt = f"Rephrase each of the following sentences. Do not add numbers or punctuation: {essay}"
+        # elif (self.task == "acronyms"):
+        #     prompt = f"Add acronyns to each of the following sentences. Here are the sentences: {essay}"
+        elif (self.task == "synonyms"):
+            prompt = f"Replace some words in each sentence with synonyms: {essay}"
+        elif (self.task == "antonyms"):
+            prompt = f"Replace some words in each sentence with antonyms: {essay}"
+        elif (self.task == "negation"):
+            prompt = f"Add negation to each of the following sentences: {essay}"
+        else:
+            prompt = f"Translate a couple words in each sentence to spanish: {essay}"
+
+        inputs = self.preprocess(prompt)
         outputs = self._forward(inputs, do_sample, max_length)
         temp = []
         temp.append(self.postprocess(outputs))
@@ -137,7 +172,13 @@ class MistralPipeline(Pipeline):
     def _sanitize_parameters(self, **kwargs):
         kwargs["model"] = self.model
         kwargs["tokenizer"] = self.tokenizer
-        kwargs["task"] = "text-generation"
+        kwargs["task"] = self.task
+        valid_tasks = ["base","spelling","paraphrase","acronyms","synonyms","antonyms","negation","spanish"]
+        if "task" in kwargs:
+          if kwargs["task"] not in valid_tasks:
+            raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
+        else:
+          raise ValueError(f"Please provide capability")
         return kwargs
 
 
