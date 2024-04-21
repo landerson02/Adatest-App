@@ -101,12 +101,12 @@ class MistralPipeline(Pipeline):
         {"role": "user", "content": prompt}
       ]
 
-      encodeds = tokenizer.apply_chat_template(messages, return_tensors="pt")
+      encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
       input_ids = encodeds.to("cuda")
       return input_ids
 
     def _forward(self, model_inputs, do_sample, max_length):
-        outputs = model.generate(
+        outputs = self.model.generate(
             inputs=model_inputs,
             max_length=max_length + 100,
             do_sample=do_sample,
@@ -116,7 +116,7 @@ class MistralPipeline(Pipeline):
         return outputs
 
     def postprocess(self, model_outputs):
-        decoded = tokenizer.decode(model_outputs[0])
+        decoded = self.tokenizer.decode(model_outputs[0])
         result = re.sub(r'\[INST\].*?\[/INST\]', '', decoded)
         result = re.sub(r'<INST>.*?</INST>', '', result)
         # result = re.sub(r'<s>', '', result)
@@ -130,7 +130,7 @@ class MistralPipeline(Pipeline):
         return generation
 
     ## NORA: changed max_len, maybe change max_length dependentg on the input essay...
-    def __call__(self, essay, do_sample=True, max_length=250, num_return_sequences=0, pad_token_id=tokenizer.eos_token_id, stopping_criteria=0):
+    def __call__(self, essay, do_sample=True, max_length=250, num_return_sequences=0, pad_token_id=None, stopping_criteria=0):
         if (self.task == "spelling"):
             for i in range(len(essay) // 20):
                 essay = Perturb.add_typos(essay)

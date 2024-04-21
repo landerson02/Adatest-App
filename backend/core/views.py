@@ -361,7 +361,7 @@ def test_delete(request, pk):
 
 
 
-@api_view('POST')
+@api_view(['POST'])
 def generate_perturbations(request, topic): 
     byte_string = request.body
 
@@ -390,6 +390,7 @@ def generate_perturbations(request, topic):
         perturbed_id = generate_random_id()
 
         perturbData = Perturbation(test_parent = testData,  label = perturbed_label, id = perturbed_id, title = perturbed_test)
+        perturbData.save()
 
         
         
