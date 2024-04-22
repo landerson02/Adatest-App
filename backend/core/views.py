@@ -88,21 +88,38 @@ if MODEL_TYPE == "mistral":
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
         # load in LORA fine-tune for student answer examples
-    lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0.2-testgen-LoRAs"
+    lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
     model = PeftModel.from_pretrained(
             model, lora_model_path, torch_dtype=torch.float16, force_download=True,
         )
     mistral_pipeline = MistralPipeline(model, tokenizer)
     spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
     negation_pipeline = MistralPipeline(model, tokenizer, task="negation")
-    synonym_pipeline = MistralPipeline(model, tokenizer, task="synonym")
+    synonym_pipeline = MistralPipeline(model, tokenizer, task="synonyms")
+    paraphrase_pipeline = MistralPipeline(model, tokenizer, task="paraphrase")
+    acronyms_pipeline = MistralPipeline(model, tokenizer, task="acronyms")
+    antonyms_pipeline = MistralPipeline(model, tokenizer, task="antonyms")
+    spanish_pipeline = MistralPipeline(model, tokenizer, task="spanish")
 
 else:
     mistral_pipeline = None
     spelling_pipeline = None
     negation_pipeline = None
     synonym_pipeline = None
+    paraphrase_pipeline = None
+    acronyms_pipeline = None
+    antonyms_pipeline = None
+    spanish_pipeline = None
 
+pipeline_map = {
+   "spelling": spelling_pipeline,
+    "negation": negation_pipeline,
+    "synonyms":  synonym_pipeline,
+    "paraphrase": paraphrase_pipeline,
+    "acronyms": acronyms_pipeline,
+    "antonyms": antonyms_pipeline,
+    "spanish": spanish_pipeline
+}
 
 obj_lce = create_obj(mistral=mistral_pipeline)
 obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
@@ -371,34 +388,24 @@ def generate_perturbations(request, topic):
     body = byte_string.decode("utf-8")
 
     data = json.loads(body)
-
+    
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
-        pipeline = None
-
-        perturbations = ["spelling", "negation", "synonyms"]
-
-        for type_perturb in perturbations:
-            if type_perturb == "spelling" or "Spelling":
-                pipeline = spelling_pipeline
-            elif type_perturb == "negation" or "Negation":
-                pipeline = negation_pipeline
-            else:
-                pipeline = synonym_pipeline
-
+        for perturb_str, pipeline in pipeline_map.items():
             if pipeline is not None:
                 perturbed_test = pipeline(testData.title)
-                perturbed_test = perturbed_test['generated_text']
+                print(perturb_str)
+                print(perturbed_test)
+                perturbed_test = perturbed_test[0]['generated_text']
             else:
                 perturbed_test = testData.title
 
             perturbed_label = check_lab(topic, perturbed_test)
-
             perturbed_id = generate_random_id()
 
-            perturbData = Perturbation(test_parent = testData,  label = perturbed_label, id = perturbed_id, title = perturbed_test, type=type_perturb)
+            perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id, title=perturbed_test, type=perturb_str)
             perturbData.save()
 
         
