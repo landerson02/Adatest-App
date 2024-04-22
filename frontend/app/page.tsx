@@ -3,8 +3,8 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import { generateTests, getTests } from "@/lib/Service";
-import { testType, testDataType } from "@/lib/Types";
+import {generateTests, getPerturbations, getTests} from "@/lib/Service";
+import {testType, testDataType, perturbedTestType} from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
 import NewButtons from "@/app/components/Buttons";
@@ -22,6 +22,9 @@ export default function Home() {
 
   // Boolean for if first checkbox is auto-selected
   const [isAutoCheck, setIsAutoSelect] = useState<boolean>(true);
+
+  // Boolean for if perturbations are being generated
+  const [isPerturbing, setIsPerturbing] = useState(false);
 
   // Load test decision context
   const {
@@ -61,6 +64,7 @@ export default function Home() {
       // Fetch and process tests for the given topic
       async function fetchAndProcessTests(topic: string): Promise<testType[]> {
         let data: testType[] = await getTests(topic);
+
         if (data && data.length > 0) {
           data = data.reverse();
           data.forEach((test: testType) => { test.isChecked = false });
@@ -71,8 +75,12 @@ export default function Home() {
 
       const topics = ['PE', 'KE', 'LCE'];
       let testArrays: { [key: string]: testType[] } = {};
+      let perturbedTests : perturbedTestType[] = await getPerturbations();
       for (let type of topics) {
         testArrays[type] = await fetchAndProcessTests(type);
+        testArrays[type].forEach((test: testType) => {
+          test.perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.test_parent === test.id);
+        });
       }
 
       // curTests are the ones that are currently being displayed
@@ -92,11 +100,10 @@ export default function Home() {
         decisions: testData.decisions,
       }
       setTestData(newTestData);
-
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent, currentTopic, filteredBy, isAutoCheck]);
+  }, [isCurrent, currentTopic, filteredBy, isAutoCheck, isPerturbing]);
 
   /**
    * Update displayed tests when the topic changes
@@ -147,6 +154,8 @@ export default function Home() {
           isGenerating={isGenerating}
           genTests={onGenerateTests}
           setIsCurrent={setIsCurrent}
+          isPerturbing={isPerturbing}
+          setIsPerturbing={setIsPerturbing}
         />
       </main>
     </div>

@@ -35,14 +35,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
 
   // Load in perturbations
   useEffect(() => {
-    // TODO: Load in Pert tests
-    // const perts = [] as perturbedTestType[];
-    const perts = [
-      { test: test, perturbation: 'Spelling Error' },
-      { test: test, perturbation: 'Negation' },
-      { test: test, perturbation: 'Synonyms' },
-    ]
-    setPertList(perts);
+    setPertList(test.perturbedTests)
   }, [test]);
 
   // Toggle the checkbox
@@ -106,7 +99,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
         </div>
 
         {/* Perturbation drop down button */}
-        <div className={'w-[10%] text-center font-light flex justify-center items-center'}>
+        <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
           {isShowingPerts ? (
             <IoIosArrowDropupCircle
               className="w-6 h-6 text-blue-600 hover:cursor-pointer"
@@ -114,8 +107,13 @@ const Row = ({ test, toggleCheck }: rowProps) => {
             />
           ) : (
             <IoIosArrowDropdownCircle
-              className="w-6 h-6 text-blue-600 hover:cursor-pointer"
-              onClick={() => setIsShowingPerts(!isShowingPerts)}
+              className={`w-6 h-6  ${pertList?.length == 0 ? 'text-gray-500' : 'hover:cursor-pointer text-blue-600'}`}
+              onClick={() => {
+                if (pertList?.length == 0) {
+                  return;
+                }
+                setIsShowingPerts(!isShowingPerts)
+              }}
             />
           )}
         </div>

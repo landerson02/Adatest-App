@@ -23,7 +23,7 @@ urlpatterns = [
     path('core/logs/save', views.save_log),
     path('core/tests/add/<str:topic>', views.add_test), 
     path('core/tests/edit/<str:pk>', views.edit_test),
-    path('core/perturbations/generate', views.generate_perturbations),
+    path('core/perturbations/generate/<str:topic>', views.generate_perturbations),
     path('core/perturbations/get', views.get_perturbations),
 
 ]

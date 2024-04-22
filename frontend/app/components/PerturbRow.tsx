@@ -13,13 +13,13 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
 
       {/* Test Essay */}
       <div className={'text-md font-light w-[65%]'}>
-        {pertTest.test.title}
+        {pertTest.title}
       </div>
 
       {/* AI Grade */}
       <div className={'w-[25%] items-center'}>
         {
-          pertTest.test.label.toLowerCase() == "acceptable" ?
+          pertTest.label.toLowerCase() == "acceptable" ?
             <div className={'w-full flex justify-center'}>
               <div className={'bg-green-50 text-green-500 rounded-md text-xl text-center ' +
                 'flex justify-left font-light border border-green-500 pr-1'}>
@@ -37,7 +37,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
 
       {/* Perturbation */}
       <div className={'w-[10%] text-center font-light'}>
-        {pertTest.perturbation}
+        {pertTest.type}
       </div>
     </div>
   )

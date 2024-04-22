@@ -2,7 +2,7 @@
 import { TestDataContext } from "@/lib/TestContext";
 import { testType } from "@/lib/Types";
 import { useContext, useState } from "react";
-import { approveTests, denyTests, logAction, trashTests } from "@/lib/Service";
+import {approveTests, denyTests, createPerturbations, logAction, trashTests} from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 
 
@@ -11,9 +11,11 @@ type ButtonsProps = {
   isGenerating: boolean,
   genTests: () => void,
   setIsCurrent: (isCurrent: boolean) => void,
+  isPerturbing: boolean,
+  setIsPerturbing: (isPerturbing: boolean) => void,
 }
 
-export default ({ currentTopic, isGenerating, genTests, setIsCurrent }: ButtonsProps) => {
+export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPerturbing, isPerturbing }: ButtonsProps) => {
 
   // Get the test data
   const { testData } = useContext(TestDataContext);
@@ -41,13 +43,11 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent }: ButtonsP
     setIsCurrent(false);
   }
 
-  const [isPerturbing, setIsPerturbing] = useState(false);
-
   async function perturbHandler() {
     if (isPerturbing) return;
     setIsPerturbing(true);
     await logAction(["null"], "Perturb Essays");
-    // TODO: Add perturbation logic
+    await createPerturbations(testData.currentTests, currentTopic);
     setIsPerturbing(false);
   }
 

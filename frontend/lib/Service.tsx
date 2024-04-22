@@ -152,3 +152,48 @@ export async function resetDB() {
     console.log(error);
   }
 }
+
+/**
+  * creates perturbations for the given tests
+  * @param tests List of tests to be approved
+  * @param topic PE, KE, LCE
+  */
+export async function createPerturbations(tests: testType[], topic: string) {
+  if (tests.length === 0) return;
+  const url = `core/perturbations/generate/${topic}`;
+  try {
+    const perturbations = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+      body: JSON.stringify(tests),
+    });
+    return await perturbations.json()
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+/**
+  * Gets an array of perturbations based off of the topic
+  * @param topic PE, KE, or LCE
+  * @returns An array of perturbations
+  */
+export async function getPerturbations() {
+  const url = `core/perturbations/get`;
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+    });
+    // checks that the response is valid
+    if (!res.ok) {
+      throw new Error("Failed to get perturbations");
+    }
+    // creates and maps an array of Test Objects
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -55,7 +55,7 @@ def check_lab(type, inp):
     else:
         pipeline = ke_pipeline
 
-    lab = pipeline(input)
+    lab = pipeline(inp)
 
     if lab[0] == 'unacceptable' or 'Unacceptable':
         return "Unacceptable"
@@ -93,15 +93,13 @@ if MODEL_TYPE == "mistral":
             model, lora_model_path, torch_dtype=torch.float16, force_download=True,
         )
     mistral_pipeline = MistralPipeline(model, tokenizer)
-    spelling_pipeline = MistralPipeline(model, tokenizer, task = "spelling")
-    negation_pipeline = MistralPipeline(model, tokenizer, task = "negation")
-    synonym_pipeline = MistralPipeline(model, tokenizer, task = "synonym")
-
-
+    spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
+    negation_pipeline = MistralPipeline(model, tokenizer, task="negation")
+    synonym_pipeline = MistralPipeline(model, tokenizer, task="synonym")
 
 else:
     mistral_pipeline = None
-    spelling_pipleing = None
+    spelling_pipeline = None
     negation_pipeline = None
     synonym_pipeline = None
 
@@ -338,8 +336,13 @@ def invalidate_list(request, topic):
 @api_view(['DELETE'])
 def test_clear(request):
     tests = Test.objects.all()
+    perturbations = Perturbation.objects.all()
     for test in tests:
         test.delete()
+
+    for perturbation in perturbations:
+        perturbation.delete()
+
     return Response("All tests cleared!")
 
 
@@ -362,7 +365,7 @@ def test_delete(request, pk):
 
 
 @api_view(['POST'])
-def generate_perturbations(request, topic): 
+def generate_perturbations(request, topic):
     byte_string = request.body
 
     body = byte_string.decode("utf-8")
@@ -371,26 +374,32 @@ def generate_perturbations(request, topic):
 
     for obj in data:
         id = obj["id"]
-        type_perturb = obj["type"]
         testData = Test.objects.get(id=id)
 
         pipeline = None
 
-        if type_perturb == "spelling" or "Spelling": 
-            pipeline = spelling_pipeline
-        elif type_perturb == "negation" or  "Negation": 
-            pipeline = negation_pipeline
-        else:
-            pipeline = synonym_pipeline
+        perturbations = ["spelling", "negation", "synonyms"]
 
-        perturbed_test = pipeline(testData.title)
+        for type_perturb in perturbations:
+            if type_perturb == "spelling" or "Spelling":
+                pipeline = spelling_pipeline
+            elif type_perturb == "negation" or "Negation":
+                pipeline = negation_pipeline
+            else:
+                pipeline = synonym_pipeline
 
-        perturbed_label = check_lab(perturbed_test)
+            if pipeline is not None:
+                perturbed_test = pipeline(testData.title)
+                perturbed_test = perturbed_test['generated_text']
+            else:
+                perturbed_test = testData.title
 
-        perturbed_id = generate_random_id()
+            perturbed_label = check_lab(topic, perturbed_test)
 
-        perturbData = Perturbation(test_parent = testData,  label = perturbed_label, id = perturbed_id, title = perturbed_test)
-        perturbData.save()
+            perturbed_id = generate_random_id()
+
+            perturbData = Perturbation(test_parent = testData,  label = perturbed_label, id = perturbed_id, title = perturbed_test, type=type_perturb)
+            perturbData.save()
 
         
         

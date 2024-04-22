@@ -1,6 +1,8 @@
 export type perturbedTestType = {
-  test: testType; // Perturbed test
-  perturbation: string; // Type of perturbation
+  test_parent: string; // Parent test id
+  label: string; // Acceptable or Unacceptable
+  title: string; // The essay
+  type: string; // Type of perturbation
 };
 
 export interface testType {
