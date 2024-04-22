@@ -4,19 +4,21 @@ FROM python:3.9
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV MODEL=mistral
+ENV MODEL=openai
 
 RUN mkdir /code
 WORKDIR /code
 
 # Install dependencies
-ADD requirements.txt /code/
 RUN pip install --upgrade pip
 RUN pip install notebook==6.1.5
-RUN pip install -r requirements.txt
-# add the bottom two commands if not running mistral model
-#RUN pip uninstall git+https://github.com/aayushb03/adatest_mod/@bca00d16a43bd5c75c2b54c0d80243e1aec7b7ea
-#RUN pip install adatest
+# If running mistral model
+#ADD mistral_requirements.txt /code/
+#RUN pip install -r mistral_requirements.txt
+
+# If running openai model
+ADD openai_requirements.txt /code/
+RUN pip install -r openai_requirements.txt
 
 
 #Copy Project

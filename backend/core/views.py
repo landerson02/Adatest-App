@@ -322,8 +322,18 @@ def save_log(request):
     dir = os.path.dirname(os.getcwd())
     conn = sqlite3.connect('db.sqlite3', isolation_level=None,
                            detect_types=sqlite3.PARSE_COLNAMES)
-    db_df = pd.read_sql_query("SELECT * FROM core_log", conn)
-    db_df.to_csv('log.csv', index=False)
+    # Save log table to csv called log.csv
+    log_df = pd.read_sql_query("SELECT * FROM core_log", conn)
+    log_df.to_csv('log.csv', index=False)
+    # Save perturbations table to csv called log.csv
+    perturbations_df = pd.read_sql_query("SELECT * FROM core_perturbation", conn)
+    perturbations_df.to_csv('perturbations.csv', index=False)
+    # Save tests table to csv called log.csv
+    tests_df = pd.read_sql_query("SELECT * FROM core_test", conn)
+    tests_df.to_csv('tests.csv', index=False)
+
+    # Close the database connection
+    conn.close()
 
     return Response("Data saved to CSV successfully!")
 
