@@ -46,7 +46,6 @@ const Row = ({ test, toggleCheck }: rowProps) => {
 
   // Update the test essay in the context
   function onEssayChange(text: string) {
-    // logAction(test.title, `Title changed to ${newTitle}`);
     const updatedTests = testData.currentTests.map((t: testType) => {
       if (test.id === t.id) {
         return { ...t, title: text };

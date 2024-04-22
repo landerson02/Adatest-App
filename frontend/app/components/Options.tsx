@@ -1,30 +1,37 @@
-
 import { useState } from 'react';
+import {logAction} from "@/lib/Service";
 
 type optionsProps = {
-    onGroupByFunc: (groupBy: string) => void;
+    onPerturbationChange: (perturbation: string) => void; // New prop
 }
 
-const Options = ({onGroupByFunc} : optionsProps) => {
-  const [selectedGrouping, setSelectedGrouping] = useState<string>('');
+const Options = ({onPerturbationChange} : optionsProps) => {
+  const [selectedPerturbation, setSelectedPerturbation] = useState<string>(''); // New state
 
-  const handleSelectChange = (newChoice: string) => {
-    setSelectedGrouping(newChoice);
-    onGroupByFunc(newChoice);
+  const handlePerturbationChange = (newChoice: string) => { // New handler
+    logAction(["null"], `Filter Graph Perturbation to ${newChoice}`);
+    setSelectedPerturbation(newChoice);
+    onPerturbationChange(newChoice);
   }
+
   return (
     <div className={'w-full h-1/4 flex flex-col items-center'}>
       <label htmlFor="grouping">Filter:</label>
-      <select
-        name="grouping"
-        id="grouping"
-        value={selectedGrouping}
-        onChange={(e) => handleSelectChange(e.target.value)}
+        <select
+            name="perturbation"
+            id="perturbation"
+            value={selectedPerturbation}
+            onChange={(e) => handlePerturbationChange(e.target.value)}
         >
-        <option value={''}>None</option>
-        <option value={'acceptable'}>Acceptable</option>
-        <option value={'unacceptable'}>Unacceptable</option>
-      </select>
+            <option value={''}>None</option>
+            <option value={'spelling'}>Spelling</option>
+            <option value={'negation'}>Negation</option>
+            <option value={'synonyms'}>Synonyms</option>
+            <option value={'paraphrase'}>Paraphrase</option>
+            <option value={'acronyms'}>Acronyms</option>
+            <option value={'antonyms'}>Antonyms</option>
+            <option value={'spanish'}>Spanish</option>
+        </select>
     </div>
   )
 }

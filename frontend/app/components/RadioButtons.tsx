@@ -53,6 +53,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
   async function resetTests() {
+    logAction(["null"], 'Resetting Tests');
     setIsResetting(true);
     await resetDB();
     setIsResetting(false);

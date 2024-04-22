@@ -5,6 +5,7 @@ import { RiFilterLine, RiFilterFill } from "react-icons/ri";
 import { useEffect, useState, useContext } from "react";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { TestDataContext } from "@/lib/TestContext";
+import {logAction} from "@/lib/Service";
 
 type testListProps = {
   setFilteredBy: (groupBy: string) => void,
@@ -45,6 +46,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
   function toggleSelectAll() {
     setIsAllSelected(!isAllSelected);
     if (!isAllSelected) {
+      logAction(["null"], "Toggle Select All On");
       let newTests = [...testData.currentTests].map((test: testType) => {
         test.isChecked = true;
         return test;
@@ -55,6 +57,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
       }
       setTestData(newTD);
     } else {
+      logAction(["null"], "Toggle Select All Off");
       let newTD: testDataType = { ...testData };
       newTD.currentTests.forEach((test: testType) => {
         test.isChecked = false;
@@ -64,12 +67,12 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
   }
 
   const filterTests = (grouping: string) => {
-
     let newTests;
     if (grouping === '') {
       newTests = [...testData.tests[currentTopic]];
     } else {
       newTests = [...testData.tests[currentTopic]].filter((test: testType) => test.label.toLowerCase() === grouping);
+      logAction(["null"], `Filter by ${grouping}`);
     }
     let newTD: testDataType = {
       ...testData,

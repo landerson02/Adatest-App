@@ -37,7 +37,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
 
       {/* Perturbation */}
       <div className={'w-[10%] text-center font-light'}>
-        {pertTest.type}
+        {pertTest.type[0].toUpperCase() + pertTest.type.slice(1).toLowerCase()}
       </div>
     </div>
   )
