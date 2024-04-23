@@ -125,11 +125,10 @@ obj_lce = create_obj(mistral=mistral_pipeline)
 obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
 obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
 
-
 ## create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    data = obj_lce.df
+    data = obj_lce.df.head(10)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="LCE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -137,7 +136,7 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_pe.df
+    data = obj_pe.df.head(10)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="PE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -145,14 +144,13 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_ke.df
+    data = obj_ke.df.head(10)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="KE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
         else:
             obj.save()
-
 
 
 ## get all tests for a given topic
@@ -364,6 +362,8 @@ def invalidate_list(request, topic):
 def test_clear(request):
     tests = Test.objects.all()
     perturbations = Perturbation.objects.all()
+    
+
     for test in tests:
         test.delete()
 
