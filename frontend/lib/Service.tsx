@@ -108,29 +108,29 @@ export async function trashTests(tests: testType[], topic: string) {
 }
 
 export async function logAction(test_ids: string[], action: string) {
-    const url = `core/logs/add`;
-    console.log(test_ids);
-    let tests = ""
-    console.log(tests);
-    test_ids.forEach((test_id) => {
-      tests += test_id + ","
+  const url = `core/logs/add`;
+  console.log(test_ids);
+  let tests = ""
+  console.log(tests);
+  test_ids.forEach((test_id) => {
+    tests += test_id + ","
+  });
+  const data = {
+    test_ids: tests,
+    action: action
+  }
+  try {
+    await fetch(url, {
+      method: 'POST',
+      cache: "no-store",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data }),
     });
-    const data = {
-      test_ids: tests,
-      action: action
-    }
-    try {
-        await fetch(url, {
-        method: 'POST',
-        cache: "no-store",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ data }),
-        });
-    } catch (error) {
-        console.log(error);
-    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 
@@ -197,3 +197,28 @@ export async function getPerturbations() {
     console.log(error);
   }
 }
+
+
+/**
+ * Adds a test to the database
+ * @param test
+ * @param topic
+ */
+export async function addTest(test: testType, topic: string) {
+  const url = `core/tests/add/${topic}`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ test }),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+

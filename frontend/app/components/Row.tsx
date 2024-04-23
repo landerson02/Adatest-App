@@ -111,7 +111,17 @@ const Row = ({ test, toggleCheck }: rowProps) => {
                   'flex justify-left font-light border border-red-500 pr-1'}>
                   <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
                 </div>
-              </div> :
+                Consider a primal linear programming problem in standard form.
+
+                Mark all the correct answers.
+
+                Group of answer choices
+
+                The complementary slackness conditions are always satisfied.
+
+                Given an optimal basic feasible solution to the primal, by imposing the complementary slackness condition we can compute an optimal dual solution.
+
+                If the primal is infeasible, we can find a hyperplane that separates the columns of A from b.</div> :
               <div className={'w-full flex justify-center'}>
                 <div className={'bg-gray-50 text-gray-500 rounded-md text-xl text-center ' +
                   'flex justify-left font-light border border-gray-500 px-1'}>

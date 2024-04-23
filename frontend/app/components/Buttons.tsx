@@ -2,7 +2,7 @@
 import { TestDataContext } from "@/lib/TestContext";
 import { testType } from "@/lib/Types";
 import { useContext, useState } from "react";
-import { approveTests, denyTests, createPerturbations, logAction, trashTests } from "@/lib/Service";
+import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 
 
@@ -19,6 +19,12 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
   // Get the test data
   const { testData } = useContext(TestDataContext);
+
+  // If currently adding a test
+  const [isAddingTest, setIsAddingTest] = useState(false);
+
+  // Text of the test to be added
+  const [addTestText, setAddTestText] = useState("");
 
   /**
    * Updates decisions for the checked tests
@@ -56,12 +62,24 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     setIsPerturbing(false);
   }
 
+  async function addTestHandler(label: string) {
+    setIsAddingTest(true);
+    await logAction(["null"], "Add Test");
+    let newTest = {
+      title: addTestText,
+      label: label,
+    } as testType;
+    setAddTestText("");
+    await addTest(newTest, currentTopic);
+    setIsCurrent(false);
+  }
+
   return (
     <div className="flex h-48 w-full items-center justify-between border-t border-black bg-gray-200 px-4">
 
       {/* Generate / Perturb */}
-      <div className="h-full py-4 flex flex-col justify-around">
-        <div className="flex w-[25%] flex-col gap-4">
+      <div className="h-full py-4 w-[20%]  flex flex-col justify-around">
+        <div className="flex flex-col gap-4">
           {/* Generate */}
           {isGenerating ? (
             <div
@@ -96,9 +114,36 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
         )}
       </div>
 
+      {/* Add Test */}
+
+      <div className="flex w-[60%] h-24 px-6 justify-around items-center gap-4">
+        <textarea className="w-[80%] h-full" placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
+        <div className="flex h-full flex-col justify-around">
+          <button
+            className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}
+            onClick={() => {
+              if (addTestText === "") return;
+              addTestHandler("Acceptable");
+            }}
+          >
+            Add as Acceptable
+          </button>
+          <button
+            className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-red-300 hover:scale-105 hover:bg-red-400 cursor-pointer"}`}
+            onClick={() => {
+              if (addTestText === "") return;
+              addTestHandler("Unacceptable");
+            }}
+          >
+            Add as Unacceptable
+          </button>
+        </div>
+
+      </div>
+
 
       {/* Agree / Disagree / Trash */}
-      <div className="ml-auto flex w-[25%] flex-col gap-4 h-full">
+      <div className="w-[20%] flex justify-center items-center h-full">
         {testData.currentTests.some((test: testType) => test.isChecked) ? (
           <div className="flex flex-col justify-around h-full">
             <button
