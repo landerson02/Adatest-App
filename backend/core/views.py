@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+import uuid
 
 from django_nextjs.render import render_nextjs_page_sync
 from dotenv import load_dotenv
@@ -13,8 +14,7 @@ from rest_framework.views import APIView
 from .ada import *
 from .ada import MistralPipeline
 from .models import *
-from .serializer import ReactSerializer, TestSerializer, PerturbationSerializer
-import uuid 
+from .serializer import PerturbationSerializer, ReactSerializer, TestSerializer
 
 load_dotenv()
 # Check if MODEL is in .env file
@@ -62,7 +62,7 @@ def check_lab(type, inp):
 
     lab = pipeline(inp)
 
-    if lab[0] == 'unacceptable' or 'Unacceptable':
+    if lab[0] == 'unacceptable' or lab[0] == 'Unacceptable':
         return "Unacceptable"
 
     else:
@@ -286,8 +286,15 @@ def deny_list(request, topic):
 @api_view(['POST'])
 def add_test(request, topic):
 
-    gen_label = check_lab(topic, request['title'])
-    testData = Test(id = generate_random_id(), title = request['title'], topic = topic, label = gen_label)
+    byte_string = request.body
+
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+    data = data['test']
+
+    gen_label = check_lab(topic, data['title'])
+    testData = Test(id = generate_random_id(), title = data['title'], topic = topic, label = gen_label)
     testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)

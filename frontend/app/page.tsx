@@ -3,11 +3,11 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import {generateTests, getPerturbations, getTests} from "@/lib/Service";
-import {testType, testDataType, perturbedTestType} from "@/lib/Types";
+import { generateTests, getPerturbations, getTests } from "@/lib/Service";
+import { testType, testDataType, perturbedTestType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
-import NewButtons from "@/app/components/Buttons";
+import Buttons from "@/app/components/Buttons";
 
 export default function Home() {
 
@@ -68,14 +68,24 @@ export default function Home() {
         if (data && data.length > 0) {
           data = data.reverse();
           data.forEach((test: testType) => { test.isChecked = false });
-          data = data.filter((test: testType) => test.validity === 'Unapproved');
+          data = data.filter((test: testType) => test.validity != 'Invalid');
+          data.sort((a, b) => {
+            if (a.validity == "Unapproved" && b.validity != "Unapproved") {
+              return -1; // Move a to the back
+            } else if (a.validity != "Unapproved" && b.validity == "Unapproved") {
+              return 1; // Move b to the back
+            } else {
+              return 0; // Preserve the order
+            }
+          });
         }
+
         return data;
       }
 
       const topics = ['PE', 'KE', 'LCE'];
       let testArrays: { [key: string]: testType[] } = {};
-      let perturbedTests : perturbedTestType[] = await getPerturbations();
+      let perturbedTests: perturbedTestType[] = await getPerturbations();
       for (let type of topics) {
         testArrays[type] = await fetchAndProcessTests(type);
         testArrays[type].forEach((test: testType) => {
@@ -149,7 +159,7 @@ export default function Home() {
           toggleCheck={toggleCheck}
           isCurrent={isCurrent}
         />
-        <NewButtons
+        <Buttons
           currentTopic={currentTopic}
           isGenerating={isGenerating}
           genTests={onGenerateTests}
