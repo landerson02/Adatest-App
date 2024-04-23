@@ -128,7 +128,7 @@ obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
 ## create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    data = obj_lce.df.head(10)
+    data = obj_lce.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="LCE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -136,7 +136,7 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_pe.df.head(10)
+    data = obj_pe.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="PE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -144,7 +144,7 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_ke.df.head(10)
+    data = obj_ke.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="KE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
