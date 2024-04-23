@@ -9,7 +9,7 @@ from transformers import T5ForConditionalGeneration, T5Tokenizer, BitsAndBytesCo
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from transformers import Pipeline
 import torch
-
+from huggingface_hub import login
 load_dotenv()
 
 # Check if MODEL is in .env file
@@ -17,6 +17,8 @@ if "MODEL" not in os.environ:
     raise ValueError("the env file is wrong")
 
 MODEL_TYPE = os.getenv('MODEL')
+LOGIN_TOKEN = os.getenv('LOGIN_TOKEN')
+login(token=LOGIN_TOKEN)
 
 if MODEL_TYPE == "mistral":
     from peft import PeftModel  # for fine-tuning
