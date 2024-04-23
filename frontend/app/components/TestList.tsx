@@ -5,7 +5,7 @@ import { RiFilterLine, RiFilterFill } from "react-icons/ri";
 import { useEffect, useState, useContext } from "react";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { TestDataContext } from "@/lib/TestContext";
-import {logAction} from "@/lib/Service";
+import { logAction } from "@/lib/Service";
 
 type testListProps = {
   setFilteredBy: (groupBy: string) => void,
@@ -93,7 +93,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
           )}
           Select All
         </div>
-        <div className={'text-2xl text-center w-[45%]'}>Essays</div>
+        <div className={'text-2xl text-center w-[45%]'}>Statements</div>
         <div className={'flex w-[20%] justify-center items-center pr-2'}>
           <div className={'text-2xl whitespace-nowrap'}>AI Grade</div>
           <div>
@@ -138,7 +138,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
             Your Grade
           </div>
         </div>
-        <div className={'w-[10%] text-center font-light'}>List <br /> Perturbations</div>
+        <div className={'w-[10%] text-center font-light'}>Criteria</div>
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (
