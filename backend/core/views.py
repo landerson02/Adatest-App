@@ -39,6 +39,8 @@ ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 
 
+
+
 def generate_random_id():
     random_uuid = uuid.uuid4()
     random_id = random_uuid.hex
@@ -126,10 +128,12 @@ obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
 obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
 
 
+df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
+
 ## create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    data = obj_lce.df
+    data = obj_lce.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="LCE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -137,7 +141,7 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_pe.df
+    data = obj_pe.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="PE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
@@ -145,14 +149,13 @@ def init_database(request):
         else:
             obj.save()
 
-    data = obj_ke.df
+    data = obj_ke.df.head(11)
     for index, row in data.iterrows():
         obj = Test(id=index, title=row['input'], topic="KE", label=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
         else:
             obj.save()
-
 
 
 ## get all tests for a given topic
@@ -227,6 +230,8 @@ def approve_list(request, topic):
 
     data = json.loads(body)
 
+    df = df_map[topic]
+
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
@@ -235,6 +240,9 @@ def approve_list(request, topic):
         testData.title = obj["title"]
 
         testData.validity = "Approved"
+
+        df_row = df.loc[df['input'] == testData.title]
+        df_row["topic"] = ""
 
         testData.save()
 
@@ -346,11 +354,15 @@ def invalidate_list(request, topic):
 
     data = json.loads(body)
 
+    df = df_map[topic]
+
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
         testData.title = obj["title"]
+        indexAge = df[df['input'] == testData.title].index
+        df.drop(indexAge , inplace=True)
 
         testData.validity = "Invalid"
         testData.save()
@@ -364,6 +376,8 @@ def invalidate_list(request, topic):
 def test_clear(request):
     tests = Test.objects.all()
     perturbations = Perturbation.objects.all()
+    
+
     for test in tests:
         test.delete()
 

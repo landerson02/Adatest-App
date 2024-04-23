@@ -56,6 +56,17 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 ```
 If there is a given docker-compose version it should be fine.
+Then, in the frontend folder, we have to download npm/node and run npm i
+To do this, run the following command:
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+```
+Then, after restarting terminal window, run the following command:
+```
+cd frontend
+nvm install node
+npm i 
+```
 After doing this, run 
 ```    
 docker-compose up

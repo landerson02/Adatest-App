@@ -232,8 +232,8 @@ def create_obj(mistral=None, type="LCE"):
 
     return obj
 
-#obj = create_obj("PE")
-# obj.generate()
-#print(obj.df)
+#obj = create_obj(type = "PE")
+#obj.generate()
+#print(obj.df.iloc)
 
  
