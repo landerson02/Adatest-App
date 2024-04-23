@@ -68,8 +68,18 @@ export default function Home() {
         if (data && data.length > 0) {
           data = data.reverse();
           data.forEach((test: testType) => { test.isChecked = false });
-          data = data.filter((test: testType) => test.validity === 'Unapproved');
+          data = data.filter((test: testType) => test.validity != 'Invalid');
+          data.sort((a, b) => {
+            if (a.validity == "Unapproved" && b.validity != "Unapproved") {
+              return -1; // Move a to the back
+            } else if (a.validity != "Unapproved" && b.validity == "Unapproved") {
+              return 1; // Move b to the back
+            } else {
+              return 0; // Preserve the order
+            }
+          });
         }
+
         return data;
       }
 

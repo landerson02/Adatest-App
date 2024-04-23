@@ -64,7 +64,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
   }
 
   return (
-    test.validity === 'Unapproved' && <div className={' border-gray-500 border-b w-full px-4 items-center flex flex-col pr-4'}>
+     <div className={' border-gray-500 border-b w-full px-4 items-center flex flex-col pr-4'}>
       <div className={'w-full px-4 min-h-16 items-center flex pr-4'}>
         {/* CheckBox */}
         <div className="w-8 h-8" onClick={toggle}>
@@ -76,10 +76,10 @@ const Row = ({ test, toggleCheck }: rowProps) => {
         </div>
 
         {/* Test Essay */}
-        <textarea className={'text-md font-light w-[55%] pl-2 h-16'} value={test.title} onChange={(e) => onEssayChange(e.target.value)} />
+        <textarea className={'text-md font-light w-[50%] pl-2 h-16'} value={test.title} onChange={(e) => onEssayChange(e.target.value)} />
 
         {/* AI Grade */}
-        <div className={'ml-auto w-[25%] items-center'}>
+        <div className={'ml-auto w-[20%] items-center'}>
           {
             test.label == "acceptable" || test.label == "Acceptable" ?
               <div className={'w-full flex justify-center'}>
@@ -97,6 +97,30 @@ const Row = ({ test, toggleCheck }: rowProps) => {
           }
         </div>
 
+        <div className={'ml-auto w-[20%] items-center'}>
+          {
+            test.validity == "Approved" || test.validity == "approved" ?
+              <div className={'w-full flex justify-center'}>
+                <div className={'bg-green-50 text-green-500 rounded-md text-xl text-center ' +
+                  'flex justify-left font-light border border-green-500 pr-1'}>
+                  <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Agreed
+                </div>
+              </div> : test.validity == "Denied" || test.validity == "denied" ?
+              <div className={'w-full flex justify-center'}>
+                <div className={'bg-red-50 text-red-500 rounded-md text-xl text-center ' +
+                  'flex justify-left font-light border border-red-500 pr-1'}>
+                  <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
+                </div>
+              </div> :
+              <div className={'w-full flex justify-center'}>
+                <div className={'bg-gray-50 text-gray-500 rounded-md text-xl text-center ' +
+                  'flex justify-left font-light border border-gray-500 px-1'}>
+                  Ungraded
+                </div>
+              </div>
+          }
+        </div>
+
         {/* Perturbation drop down button */}
         <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
           {isShowingPerts ? (
@@ -106,7 +130,7 @@ const Row = ({ test, toggleCheck }: rowProps) => {
             />
           ) : (
             <IoIosArrowDropdownCircle
-              className={`w-6 h-6  ${pertList?.length == 0 ? 'text-gray-500' : 'hover:cursor-pointer text-blue-600'}`}
+              className={`w-6 h-6  ${pertList?.length == 0 ? 'hidden' : 'hover:cursor-pointer text-blue-600'}`}
               onClick={() => {
                 if (pertList?.length == 0) {
                   return;

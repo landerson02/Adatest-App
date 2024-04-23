@@ -47,7 +47,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     if (isPerturbing) return;
     setIsPerturbing(true);
     await logAction(["null"], "Perturb Essays");
-    await createPerturbations(testData.currentTests, currentTopic);
+    await createPerturbations(testData.currentTests.filter((test)=> test.validity == "Approved" || test.validity == "Denied"), currentTopic);
     setIsPerturbing(false);
   }
 
