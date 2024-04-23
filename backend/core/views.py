@@ -39,7 +39,10 @@ ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 
 
+## HELPER FUNCTIONS
 
+
+## helpe function to generate ids 
 
 def generate_random_id():
     random_uuid = uuid.uuid4()
@@ -346,6 +349,8 @@ def save_log(request):
     return Response("Data saved to CSV successfully!")
 
 
+
+# invalidate a list of tests and delete from df
 @api_view(['POST'])
 def invalidate_list(request, topic):
     byte_string = request.body
@@ -467,3 +472,4 @@ class ReactView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+        
