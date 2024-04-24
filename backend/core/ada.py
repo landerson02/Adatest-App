@@ -213,12 +213,9 @@ class AdaClass():
 
 
 
-def create_obj(mistral=None, type="LCE"):
+def create_obj(mistral=None, essayPipeline=None, type=None):
     csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
-
-    lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_{type}_v2')
-    lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
     if mistral is None:
         OPENAI_API_KEY = "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"
@@ -226,7 +223,7 @@ def create_obj(mistral=None, type="LCE"):
     else:
         generator = generators.Pipelines(mistral, sep=". ", quote="")
 
-    browser = test_tree.adapt(lce_pipeline, generator, max_suggestions=20)
+    browser = test_tree.adapt(essayPipeline, generator, max_suggestions=20)
     df1 = browser.test_tree._tests
     obj = AdaClass(browser)
 
