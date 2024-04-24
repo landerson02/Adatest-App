@@ -474,6 +474,7 @@ def get_perturbations(request):
     return Response(serializer.data)
 
 
+@api_view(['POST'])
 def validate_perturbations(request, validation):
     byte_string = request.body
     body = byte_string.decode("utf-8")

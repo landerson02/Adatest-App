@@ -1,4 +1,4 @@
-import { testType } from "@/lib/Types";
+import {perturbedTestType, testType} from "@/lib/Types";
 
 /**
   * Gets an array of tests based off of the topic
@@ -241,4 +241,23 @@ export async function editTest(test: testType, topic: string) {
 }
 
 
-
+/**
+ * Deletes a test from the database
+ * @param tests List of perturbed tests to be validated
+ * @param validation Approved, Denied, Invalid
+ */
+export async function validatePerturbations(tests: perturbedTestType[], validation: string) {
+  const url = `core/perturbations/validate/${validation}`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+      body: JSON.stringify({ tests }),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
