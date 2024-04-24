@@ -474,6 +474,31 @@ def get_perturbations(request):
     return Response(serializer.data)
 
 
+def validate_perturbations(request, validation):
+    byte_string = request.body
+    body = byte_string.decode("utf-8")
+    data = json.loads(body)
+
+    if validation not in ["Approved", "Denied", "Invalid"]:
+        return Response("Invalid validation type", status=status.HTTP_400_BAD_REQUEST)
+
+    for obj in data:
+        id = obj["id"]
+        perturbData = Perturbation.objects.get(id=id)
+
+        if validation == "Approve":
+            perturbData.validity = "Approved"
+        elif validation == "Denied":
+            perturbData.validity = "Denied"
+        else:
+            perturbData.validity = "Invalid"
+
+        perturbData.save()
+
+    data = Perturbation.objects.all()
+    serializer = PerturbationSerializer(data, context={'request': request}, many=True)
+    return Response(serializer.data)
+
 class ReactView(APIView):
     serializer_class = ReactSerializer
 
