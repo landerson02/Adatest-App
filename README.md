@@ -43,7 +43,7 @@ chmod 600 adatest.pem
 ```
 Then ssh into the vm with the command:
 ```
-ssh -i adatest.pem ubuntu@129.213.82.253 -L localhost:8000:localhost:8000
+ssh -i adatest.pem ubuntu@1280.136.135 -L localhost:8000:localhost:8000 -L localhost:3000:localhost:3000
 ```
 if the vm does not yet have docker installed for some reason, use the following commands:
 ```

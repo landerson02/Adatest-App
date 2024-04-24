@@ -37,6 +37,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('test_parent', models.ForeignKey('Test', on_delete=models.CASCADE)),
                 ('label', models.CharField(max_length=20, default="Unacceptable")),
+                ('validity', models.CharField(default='Unapproved', max_length=50)),
                 ('id', models.UUIDField(max_length=50, default=uuid.uuid4, editable=False, primary_key=True)),
                 ('title', models.TextField()),
                 ('type', models.CharField(max_length=20, default="spelling"))

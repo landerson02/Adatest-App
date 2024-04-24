@@ -8,6 +8,7 @@ import { testType, testDataType, perturbedTestType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
 import Buttons from "@/app/components/Buttons";
+import Options from "@/app/components/Options";
 
 export default function Home() {
 
@@ -140,7 +141,6 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        {/* <Options onGroupByFunc={onGroupBy} /> */}
         <TaskGraph />
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">

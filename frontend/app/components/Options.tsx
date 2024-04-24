@@ -15,13 +15,14 @@ const Options = ({onPerturbationChange} : optionsProps) => {
   }
 
   return (
-    <div className={'w-full h-1/4 flex flex-col items-center'}>
-      <label htmlFor="grouping">Filter:</label>
+    <div className={'w-full h-1/6 items-center flex justify-between pt-10'}>
+      <label className={'align-left justify-start'} htmlFor="grouping">Set Criteria: </label>
         <select
             name="perturbation"
             id="perturbation"
             value={selectedPerturbation}
             onChange={(e) => handlePerturbationChange(e.target.value)}
+            className={'align-right justify-end'}
         >
             <option value={''}>None</option>
             <option value={'spelling'}>Spelling</option>
