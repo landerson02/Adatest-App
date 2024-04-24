@@ -487,7 +487,7 @@ def validate_perturbations(request, validation):
         id = obj["id"]
         perturbData = Perturbation.objects.get(id=id)
 
-        if validation == "Approve":
+        if validation == "Approved":
             perturbData.validity = "Approved"
         elif validation == "Denied":
             perturbData.validity = "Denied"

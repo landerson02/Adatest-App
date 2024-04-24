@@ -1,8 +1,8 @@
 'use client';
 import { TestDataContext } from "@/lib/TestContext";
-import { testType } from "@/lib/Types";
+import { perturbedTestType, testType } from "@/lib/Types";
 import { useContext, useState } from "react";
-import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest } from "@/lib/Service";
+import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest, validatePerturbations } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 
 
@@ -31,6 +31,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    * @param decision "approved" | "denied" | "trashed" The decision to make
    */
   async function decisionHandler(decision: "approved" | "denied" | "trashed") {
+
+    // Handle main test decisions
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
     testData.decisions[currentTopic][decision].push(...checkedTests);
 
@@ -43,6 +45,15 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     else if (decision === "denied") await denyTests(checkedTests, currentTopic);
     else if (decision === "trashed") await trashTests(checkedTests, currentTopic);
     else console.error("Invalid decision");
+
+    // Handle perturbed test decisions
+
+    let checkedPerts = testData.currentTests.map((test: testType) => test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
+
+    // Update pert decisions in db
+    // set First char to uppercase
+    decision = decision.charAt(0).toUpperCase() + decision.slice(1);
+    await validatePerturbations(checkedPerts, decision);
 
     setIsCurrent(false);
   }
@@ -71,6 +82,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     setAddTestText("");
     await addTest(newTest, currentTopic, label);
     setIsCurrent(false);
+    setIsAddingTest(false);
   }
 
   return (

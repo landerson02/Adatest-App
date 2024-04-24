@@ -1,4 +1,4 @@
-import {perturbedTestType, testType} from "@/lib/Types";
+import { perturbedTestType, testType } from "@/lib/Types";
 
 /**
   * Gets an array of tests based off of the topic
@@ -185,6 +185,7 @@ export async function getPerturbations() {
   const url = `core/perturbations/get`;
   try {
     const res = await fetch(url, {
+      method: 'GET',
       cache: "no-store",
     });
     // checks that the response is valid
@@ -254,8 +255,7 @@ export async function validatePerturbations(tests: perturbedTestType[], validati
       headers: {
         'Content-Type': 'application/json',
       },
-      cache: 'no-store',
-      body: JSON.stringify({ tests }),
+      body: JSON.stringify(tests),
     });
   } catch (error) {
     console.log(error);
