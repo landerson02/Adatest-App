@@ -7,4 +7,4 @@ DS_Store
 .next
 __pycache__
 backend/db.sqlite3
-
+backend/core/migrations/000[2-9]_*.py

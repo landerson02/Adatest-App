@@ -11,6 +11,7 @@ class Test(models.Model):
     topic = models.CharField(max_length=50)
     validity = models.CharField(max_length=50, default="Unapproved")
     label = models.CharField(max_length=20, default="Unacceptable")
+    ground_truth = models.CharField(max_length=20, default="Unknown")
 
 
 class Log(models.Model):

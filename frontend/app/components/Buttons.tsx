@@ -67,10 +67,9 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     await logAction(["null"], "Add Test");
     let newTest = {
       title: addTestText,
-      label: label,
     } as testType;
     setAddTestText("");
-    await addTest(newTest, currentTopic);
+    await addTest(newTest, currentTopic, label);
     setIsCurrent(false);
   }
 

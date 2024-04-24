@@ -21,8 +21,8 @@ urlpatterns = [
     path('core/logs/add', views.log_action),
     path('core/logs/clear', views.log_clear),
     path('core/logs/save', views.save_log),
-    path('core/tests/add/<str:topic>', views.add_test), 
-    path('core/tests/edit/<str:pk>', views.edit_test),
+    path('core/tests/add/<str:topic>/<str:ground_truth>', views.add_test),
+    path('core/tests/edit/<str:topic>', views.edit_test),
     path('core/perturbations/generate/<str:topic>', views.generate_perturbations),
     path('core/perturbations/get', views.get_perturbations),
 

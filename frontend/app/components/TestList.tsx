@@ -12,9 +12,10 @@ type testListProps = {
   filteredBy: string,
   toggleCheck: (test: testType) => void,
   isCurrent: boolean,
+  setIsCurrent: (isCurrent: boolean) => void,
 }
 
-const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testListProps) => {
+const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurrent }: testListProps) => {
 
   // Filtering states
   const [isSelectingFilter, setIsSelectingFilter] = useState<boolean>(false);
@@ -84,18 +85,18 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
   return (
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll overflow-x-hidden'}>
       {/* HEADER */}
-      <div className={'sticky top-0 border-black border-b w-full px-4 max-h-12 min-h-12 items-center flex justify-between bg-gray-200'}>
-        <div className={'flex flex-row items-center w-32 hover:cursor-pointer'} onClick={toggleSelectAll}>
+      <div className={'sticky top-0 border-black border-b w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200'}>
+          <div className={'flex flex-row items-center justify-center w-[5%] hover:cursor-pointer'} onClick={toggleSelectAll}>
           {isAllSelected ? (
             <MdOutlineCheckBox className="w-6 h-6" />
           ) : (
             <MdOutlineCheckBoxOutlineBlank className="w-6 h-6" />
           )}
-          Select All
+          {/*Select All*/}
         </div>
-        <div className={'text-2xl text-center w-[45%]'}>Statements</div>
-        <div className={'flex w-[20%] justify-center items-center pr-2'}>
-          <div className={'text-2xl whitespace-nowrap'}>AI Grade</div>
+        <div className={'text-xl text-center w-[55%]'}>Statements</div>
+        <div className={'flex w-[17%] justify-center items-center pr-2'}>
+          <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
           <div>
             {filteredBy === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingFilter(!isSelectingFilter)} /> :
@@ -133,8 +134,8 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
             }
           </div>
         </div>
-        <div className={"flex w-[20%] justify-center items-center pr-2"}>
-          <div className={"text-2xl whitespace-nowrap"}>
+        <div className={"flex w-[13%] justify-center items-center pr-2"}>
+          <div className={"text-xl whitespace-nowrap"}>
             Your Grade
           </div>
         </div>
@@ -143,7 +144,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent }: testLis
 
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} />
+          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent}/>
         })
       ) : (filteredBy !== '') ? (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>

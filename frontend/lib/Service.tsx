@@ -203,9 +203,10 @@ export async function getPerturbations() {
  * Adds a test to the database
  * @param test
  * @param topic
+ * @param groundTruth
  */
-export async function addTest(test: testType, topic: string) {
-  const url = `core/tests/add/${topic}`;
+export async function addTest(test: testType, topic: string, groundTruth: string) {
+  const url = `core/tests/add/${topic}/${groundTruth}`;
   try {
     await fetch(url, {
       method: 'POST',
@@ -219,6 +220,25 @@ export async function addTest(test: testType, topic: string) {
   }
 }
 
+/**
+ * Edits a test in the database
+ * @param test
+ * @param topic
+ */
+export async function editTest(test: testType, topic: string) {
+  const url = `core/tests/edit/${topic}`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ test }),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 

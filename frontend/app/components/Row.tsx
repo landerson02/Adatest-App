@@ -3,7 +3,7 @@ import { perturbedTestType, testType } from "@/lib/Types";
 import { useState, useEffect, useContext } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import { logAction } from "@/lib/Service";
+import {editTest, logAction} from "@/lib/Service";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import PerturbRow from "@/app/components/PerturbRow";
 import { TestDataContext } from "@/lib/TestContext";
@@ -15,9 +15,10 @@ type rowProps = {
   currentTopic: string,
   setCurrentTopic: (topic: string) => void,
   toggleCheck: (test: testType) => void,
+  setIsCurrent: (isCurrent: boolean) => void,
 }
 
-const Row = ({ test, toggleCheck }: rowProps) => {
+const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
   // Get test data
   const { setTestData, testData, currentTopic } = useContext(TestDataContext);
@@ -25,9 +26,13 @@ const Row = ({ test, toggleCheck }: rowProps) => {
   // if the perturbation dropdown is showing
   const [isShowingPerts, setIsShowingPerts] = useState<boolean>(false);
 
+  // if the test was edited
+  const [newTest, setNewTest] = useState<string>("");
+
   // Reset drop down on any change
   useEffect(() => {
     setIsShowingPerts(false);
+    setNewTest(test.title);
   }, [test]);
 
   // List of perturbed tests
@@ -46,28 +51,20 @@ const Row = ({ test, toggleCheck }: rowProps) => {
 
   // Update the test essay in the context
   function onEssayChange(text: string) {
-    const updatedTests = testData.currentTests.map((t: testType) => {
-      if (test.id === t.id) {
-        return { ...t, title: text };
-      }
-      return t;
-    });
+    setNewTest(text);
+  }
 
-    // Create the new test data object
-    let newData: testDataType = {
-      tests: testData.tests,
-      currentTests: updatedTests,
-      decisions: testData.decisions,
-    }
-
-    setTestData(newData);
+  async function onEditTest() {
+    test.title = newTest;
+    await editTest(test, currentTopic);
+    setIsCurrent(false);
   }
 
   return (
-     <div className={' border-gray-500 border-b w-full px-4 items-center flex flex-col pr-4'}>
-      <div className={'w-full px-4 min-h-16 items-center flex pr-4'}>
+     <div className={' border-gray-500 border-b w-full items-center flex flex-col'}>
+      <div className={'w-full min-h-16 items-center flex'}>
         {/* CheckBox */}
-        <div className="w-8 h-8" onClick={toggle}>
+        <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
           {test.isChecked ? (
             <MdOutlineCheckBox className={'w-8 h-8 cursor-pointer'} />
           ) : (
@@ -76,20 +73,32 @@ const Row = ({ test, toggleCheck }: rowProps) => {
         </div>
 
         {/* Test Essay */}
-        <textarea className={'text-md font-light w-[50%] pl-2 h-16'} value={test.title} onChange={(e) => onEssayChange(e.target.value)} />
+        <div className={"w-[55%] flex justify-around items-center"}>
+          <textarea className={'text-md font-light w-[80%] px-2 h-16'} value={newTest}
+                    onChange={(e) => onEssayChange(e.target.value)}/>
+          <button className={`h-6 w-[15%] rounded-xl border 
+          ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transform ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
+          onClick={() => {
+            if (test.title != newTest) {
+              onEditTest().catch();
+            }
+          }}>
+            Edit
+          </button>
+        </div>
 
         {/* AI Grade */}
-        <div className={'ml-auto w-[20%] items-center'}>
+        <div className={'w-[17%] items-center'}>
           {
             test.label == "acceptable" || test.label == "Acceptable" ?
               <div className={'w-full flex justify-center'}>
-                <div className={'bg-green-50 text-green-500 rounded-md text-xl text-center ' +
+                <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
                   'flex justify-left font-light border border-green-500 pr-1'}>
                   <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Acceptable
                 </div>
               </div> :
               <div className={'w-full flex justify-center'}>
-                <div className={'bg-red-50 text-red-500 rounded-md text-xl text-center ' +
+                <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
                   'flex justify-left font-light border border-red-500 pr-1'}>
                   <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Unacceptable
                 </div>
@@ -97,33 +106,23 @@ const Row = ({ test, toggleCheck }: rowProps) => {
           }
         </div>
 
-        <div className={'ml-auto w-[20%] items-center'}>
+        <div className={'w-[13%] items-center'}>
           {
             test.validity == "Approved" || test.validity == "approved" ?
               <div className={'w-full flex justify-center'}>
-                <div className={'bg-green-50 text-green-500 rounded-md text-xl text-center ' +
+                <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
                   'flex justify-left font-light border border-green-500 pr-1'}>
                   <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Agreed
                 </div>
               </div> : test.validity == "Denied" || test.validity == "denied" ?
               <div className={'w-full flex justify-center'}>
-                <div className={'bg-red-50 text-red-500 rounded-md text-xl text-center ' +
+                <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
                   'flex justify-left font-light border border-red-500 pr-1'}>
                   <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
                 </div>
-                Consider a primal linear programming problem in standard form.
-
-                Mark all the correct answers.
-
-                Group of answer choices
-
-                The complementary slackness conditions are always satisfied.
-
-                Given an optimal basic feasible solution to the primal, by imposing the complementary slackness condition we can compute an optimal dual solution.
-
-                If the primal is infeasible, we can find a hyperplane that separates the columns of A from b.</div> :
+              </div> :
               <div className={'w-full flex justify-center'}>
-                <div className={'bg-gray-50 text-gray-500 rounded-md text-xl text-center ' +
+                <div className={'bg-gray-50 text-gray-500 rounded-md text-center ' +
                   'flex justify-left font-light border border-gray-500 px-1'}>
                   Ungraded
                 </div>
