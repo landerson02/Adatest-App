@@ -220,6 +220,11 @@ export async function addTest(test: testType, topic: string, groundTruth: string
   }
 }
 
+/**
+ * Edits a test in the database
+ * @param test
+ * @param topic
+ */
 export async function editTest(test: testType, topic: string) {
   const url = `core/tests/edit/${topic}`;
   try {
