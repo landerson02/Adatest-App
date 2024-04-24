@@ -159,6 +159,8 @@ def init_database(request):
             pass
         else:
             obj.save()
+    
+    return Response("All initial tests loaded!")
 
 
 ## get all tests for a given topic
