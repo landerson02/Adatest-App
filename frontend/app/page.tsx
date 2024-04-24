@@ -158,6 +158,7 @@ export default function Home() {
           filteredBy={filteredBy}
           toggleCheck={toggleCheck}
           isCurrent={isCurrent}
+          setIsCurrent={setIsCurrent}
         />
         <Buttons
           currentTopic={currentTopic}

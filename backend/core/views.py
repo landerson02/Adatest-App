@@ -138,7 +138,7 @@ df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
 def init_database(request):
     data = obj_lce.df.head(11)
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic="LCE", label=row['output'])
+        obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']), ground_truth=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
         else:
@@ -146,7 +146,7 @@ def init_database(request):
 
     data = obj_pe.df.head(11)
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic="PE", label=row['output'])
+        obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE",  row['input']), ground_truth=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
         else:
@@ -154,7 +154,7 @@ def init_database(request):
 
     data = obj_ke.df.head(11)
     for index, row in data.iterrows():
-        obj = Test(id=index, title=row['input'], topic="KE", label=row['output'])
+        obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']), ground_truth=row['output'])
         if Test.objects.filter(title=obj.title).exists():  # does not work with get
             pass
         else:
@@ -240,8 +240,7 @@ def approve_list(request, topic):
         testData = Test.objects.get(id=id)
 
 
-        testData.title = obj["title"]
-
+        testData.group_truth = testData.label
         testData.validity = "Approved"
 
         df_row = df.loc[df['input'] == testData.title]
@@ -267,14 +266,12 @@ def deny_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
-        testData.title = obj["title"]
         testData.validity = "Denied"
 
         if testData.label == "Unacceptable":
-            testData.label = "Acceptable"
-
+            testData.ground_truth = "Acceptable"
         else:
-            testData.label = "Unacceptable"
+            testData.ground_truth = "Unacceptable"
 
         testData.save()
 
@@ -284,7 +281,7 @@ def deny_list(request, topic):
 
 
 @api_view(['POST'])
-def add_test(request, topic):
+def add_test(request, topic, ground_truth):
 
     byte_string = request.body
 
@@ -294,7 +291,12 @@ def add_test(request, topic):
     data = data['test']
 
     gen_label = check_lab(topic, data['title'])
-    testData = Test(id = generate_random_id(), title = data['title'], topic = topic, label = gen_label)
+    if gen_label == ground_truth:
+        validity = "Approved"
+    else:
+        validity = "Denied"
+
+    testData = Test(id=generate_random_id(), title=data['title'], topic=topic, validity=validity, label=gen_label, ground_truth=ground_truth)
     testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
@@ -303,13 +305,23 @@ def add_test(request, topic):
 
 @api_view(['POST'])
 def edit_test(request, topic):
+    byte_string = request.body
 
-    id_val = request.POST['id']
-    new_title = request.POST['title']
+    body = byte_string.decode("utf-8")
+
+    data = json.loads(body)
+    data = data['test']
+
+    gen_label = check_lab(topic, data['title'])
+
+    id_val = data['id']
 
     testData = Test.objects.get(id = id_val)
 
-    testData.title = new_title
+    testData.title = data['title']
+    testData.label = gen_label
+    testData.validity = "Unapproved"
+    testData.ground_truth = "Unknown"
     testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
