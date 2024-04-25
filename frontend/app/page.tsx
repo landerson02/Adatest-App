@@ -86,7 +86,12 @@ export default function Home() {
 
       const topics = ['PE', 'KE', 'LCE'];
       let testArrays: { [key: string]: testType[] } = {};
+
+      // Get all perturbed tests
       let perturbedTests: perturbedTestType[] = await getPerturbations();
+      // Filter out invalid perturbations
+      perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.validity != 'Invalid');
+      // Assign perturbed tests to their parent tests
       for (let type of topics) {
         testArrays[type] = await fetchAndProcessTests(type);
         testArrays[type].forEach((test: testType) => {
