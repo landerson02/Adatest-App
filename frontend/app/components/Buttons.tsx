@@ -136,8 +136,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
       {/* Add Test */}
 
-      <div className="flex h-24 w-[60%] items-center justify-around gap-4 px-6">
-        <textarea className="h-full w-[80%]" placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
+      <div className="flex h-28 w-[60%] items-center justify-around gap-4 px-6">
+        <textarea className="h-full w-[80%] resize-none border border-gray-300 rounded p-1" placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
         <div className="flex h-full flex-col justify-around">
           <button
             className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}

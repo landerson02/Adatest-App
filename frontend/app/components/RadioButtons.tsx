@@ -15,11 +15,11 @@ type RadioButtonProps = {
 function RadioButton({ text, isSelected }: RadioButtonProps) {
   return (
     isSelected ? (
-      <div className={'w-16 h-12 border border-black rounded-md flex justify-center items-center bg-gray-300 text-3xl font-bold shadow-2xl'}>
+      <div className={'w-16 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
         {text}
       </div>
     ) : (
-      <div className={'w-16 h-12 border border-black rounded-md text-3xl font-light flex justify-center items-center hover:bg-gray-300 shadow-2xl cursor-pointer transition hover:scale-105'}>
+      <div className={'w-16 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
         {text}
       </div>
     )

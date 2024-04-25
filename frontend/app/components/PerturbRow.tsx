@@ -53,7 +53,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
   }
 
   return (
-    <div className={'w-full h-16 ml-4 flex items-center border-t border-r border-gray-500 bg-gray-50'}>
+    <div className={'w-full h-16 px-2 flex items-center border-t border-r border-gray-500 bg-gray-50'}>
       {/* Checkbox Placeholder */}
       <div className={"w-[5%] flex justify-center items-center"} onClick={togglePertCheck}>
         {pertTest.isChecked ? (
