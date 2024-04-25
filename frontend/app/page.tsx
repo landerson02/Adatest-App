@@ -83,7 +83,7 @@ export default function Home() {
         return data;
       }
 
-      const topics = ['PE', 'KE', 'LCE'];
+      const topics = ['PE', 'KE', 'LCE', 'CU0', 'CU5'];
       let testArrays: { [key: string]: testType[] } = {};
 
       // Get all perturbed tests
@@ -110,6 +110,8 @@ export default function Home() {
           PE: testArrays['PE'],
           KE: testArrays['KE'],
           LCE: testArrays['LCE'],
+          CU0: testArrays['CU0'],
+          CU5: testArrays['CU5'],
         },
         currentTests: curTests,
         decisions: testData.decisions,

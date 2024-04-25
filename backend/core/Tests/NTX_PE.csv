@@ -1,5 +1,5 @@
 ,topic,input,output,label,labeler,description,author,model score
-001d29ac38a846eaaeb4b670842d4685,,"Potential energy is energy at rest",Acceptable,fail,adatest_default,,,
+001d29ac38a846eaqeb4b670842d4685,,"Potential energy is energy at rest",Acceptable,fail,adatest_default,,,
 002747a9059644b7bf1c96bea7dc8f0e,,"Potential energy is energy stored in the car at the top of the initial drop",Acceptable,fail,adatest_default,,,
 00b80e0768c94a25acf2cea654b068a8,,"Potential energy is energy that has the potential to become another form of energy.",Acceptable,fail,adatest_default,,,
 01450c14171d44559113adc39ede0d3f,,"Potential energy is the stored energy of the rollercoaster car when it is not moving.",Acceptable,fail,adatest_default,,,

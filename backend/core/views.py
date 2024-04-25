@@ -23,8 +23,7 @@ if "MODEL" not in os.environ:
 
 MODEL_TYPE = os.getenv('MODEL')
 
-
-## helper objects
+# helper objects
 
 lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
 lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
@@ -35,19 +34,26 @@ pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
 ke_model, ke_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
+# TODO: Load the correct CU0 and CU5 models, might have to make new pipelines for these
+cu0_model, cu0_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
+cu0_pipeline = CustomEssayPipeline(model=cu0_model, tokenizer=cu0_tokenizer)
+
+cu5_model, cu5_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
+cu5_pipeline = CustomEssayPipeline(model=cu5_model, tokenizer=cu5_tokenizer)
 
 
-## HELPER FUNCTIONS
+# HELPER FUNCTIONS
 
 
-## helpe function to generate ids 
+# helpe function to generate ids
 
 def generate_random_id():
     random_uuid = uuid.uuid4()
     random_id = random_uuid.hex
     return random_id
 
-## helper function to output label
+
+# helper function to output label
 def check_lab(type, inp):
     pipeline = None
     if type == "PE":
@@ -76,25 +82,24 @@ if MODEL_TYPE == "mistral":
     # Create your views here.
     model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
     nf4_config = BitsAndBytesConfig(  # quantization 4-bit
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.bfloat16
-        )
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
     model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                     device_map="auto",
-                                                     trust_remote_code=False,
-                                                     quantization_config=nf4_config,
-                                                     revision="main")
-
+                                                 device_map="auto",
+                                                 trust_remote_code=False,
+                                                 quantization_config=nf4_config,
+                                                 revision="main")
 
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
-        # load in LORA fine-tune for student answer examples
+    # load in LORA fine-tune for student answer examples
     lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
     model = PeftModel.from_pretrained(
-            model, lora_model_path, torch_dtype=torch.float16, force_download=True,
-        )
+        model, lora_model_path, torch_dtype=torch.float16, force_download=True,
+    )
     mistral_pipeline = MistralPipeline(model, tokenizer)
     spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
     negation_pipeline = MistralPipeline(model, tokenizer, task="negation")
@@ -115,9 +120,9 @@ else:
     spanish_pipeline = None
 
 pipeline_map = {
-   "spelling": spelling_pipeline,
+    "spelling": spelling_pipeline,
     "negation": negation_pipeline,
-    "synonyms":  synonym_pipeline,
+    "synonyms": synonym_pipeline,
     "paraphrase": paraphrase_pipeline,
     "acronyms": acronyms_pipeline,
     "antonyms": antonyms_pipeline,
@@ -127,39 +132,62 @@ pipeline_map = {
 obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
 obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
 obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
-
+obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
+obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
 df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
 
-## create default vals in db
+
+# create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    global obj_lce, obj_pe, obj_ke, pe_pipeline, ke_pipeline, lce_pipeline
+    global obj_lce, obj_pe, obj_ke, obj_cu0, obj_cu5, pe_pipeline, ke_pipeline, lce_pipeline, cu0_pipeline, cu5_pipeline
     obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
     obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
     obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
+    obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
+    obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
     data = obj_lce.df.head(11)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
-        obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']), ground_truth=row['output'])
+        obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']),
+                   ground_truth=row['output'])
         obj.save()
 
     data = obj_pe.df.head(11)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
-        obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE",  row['input']), ground_truth=row['output'])
+        obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE", row['input']),
+                   ground_truth=row['output'])
         obj.save()
 
     data = obj_ke.df.head(11)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
-        obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']), ground_truth=row['output'])
+        obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']),
+                   ground_truth=row['output'])
         obj.save()
-    
+
+    data = obj_cu0.df.head(11)
+    for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
+        obj = Test(id=index, title=row['input'], topic="CU0", label=check_lab("CU0", row['input']),
+                   ground_truth=row['output'])
+        obj.save()
+
+    data = obj_cu5.df.head(11)
+    for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
+        obj = Test(id=index, title=row['input'], topic="CU5", label=check_lab("CU5", row['input']),
+                   ground_truth=row['output'])
+        obj.save()
+
     return Response("All initial tests loaded!")
 
 
@@ -171,14 +199,12 @@ def test_get(request, my_topic):
     return Response(serializer.data)
 
 
-
 ## get all tests overall
 @api_view(['GET'])
 def get_all(request):
     data = Test.objects.all()
     serializer = TestSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
-
 
 
 ## generate tests using adatest
@@ -191,11 +217,6 @@ def test_generate(request, topic):
             if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_KE", label=row['output'])
                 test.save()
-                # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
-                #     pass
-                # else:
-                #     test.save()
-
     elif topic == "PE":
         obj_pe.generate()
         data = obj_pe.df
@@ -203,27 +224,31 @@ def test_generate(request, topic):
             if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_PE", label=row['output'])
                 test.save()
-                # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
-                #     pass
-                # else:
-                #     test.save()
-
-    else:
+    elif topic == "LCE":
         obj_lce.generate()
         data = obj_lce.df
         for index, row in data.iterrows():
             if row['topic'].__contains__("suggestions"):
                 test = Test(id=index, title=row['input'], topic="suggested_LCE", label=row['output'])
                 test.save()
-                # if Test.objects.filter(title=test_list.title).exists():  # does not work with get
-                #     pass
-                # else:
-                #     test.save()
+    elif topic == "CU0":
+        obj_cu0.generate()
+        data = obj_cu0.df
+        for index, row in data.iterrows():
+            if row['topic'].__contains__("suggestions"):
+                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=row['output'])
+                test.save()
+    elif topic == "CU5":
+        obj_cu5.generate()
+        data = obj_cu5.df
+        for index, row in data.iterrows():
+            if row['topic'].__contains__("suggestions"):
+                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=row['output'])
+                test.save()
 
     testData = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(testData, context={'request': request}, many=True)
     return Response(serializer.data)
-
 
 
 ## approve a list of tests
@@ -241,7 +266,6 @@ def approve_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
-
         testData.group_truth = testData.label
         testData.validity = "Approved"
 
@@ -254,6 +278,7 @@ def approve_list(request, topic):
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
 
     return Response(serializer.data)
+
 
 ## deny a list of tests
 @api_view(['POST'])
@@ -284,7 +309,6 @@ def deny_list(request, topic):
 
 @api_view(['POST'])
 def add_test(request, topic, ground_truth):
-
     byte_string = request.body
 
     body = byte_string.decode("utf-8")
@@ -298,12 +322,14 @@ def add_test(request, topic, ground_truth):
     else:
         validity = "Denied"
 
-    testData = Test(id=generate_random_id(), title=data['title'], topic=topic, validity=validity, label=gen_label, ground_truth=ground_truth)
+    testData = Test(id=generate_random_id(), title=data['title'], topic=topic, validity=validity, label=gen_label,
+                    ground_truth=ground_truth)
     testData.save()
 
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 def edit_test(request, topic):
@@ -318,7 +344,7 @@ def edit_test(request, topic):
 
     id_val = data['id']
 
-    testData = Test.objects.get(id = id_val)
+    testData = Test.objects.get(id=id_val)
 
     testData.title = data['title']
     testData.label = gen_label
@@ -369,7 +395,6 @@ def save_log(request):
     return Response("Data saved to CSV successfully!")
 
 
-
 # invalidate a list of tests and delete from df
 @api_view(['POST'])
 def invalidate_list(request, topic):
@@ -387,7 +412,7 @@ def invalidate_list(request, topic):
 
         testData.title = obj["title"]
         indexAge = df[df['input'] == testData.title].index
-        df.drop(indexAge , inplace=True)
+        df.drop(indexAge, inplace=True)
 
         testData.validity = "Invalid"
         testData.save()
@@ -401,7 +426,6 @@ def invalidate_list(request, topic):
 def test_clear(request):
     tests = Test.objects.all()
     perturbations = Perturbation.objects.all()
-    
 
     for test in tests:
         test.delete()
@@ -428,8 +452,6 @@ def test_delete(request, pk):
     return Response('Test Successfully Deleted!')
 
 
-
-
 @api_view(['POST'])
 def generate_perturbations(request, topic):
     byte_string = request.body
@@ -437,7 +459,7 @@ def generate_perturbations(request, topic):
     body = byte_string.decode("utf-8")
 
     data = json.loads(body)
-    
+
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
@@ -454,20 +476,17 @@ def generate_perturbations(request, topic):
             perturbed_label = check_lab(topic, perturbed_test)
             perturbed_id = generate_random_id()
 
-            perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id, title=perturbed_test, type=perturb_str)
+            perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
+                                       title=perturbed_test, type=perturb_str)
             perturbData.save()
-
-        
-        
 
     allPerturbs = Perturbation.objects.all()
     serializer = PerturbationSerializer(allPerturbs, context={'request': request}, many=True)
     return Response(serializer.data)
 
 
-
 @api_view(['GET'])
-def get_perturbations(request): 
+def get_perturbations(request):
     data = Perturbation.objects.all()
     serializer = PerturbationSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
@@ -499,6 +518,7 @@ def validate_perturbations(request, validation):
     serializer = PerturbationSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
 
+
 class ReactView(APIView):
     serializer_class = ReactSerializer
 
@@ -518,4 +538,3 @@ class ReactView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-        

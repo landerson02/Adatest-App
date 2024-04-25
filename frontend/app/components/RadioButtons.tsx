@@ -64,13 +64,19 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
     <div className={'flex justify-between items-center w-full'}>
       <div className={'flex gap-2'}>
         <div onClick={handleTopicChange('PE')}>
-          <RadioButton text={'PE'} isSelected={currentTopic === 'PE'} />
+          <RadioButton text={'PE'} isSelected={currentTopic === 'PE'}/>
         </div>
         <div onClick={handleTopicChange('KE')}>
-          <RadioButton text={'KE'} isSelected={currentTopic === 'KE'} />
+          <RadioButton text={'KE'} isSelected={currentTopic === 'KE'}/>
         </div>
         <div onClick={handleTopicChange('LCE')}>
-          <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'} />
+          <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>
+        </div>
+        <div onClick={handleTopicChange('CU0')}>
+          <RadioButton text={'CU0'} isSelected={currentTopic === 'CU0'}/>
+        </div>
+        <div onClick={handleTopicChange('CU5')}>
+          <RadioButton text={'CU5'} isSelected={currentTopic === 'CU5'}/>
         </div>
       </div>
 

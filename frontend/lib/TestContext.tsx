@@ -7,6 +7,8 @@ const initTestData: testDataType = {
     PE: [],
     KE: [],
     LCE: [],
+    CU0: [],
+    CU5: []
   },
   currentTests: [],
 
@@ -22,6 +24,16 @@ const initTestData: testDataType = {
       invalid: [],
     },
     LCE: {
+      approved: [],
+      denied: [],
+      invalid: [],
+    },
+    CU0: {
+      approved: [],
+      denied: [],
+      invalid: [],
+    },
+    CU5: {
       approved: [],
       denied: [],
       invalid: [],
