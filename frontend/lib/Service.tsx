@@ -1,4 +1,4 @@
-import { testType } from "@/lib/Types";
+import { perturbedTestType, testType } from "@/lib/Types";
 
 /**
   * Gets an array of tests based off of the topic
@@ -18,7 +18,7 @@ export async function getTests(topic: string) {
     // creates and maps an array of Test Objects
     return await res.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -37,7 +37,7 @@ export async function generateTests(topic: string) {
     });
     return await getTests(topic);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -59,7 +59,7 @@ export async function approveTests(tests: testType[], topic: string) {
       body: JSON.stringify(tests),
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -81,7 +81,7 @@ export async function denyTests(tests: testType[], topic: string) {
       body: JSON.stringify(tests),
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -103,15 +103,13 @@ export async function trashTests(tests: testType[], topic: string) {
       body: JSON.stringify(tests),
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
 export async function logAction(test_ids: string[], action: string) {
   const url = `core/logs/add`;
-  console.log(test_ids);
   let tests = ""
-  console.log(tests);
   test_ids.forEach((test_id) => {
     tests += test_id + ","
   });
@@ -129,7 +127,7 @@ export async function logAction(test_ids: string[], action: string) {
       body: JSON.stringify({ data }),
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -149,7 +147,7 @@ export async function resetDB() {
       cache: 'no-store'
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -172,7 +170,7 @@ export async function createPerturbations(tests: testType[], topic: string) {
     });
     return await perturbations.json()
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -185,6 +183,7 @@ export async function getPerturbations() {
   const url = `core/perturbations/get`;
   try {
     const res = await fetch(url, {
+      method: 'GET',
       cache: "no-store",
     });
     // checks that the response is valid
@@ -194,7 +193,7 @@ export async function getPerturbations() {
     // creates and maps an array of Test Objects
     return await res.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -216,7 +215,7 @@ export async function addTest(test: testType, topic: string, groundTruth: string
       body: JSON.stringify({ test }),
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -236,9 +235,27 @@ export async function editTest(test: testType, topic: string) {
       body: JSON.stringify({ test }),
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
 
-
+/**
+ * Deletes a test from the database
+ * @param tests List of perturbed tests to be validated
+ * @param validation Approved, Denied, Invalid
+ */
+export async function validatePerturbations(tests: perturbedTestType[], validation: string) {
+  const url = `core/perturbations/validate/${validation}`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(tests),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}

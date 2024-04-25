@@ -7,21 +7,20 @@ It allows users to generate, grade, and review results of adaptive test cases.
 ## Getting started
 Clone the repository
 
-Create a .env file with the following content:
-```angular2html
+Create a .env file in /backend with the following content:
+```
 MODEL=modelname
+OPENAI_API_KEY=your_openai_api_key
 ```
 where modelname is the name of the model you want to use. (mistral or openai)
 
 ### If using Docker:
-- place the .env in the application root
 - run the following command:
 ```
 docker-compose up
 ```
 
 ### If not using Docker:
-- place the .env in /backend
 - in /backend, run the following command:
 ```
 python manage.py runserver
@@ -30,7 +29,6 @@ python manage.py runserver
 ```
 npm i
 # npm i only needs to be run once
-
 npm run dev
 ```
 Docker or not, the application will be available at http://localhost:8000
@@ -64,7 +62,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 Then, after restarting terminal window, run the following command:
 ```
 cd frontend
-nvm install node
+npm install node
 npm i 
 ```
 After doing this, run 

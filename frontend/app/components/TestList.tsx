@@ -86,7 +86,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
     <div className={'w-full h-screen flex flex-col gap-2 overflow-y-scroll overflow-x-hidden'}>
       {/* HEADER */}
       <div className={'sticky top-0 border-black border-b w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200'}>
-          <div className={'flex flex-row items-center justify-center w-[5%] hover:cursor-pointer'} onClick={toggleSelectAll}>
+        <div className={'flex flex-row items-center justify-center w-[5%] hover:cursor-pointer'} onClick={toggleSelectAll}>
           {isAllSelected ? (
             <MdOutlineCheckBox className="w-6 h-6" />
           ) : (
@@ -144,7 +144,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
 
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} setCurrentTopic={setCurrentTopic} currentTopic={currentTopic} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent}/>
+          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent} />
         })
       ) : (filteredBy !== '') ? (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
