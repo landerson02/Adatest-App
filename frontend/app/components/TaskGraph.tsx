@@ -28,14 +28,23 @@ const TaskGraph = () => {
     const {testData, currentTopic} = useContext(TestDataContext);
     // Currently selected Perturbation from the filter used in the last graph
     const [selectedPerturbation, setSelectedPerturbation] = useState<string>('spelling'); // New state
+    const [perturbation, setPerturbations] = useState<string[]>([]);
 
-    const restPE = testData.decisions.PE.denied.length + testData.decisions.PE.trashed.length;
-    const restKE = testData.decisions.KE.denied.length + testData.decisions.KE.trashed.length;
-    const restLCE = testData.decisions.LCE.denied.length + testData.decisions.LCE.trashed.length;
+    // setting values for first graph based on test data decision values
+    const restPE = testData.decisions.PE.denied.length + testData.decisions.PE.invalid.length;
+    const restKE = testData.decisions.KE.denied.length + testData.decisions.KE.invalid.length;
+    const restLCE = testData.decisions.LCE.denied.length + testData.decisions.LCE.invalid.length;
     const totalTests = testData.decisions.KE.approved.length + restKE
         + testData.decisions.PE.approved.length + restPE
         + testData.decisions.LCE.approved.length + restLCE;
 
+    useEffect(() => {
+        async function fetchPerts() {
+            const perts = await getPerturbations()
+            setPerturbations(perts)
+        }
+
+    })
     const data_topic = {
         labels: ['PE', 'KE', 'LCE'],
         datasets: [{
@@ -121,13 +130,13 @@ const TaskGraph = () => {
                 <p> Graded Essays in Total </p>
                 <p className={'text-4xl font-serif'}> {totalTests} </p>
             </div>
-            <div className={'w-full h-[20%]'}>
+            <div className={'w-full h-[21%]'}>
                 <Bar data={data_topic} options={createOptions("Tests by Topic")}> </Bar>
             </div>
-            <div className={'w-full h-[40%]'}>
+            <div className={'w-full h-[33.5%]'}>
                 <Bar data={data_perturbations} options={createOptions("Tests by Criteria")}> </Bar>
             </div>
-            <div className={'w-full h-[20%]'}>
+            <div className={'w-full h-[21%]'}>
                 <Options onPerturbationChange={setSelectedPerturbation}/>
                 <Bar data={data_acceptable} options={
                     createOptions(`Acceptable Tests by ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>
