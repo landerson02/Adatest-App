@@ -70,7 +70,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
   return (
     <>
-      <div className={'border-gray-500 border-b w-full items-center flex flex-col justify-center py-2 bg-gray-50'}>
+      <div className={'border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 bg-gray-50'}>
         <div className={'w-full items-center flex'}>
           {/* CheckBox */}
           <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
