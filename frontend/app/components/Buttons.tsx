@@ -35,6 +35,14 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     setIsPertChecked(testData.currentTests.some((test: testType) => test.perturbedTests.some((pt: perturbedTestType) => pt.isChecked)));
   }, [testData.currentTests]);
 
+  // If any tests have been approved / denied
+  // Used to determine if pert button should be disabled
+  const [isAnyDecided, setIsAnyDecided] = useState(false);
+
+  useEffect(() => {
+    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "Approved" || test.validity === "Denied"));
+  }, [testData.currentTests]);
+
   /**
    * Updates decisions for the checked tests
    * @param decision "approved" | "denied" | "invalid" The decision to make
@@ -126,8 +134,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
           </div>
         ) : (
           <button
-            className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
-            onClick={perturbHandler}
+            className={`flex h-8 w-48 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
+            onClick={isAnyDecided ? perturbHandler : () => { }}
           >
             Perturb Essays
           </button>
