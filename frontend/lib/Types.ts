@@ -22,7 +22,7 @@ export type TestDecisionsType = {
   [key: string]: {
     approved: testType[];
     denied: testType[];
-    trashed: testType[];
+    invalid: testType[];
   };
 };
 

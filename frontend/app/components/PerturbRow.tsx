@@ -41,16 +41,6 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
       }
       return test;
     });
-    // testData.currentTests.map((test: testType) => {
-    //   if (test.id === parent.id) {
-    //     if (test.perturbedTests.find((p: perturbedTestType) => p.id === pertTest.id)) {
-    //       // TODO: Fix this
-    //     }
-    //     return { ...test, perturbedTests: parent.perturbedTests };
-    //   } else {
-    //     return test;
-    //   }
-    // });
 
     // Create the new test data object
     let newData: testDataType = {

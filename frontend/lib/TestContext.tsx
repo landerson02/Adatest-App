@@ -14,17 +14,17 @@ const initTestData: testDataType = {
     PE: {
       approved: [],
       denied: [],
-      trashed: [],
+      invalid: [],
     },
     KE: {
       approved: [],
       denied: [],
-      trashed: [],
+      invalid: [],
     },
     LCE: {
       approved: [],
       denied: [],
-      trashed: [],
+      invalid: [],
     }
   }
 }

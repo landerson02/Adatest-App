@@ -141,27 +141,24 @@ def init_database(request):
 
     data = obj_lce.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
 
     data = obj_pe.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE",  row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
 
     data = obj_ke.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
     
     return Response("All initial tests loaded!")
 
@@ -170,7 +167,7 @@ def init_database(request):
 @api_view(['GET'])
 def test_get(request, my_topic):
     data = Test.objects.filter(topic__icontains=my_topic)
-    serializer = TestSerializer(data, context={'request': request}, many=True)
+    serializer = TestSerializer(data, many=True)
     return Response(serializer.data)
 
 
@@ -339,7 +336,6 @@ def log_action(request):
     byte_string = request.body
     body = byte_string.decode("utf-8")
     body_dict = json.loads(body)
-    print(body_dict)
     test_ids = body_dict['data']['test_ids']
     action = body_dict['data']['action']
 
