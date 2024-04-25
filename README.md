@@ -8,8 +8,11 @@ It allows users to generate, grade, and review results of adaptive test cases.
 Clone the repository
 
 Create a .env file with the following content:
-```angular2html
+```
 MODEL=modelname
+OPENAI_API_KEY=your_openai_api_key
+```
+where modelname is the name of the model you want to use. (mistral or openai)
 ```
 where modelname is the name of the model you want to use. (mistral or openai)
 
