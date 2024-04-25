@@ -21,7 +21,7 @@ services:
     networks:
       - app_net
     env_file:
-      - ./.env
+      - ./backend/.env
 
 
 networks:
