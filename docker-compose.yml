@@ -11,7 +11,13 @@ services:
     volumes:
       - ./frontend:/app
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - MODEL=$MODEL
+        - HUGGINGFACE_TOKEN=$HUGGINGFACE_TOKEN
+        - OPEN_API_KEY=$OPEN_API_KEY
     container_name: ada_backend
     restart: unless-stopped
     volumes:
@@ -21,7 +27,7 @@ services:
     networks:
       - app_net
     env_file:
-      - ./backend/.env
+      - .env
 
 
 networks:

@@ -1,10 +1,17 @@
 #Pull the official base image
 FROM python:3.9
 
-# Set environment variables
+# Set environment variables to ones in .env file
+ARG MODEL
+ARG HUGGINGFACE_TOKEN
+ARG OPEN_API_KEY
+ENV MODEL ${MODEL?modelnotset}
+ENV HUGGINGFACE_TOKEN ${HUGGINGFACE_TOKEN?hftokennotset}
+ENV OEPN_API_KEY ${OPEN_API_KEY?oakeynotset}
+
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV MODEL=mistral
+
 
 RUN mkdir /code
 WORKDIR /code
@@ -12,14 +19,13 @@ WORKDIR /code
 # Install dependencies
 RUN pip install --upgrade pip
 RUN pip install notebook==6.1.5
-# If running mistral model
-#ADD mistral_requirements.txt /code/
-#RUN pip install -r mistral_requirements.txt
 
-# If running openai model
-ADD openai_requirements.txt /code/
-RUN pip install -r openai_requirements.txt
+# Installs requirements based on MODEL from .env file
+ADD ${MODEL}_requirements.txt /code/
+RUN pip install -r ${MODEL}_requirements.txt
 
+# Setup huggingface token access
+RUN huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
 
 #Copy Project
 ADD . /code/
