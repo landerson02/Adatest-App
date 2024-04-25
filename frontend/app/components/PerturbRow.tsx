@@ -53,7 +53,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
   }
 
   return (
-    <div className={'w-full h-16 px-2 flex items-center border-t border-r border-gray-500 bg-gray-50'}>
+    <div className={'w-full py-4 px-2 flex items-center border-b border-r bg-gray-100 border-gray-500'}>
       {/* Checkbox Placeholder */}
       <div className={"w-[5%] flex justify-center items-center"} onClick={togglePertCheck}>
         {pertTest.isChecked ? (
@@ -74,13 +74,13 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
             <div className={'w-full flex justify-center'}>
               <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
                 'flex justify-left font-light border border-green-500 pr-1'}>
-                <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Acceptable
+                <CiCircleCheck className={'h-6 w-6 text-green-500'} />Acceptable
               </div>
             </div> :
             <div className={'w-full flex justify-center'}>
               <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
                 'flex justify-left font-light border border-red-500 pr-1'}>
-                <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Unacceptable
+                <CiCircleRemove className={'h-6 w-6 text-red-500'} /> Unacceptable
               </div>
             </div>
         }
@@ -92,7 +92,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
           <div className={'w-full flex justify-center'}>
             <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
               'flex justify-left font-light border border-green-500 pr-1'}>
-              <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Agreed
+              <CiCircleCheck className={'h-6 w-6 text-green-500'} />Agreed
             </div>
           </div>
         ) : (
@@ -100,7 +100,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
             <div className={'w-full flex justify-center'}>
               <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
                 'flex justify-left font-light border border-red-500 pr-1'}>
-                <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
+                <CiCircleRemove className={'h-6 w-6 text-red-500'} /> Disagreed
               </div>
             </div>
           ) : (
