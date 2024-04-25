@@ -3,7 +3,7 @@ import { perturbedTestType, testType } from "@/lib/Types";
 import { useState, useEffect, useContext } from "react";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import {editTest, logAction} from "@/lib/Service";
+import { editTest, logAction } from "@/lib/Service";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import PerturbRow from "@/app/components/PerturbRow";
 import { TestDataContext } from "@/lib/TestContext";
@@ -12,8 +12,6 @@ import { testDataType } from "@/lib/Types";
 
 type rowProps = {
   test: testType,
-  currentTopic: string,
-  setCurrentTopic: (topic: string) => void,
   toggleCheck: (test: testType) => void,
   setIsCurrent: (isCurrent: boolean) => void,
 }
@@ -31,7 +29,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
   // Reset drop down on any change
   useEffect(() => {
-    setIsShowingPerts(false);
+    // setIsShowingPerts(false);
     setNewTest(test.title);
   }, [test]);
 
@@ -61,7 +59,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
   }
 
   return (
-     <div className={' border-gray-500 border-b w-full items-center flex flex-col'}>
+    <div className={' border-gray-500 border-b w-full items-center flex flex-col'}>
       <div className={'w-full min-h-16 items-center flex'}>
         {/* CheckBox */}
         <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
@@ -75,14 +73,14 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
         {/* Test Essay */}
         <div className={"w-[55%] flex justify-around items-center"}>
           <textarea className={'text-md font-light w-[80%] px-2 h-16'} value={newTest}
-                    onChange={(e) => onEssayChange(e.target.value)}/>
+            onChange={(e) => onEssayChange(e.target.value)} />
           <button className={`h-6 w-[15%] rounded-xl border 
           ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transform ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
-          onClick={() => {
-            if (test.title != newTest) {
-              onEditTest().catch();
-            }
-          }}>
+            onClick={() => {
+              if (test.title != newTest) {
+                onEditTest().catch();
+              }
+            }}>
             Edit
           </button>
         </div>
@@ -106,6 +104,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
           }
         </div>
 
+        {/* Your Grade */}
         <div className={'w-[13%] items-center'}>
           {
             test.validity == "Approved" || test.validity == "approved" ?
@@ -115,18 +114,18 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
                   <CiCircleCheck className={'h-6 w-6 pt-1 text-green-500'} />Agreed
                 </div>
               </div> : test.validity == "Denied" || test.validity == "denied" ?
-              <div className={'w-full flex justify-center'}>
-                <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
-                  'flex justify-left font-light border border-red-500 pr-1'}>
-                  <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
+                <div className={'w-full flex justify-center'}>
+                  <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
+                    'flex justify-left font-light border border-red-500 pr-1'}>
+                    <CiCircleRemove className={'h-6 w-6 pt-1 text-red-500'} /> Disagreed
+                  </div>
+                </div> :
+                <div className={'w-full flex justify-center'}>
+                  <div className={'bg-gray-50 text-gray-500 rounded-md text-center ' +
+                    'flex justify-left font-light border border-gray-500 px-1'}>
+                    Ungraded
+                  </div>
                 </div>
-              </div> :
-              <div className={'w-full flex justify-center'}>
-                <div className={'bg-gray-50 text-gray-500 rounded-md text-center ' +
-                  'flex justify-left font-light border border-gray-500 px-1'}>
-                  Ungraded
-                </div>
-              </div>
           }
         </div>
 

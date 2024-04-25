@@ -26,15 +26,13 @@ MODEL_TYPE = os.getenv('MODEL')
 
 ## helper objects
 
-lce_model, lce_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_LCE_v2')
+lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
 lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
-
-pe_model, pe_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_PE_v2')
+pe_model, pe_tokenizer = load_model('aanandan/FlanT5_AdaTest_PE_v2')
 pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
 
-
-ke_model, ke_tokenizer = load_model(f'aanandan/FlanT5_AdaTest_KE_v2')
+ke_model, ke_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 
@@ -126,9 +124,9 @@ pipeline_map = {
     "spanish": spanish_pipeline
 }
 
-obj_lce = create_obj(mistral=mistral_pipeline)
-obj_pe = create_obj(type="PE", mistral=mistral_pipeline)
-obj_ke = create_obj(type="KE", mistral=mistral_pipeline)
+obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
+obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
+obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
 
 
 df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
@@ -136,29 +134,31 @@ df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
 ## create default vals in db
 @api_view(['POST'])
 def init_database(request):
+    global obj_lce, obj_pe, obj_ke, pe_pipeline, ke_pipeline, lce_pipeline
+    obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
+    obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
+    obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
+
     data = obj_lce.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
 
     data = obj_pe.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE",  row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
 
     data = obj_ke.df.head(11)
     for index, row in data.iterrows():
+        if row['input'] == '':
+            continue
         obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']), ground_truth=row['output'])
-        if Test.objects.filter(title=obj.title).exists():  # does not work with get
-            pass
-        else:
-            obj.save()
+        obj.save()
     
     return Response("All initial tests loaded!")
 
@@ -167,7 +167,7 @@ def init_database(request):
 @api_view(['GET'])
 def test_get(request, my_topic):
     data = Test.objects.filter(topic__icontains=my_topic)
-    serializer = TestSerializer(data, context={'request': request}, many=True)
+    serializer = TestSerializer(data, many=True)
     return Response(serializer.data)
 
 
@@ -336,7 +336,6 @@ def log_action(request):
     byte_string = request.body
     body = byte_string.decode("utf-8")
     body_dict = json.loads(body)
-    print(body_dict)
     test_ids = body_dict['data']['test_ids']
     action = body_dict['data']['action']
 
@@ -473,6 +472,32 @@ def get_perturbations(request):
     serializer = PerturbationSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
 
+
+@api_view(['POST'])
+def validate_perturbations(request, validation):
+    byte_string = request.body
+    body = byte_string.decode("utf-8")
+    data = json.loads(body)
+
+    if validation not in ["Approved", "Denied", "Invalid"]:
+        return Response("Invalid validation type", status=status.HTTP_400_BAD_REQUEST)
+
+    for obj in data:
+        id = obj["id"]
+        perturbData = Perturbation.objects.get(id=id)
+
+        if validation == "Approved":
+            perturbData.validity = "Approved"
+        elif validation == "Denied":
+            perturbData.validity = "Denied"
+        else:
+            perturbData.validity = "Invalid"
+
+        perturbData.save()
+
+    data = Perturbation.objects.all()
+    serializer = PerturbationSerializer(data, context={'request': request}, many=True)
+    return Response(serializer.data)
 
 class ReactView(APIView):
     serializer_class = ReactSerializer

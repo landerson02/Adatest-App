@@ -22,5 +22,5 @@ class ReactSerializer(serializers.ModelSerializer):
 class PerturbationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perturbation
-        fields = ('test_parent', 'label', 'id', 'title', 'type')
+        fields = ('test_parent', 'label', 'id', 'title', 'type', 'validity')
 

@@ -19,9 +19,9 @@ ChartJS.register(BarElement,
 
 const TaskGraph = () => {
     const { testData, currentTopic } = useContext(TestDataContext);
-    const restPE = testData.decisions.PE.denied.length + testData.decisions.PE.trashed.length;
-    const restKE = testData.decisions.KE.denied.length + testData.decisions.KE.trashed.length;
-    const restLCE = testData.decisions.LCE.denied.length + testData.decisions.LCE.trashed.length;
+    const restPE = testData.decisions.PE.denied.length + testData.decisions.PE.invalid.length;
+    const restKE = testData.decisions.KE.denied.length + testData.decisions.KE.invalid.length;
+    const restLCE = testData.decisions.LCE.denied.length + testData.decisions.LCE.invalid.length;
     const totalTests = testData.decisions.KE.approved.length + restKE
         + testData.decisions.PE.approved.length + restPE
         + testData.decisions.LCE.approved.length + restLCE;
