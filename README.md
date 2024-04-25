@@ -57,6 +57,7 @@ Once in the vm, you will be able to navigate into the Adatest folder and run the
 ```
 cd Adatest/Adatest-App
 sh vm_setup.sh
+docker-compose up
 ```
 This should install and give permissions to everything for the app and Docker to run. It will also start the application,
 

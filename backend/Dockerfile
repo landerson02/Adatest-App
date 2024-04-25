@@ -1,5 +1,5 @@
 #Pull the official base image
-FROM python:3.9
+FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 # Set environment variables to ones in .env file
 ARG MODEL
@@ -12,9 +12,11 @@ ENV OEPNAI_API_KEY ${OPENAI_API_KEY?oakeynotset}
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-
 RUN mkdir /code
 WORKDIR /code
+
+# Install python and git
+RUN apt-get -y update && apt-get install -y python3 python3-pip && apt-get install -y git
 
 # Install dependencies
 RUN pip install --upgrade pip
@@ -25,6 +27,7 @@ ADD ${MODEL}_requirements.txt /code/
 RUN pip install -r ${MODEL}_requirements.txt
 
 # Setup huggingface token access
+RUN echo %{HUGGINGFACE_TOKEN}
 RUN huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
 
 #Copy Project
