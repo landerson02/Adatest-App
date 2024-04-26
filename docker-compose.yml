@@ -32,7 +32,6 @@ services:
       - app_net
     env_file:
       - .env
-    depends_on: frontend
 
 networks:
   app_net:

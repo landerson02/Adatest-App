@@ -1,5 +1,5 @@
 #Pull the official base image
-FROM ubuntu:22.04
+FROM python:3.9
 
 # Set environment variables to ones in .env file
 ARG MODEL
@@ -14,9 +14,6 @@ ENV PYTHONUNBUFFERED 1
 ENV LD_LIBRARY_PATH /usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH
 RUN mkdir /code
 WORKDIR /code
-
-# Install python
-RUN apt-get update && apt-get install -y python3 python3-pip
 
 # Install dependencies
 RUN pip install --upgrade pip
