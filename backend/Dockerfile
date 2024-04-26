@@ -1,5 +1,5 @@
 #Pull the official base image
-FROM nvidia/cuda:12.4.1-base-ubuntu22.04
+FROM ubuntu:22.04
 
 # Set environment variables to ones in .env file
 ARG MODEL
@@ -11,17 +11,16 @@ ENV OEPNAI_API_KEY ${OPENAI_API_KEY?oakeynotset}
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH
 RUN mkdir /code
 WORKDIR /code
 
-# Install python and git
-RUN apt-get -y update && apt-get install -y python3 python3-pip && apt-get install -y git
+# Install python
+RUN apt-get update && apt-get install -y python3 python3-pip
 
 # Install dependencies
 RUN pip install --upgrade pip
 RUN pip install notebook==6.1.5
-
 # Installs requirements based on MODEL from .env file
 ADD ${MODEL}_requirements.txt /code/
 RUN pip install -r ${MODEL}_requirements.txt
