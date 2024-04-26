@@ -225,7 +225,6 @@ def test_generate(request, topic):
     return Response(serializer.data)
 
 
-
 ## approve a list of tests
 @api_view(['POST'])
 def approve_list(request, topic):

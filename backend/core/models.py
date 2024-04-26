@@ -23,12 +23,10 @@ class Log(models.Model):
 
 class Perturbation(models.Model): 
     test_parent = models.ForeignKey(Test, on_delete=models.CASCADE)
-
     label = models.CharField(max_length=20, default="Unacceptable")
     id = models.UUIDField(max_length=50, default=uuid.uuid4, editable=False, primary_key=True)
     title = models.TextField()
     type = models.CharField(max_length=20, default="spelling")
-
     validity = models.CharField(max_length=50, default="Unapproved")
 
 

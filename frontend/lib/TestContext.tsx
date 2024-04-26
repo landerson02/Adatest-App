@@ -10,7 +10,7 @@ const initTestData: testDataType = {
   },
   currentTests: [],
 
-  decisions: {
+  test_decisions: {
     PE: {
       approved: [],
       denied: [],
@@ -26,7 +26,12 @@ const initTestData: testDataType = {
       denied: [],
       invalid: [],
     }
-  }
+  },
+  pert_decisions: {
+    approved: [],
+    denied: [],
+    invalid: [],
+  },
 }
 
 type testDataContextType = {
