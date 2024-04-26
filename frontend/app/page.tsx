@@ -50,7 +50,8 @@ export default function Home() {
     let newData: testDataType = {
       tests: testData.tests,
       currentTests: updatedTests,
-      decisions: testData.decisions,
+      test_decisions: testData.test_decisions,
+      pert_decisions: testData.pert_decisions,
     }
 
     setTestData(newData);
@@ -113,7 +114,8 @@ export default function Home() {
           LCE: testArrays['LCE'],
         },
         currentTests: curTests,
-        decisions: testData.decisions,
+        test_decisions: testData.test_decisions,
+        pert_decisions: testData.pert_decisions,
       }
       setTestData(newTestData);
       setIsCurrent(true);
@@ -128,7 +130,8 @@ export default function Home() {
     let newTestsData: testDataType = {
       tests: testData.tests,
       currentTests: testData.tests[currentTopic],
-      decisions: testData.decisions,
+      test_decisions: testData.test_decisions,
+      pert_decisions: testData.pert_decisions,
     }
     setTestData(newTestsData);
   }, [currentTopic, isCurrent]);
