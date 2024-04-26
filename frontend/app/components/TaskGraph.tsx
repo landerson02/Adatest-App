@@ -24,17 +24,15 @@ ChartJS.register(BarElement,
     Title);
 
 const TaskGraph = () => {
-
     const {testData} = useContext(TestDataContext);
     // Currently selected Perturbation from the filter used in the last graph
     const [selectedPerturbation, setSelectedPerturbation] = useState<string>('spelling'); // New state
-
-
     // setting values for first graph based on test data decision values
     const totalTests = testData.test_decisions.KE.approved.length + testData.test_decisions.KE.denied.length
         + testData.test_decisions.PE.approved.length + testData.test_decisions.PE.denied.length
         + testData.test_decisions.LCE.approved.length + testData.test_decisions.LCE.denied.length;
 
+    // Sets the data for the tests that are graded by topic
     const data_topic = {
         labels: ['PE', 'KE', 'LCE'],
         datasets: [{
@@ -49,7 +47,7 @@ const TaskGraph = () => {
         }]
     };
 
-    // Sets the data for the graph for all the user graded perturbations
+    // Sets the data for the graph for all the perturbations graded by type
     const decisionValidity = ['approved', 'denied'];
     const decisionTypes = ['Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const pert_data: any = {};
@@ -80,7 +78,7 @@ const TaskGraph = () => {
         }]
     };
 
-    // Sets the data needed for the graphs in criteria_data, filters by acceptable and selected perturbation
+    // Sets the data needed for the graphs in criteria_data based on selected perturbation
     const decisionLabels = ['acceptable', 'unacceptable'];
     const criteria_data: any = {};
         decisionValidity.forEach(validity => {
@@ -107,6 +105,7 @@ const TaskGraph = () => {
         }]
     };
 
+    // fixing type error for options
     const createOptions = (title: string) => ({
         indexAxis: "y",
         scales: {
@@ -135,29 +134,28 @@ const TaskGraph = () => {
         },
         responsive: true,
         maintainAspectRatio: false,
-        borderRadius: 10,
+        borderRadius: 5,
     });
-
-    // Usage:
-    const options = createOptions('Your New Title');
 
     return (
         <div className={'float-end border-gray-600 w-full h-full justify-start items-center flex flex-col'}>
-            <div className={'bg-gray-100 w-full h-12 justify-center items-center flex border-b border-gray-200'}>
-                <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
+            <div className={'w-full h-[15]%'}>
+                <div className={'bg-gray-100 w-full h-[25%] justify-center items-center flex border-b border-gray-200'}>
+                    <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
+                </div>
+                <Options onPerturbationChange={setSelectedPerturbation}/>
+                <div className={'justify-center mt-7 float-start w-full'}>
+                    <p> Graded Essays in Total </p>
+                    <p className={'text-4xl font-serif'}> {totalTests} </p>
+                </div>
             </div>
-            <div className={'justify-center p-7 float-start w-full'}>
-                <p> Graded Essays in Total </p>
-                <p className={'text-4xl font-serif'}> {totalTests} </p>
-            </div>
-            <div className={'w-full h-[21%]'}>
+            <div className={'w-full h-[22%]'}>
                 <Bar data={data_topic} options={createOptions("Tests by Topic")}> </Bar>
             </div>
-            <div className={'w-full h-[33.5%]'}>
+            <div className={'w-full h-[35%]'}>
                 <Bar data={data_perturbations} options={createOptions("Tests by Criteria")}> </Bar>
             </div>
             <div className={'w-full h-[21%]'}>
-                <Options onPerturbationChange={setSelectedPerturbation}/>
                 <Bar data={data_criteria} options={
                     createOptions(`Acceptable Tests by ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>
             </div>
