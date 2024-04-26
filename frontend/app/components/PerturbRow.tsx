@@ -78,7 +78,8 @@ const PerturbRow = ({ pertTest, setIsCurrent }: PerturbRowProps) => {
     let newData: testDataType = {
       tests: testData.tests,
       currentTests: updatedTests,
-      decisions: testData.decisions,
+      test_decisions: testData.test_decisions,
+      pert_decisions: testData.pert_decisions,
     }
 
     setTestData(newData);

@@ -44,14 +44,49 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
   }, [testData.currentTests]);
 
   /**
+   * Updates decisions for the checked tests - doesn't allow duplicates
+   * @param checkedTests - The tests that are currently checked
+   * @param decision - Decision of the button pressed
+   */
+  function testDecisionHandler(checkedTests: testType[], decision: string) {
+    // Remove the test from all decisions
+    const temp: testType[] = [];
+    checkedTests.forEach((checkedTest: testType) => {
+      ["approved", "denied", "invalid"].forEach((status) => {
+        testData.test_decisions[currentTopic][status] = testData.test_decisions[currentTopic][status].filter((existingTest) =>
+          !checkedTests.some((test) => existingTest.id === test.id)
+        );
+      });
+      temp.push(checkedTest);
+    });
+    testData.test_decisions[currentTopic][decision].push(...temp);
+  }
+
+  /**
+   * Updates decisions for the checked perturbations - doesn't allow duplicates
+   * @param checkedPerts - The tests that are currently checked
+   * @param decision - Decision of the button pressed
+   */
+ function pertDecisionHandler(checkedPerts: perturbedTestType[], decision: string) {
+    const temp: perturbedTestType[] = [];
+    // Remove the test from all decisions
+    checkedPerts.forEach((checkedPert: perturbedTestType) => {
+      ["approved", "denied", "invalid"].forEach((status) => {
+        testData.pert_decisions[status] = testData.pert_decisions[status].filter((existingPert) =>
+          !checkedPerts.some((pert) => existingPert.id === pert.id)
+        );
+      });
+      temp.push(checkedPert);
+    });
+    testData.pert_decisions[decision.toLowerCase()].push(...temp);
+  }
+  /**
    * Updates decisions for the checked tests
    * @param decision "approved" | "denied" | "invalid" The decision to make
    */
-  async function decisionHandler(decision: "approved" | "denied" | "invalid") {
-
-    // Handle main test decisions
+  async function decisionHandler(decision: string) {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testData.decisions[currentTopic][decision].push(...checkedTests);
+    testDecisionHandler(checkedTests, decision);
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
@@ -65,12 +100,14 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
     // Handle perturbed test decisions
 
-    let checkedPerts = testData.currentTests.map((test: testType) => test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
+    let checkedPerts = testData.currentTests.map((test: testType) =>
+        test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
 
     // Update pert decisions in db
     // set First char to uppercase
     decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
+    pertDecisionHandler(checkedPerts, decision);
 
     setIsCurrent(false);
   }

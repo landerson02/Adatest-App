@@ -8,6 +8,10 @@ export type perturbedTestType = {
   isChecked: boolean; // Checkbox state
 };
 
+export type PertDecisionsType = {
+  [key: string]: perturbedTestType[];
+};
+
 export type testType = {
   id: string;
   label: string; // Acceptable or Unacceptable
@@ -20,9 +24,7 @@ export type testType = {
 
 export type TestDecisionsType = {
   [key: string]: {
-    approved: testType[];
-    denied: testType[];
-    invalid: testType[];
+    [key: string]: testType[];
   };
 };
 
@@ -33,5 +35,6 @@ export type TestListType = {
 export type testDataType = {
   tests: TestListType;
   currentTests: testType[];
-  decisions: TestDecisionsType;
+  test_decisions: TestDecisionsType;
+  pert_decisions: PertDecisionsType;
 };
