@@ -40,7 +40,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    * @param checkedTests - The tests that are currently checked
    * @param decision - Decision of the button pressed
    */
-  function test_decision_handler(checkedTests: testType[], decision: string) {
+  function testDecisionHandler(checkedTests: testType[], decision: string) {
     // Remove the test from all decisions
     const temp: testType[] = [];
     checkedTests.forEach((checkedTest: testType) => {
@@ -51,7 +51,6 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
       });
       temp.push(checkedTest);
     });
-    console.log(checkedTests)
     testData.test_decisions[currentTopic][decision].push(...temp);
   }
 
@@ -60,7 +59,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    * @param checkedPerts - The tests that are currently checked
    * @param decision - Decision of the button pressed
    */
- function pert_decision_handler(checkedPerts: perturbedTestType[], decision: string) {
+ function pertDecisionHandler(checkedPerts: perturbedTestType[], decision: string) {
     const temp: perturbedTestType[] = [];
     // Remove the test from all decisions
     checkedPerts.forEach((checkedPert: perturbedTestType) => {
@@ -79,7 +78,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    */
   async function decisionHandler(decision: string) {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    test_decision_handler(checkedTests, decision);
+    testDecisionHandler(checkedTests, decision);
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
@@ -95,13 +94,12 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
     let checkedPerts = testData.currentTests.map((test: testType) =>
         test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
-    console.log(checkedPerts)
 
     // Update pert decisions in db
     // set First char to uppercase
     decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
-    pert_decision_handler(checkedPerts, decision);
+    pertDecisionHandler(checkedPerts, decision);
 
     setIsCurrent(false);
   }
