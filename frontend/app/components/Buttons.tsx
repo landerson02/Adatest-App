@@ -35,6 +35,14 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     setIsPertChecked(testData.currentTests.some((test: testType) => test.perturbedTests.some((pt: perturbedTestType) => pt.isChecked)));
   }, [testData.currentTests]);
 
+  // If any tests have been approved / denied
+  // Used to determine if pert button should be disabled
+  const [isAnyDecided, setIsAnyDecided] = useState(false);
+
+  useEffect(() => {
+    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "Approved" || test.validity === "Denied"));
+  }, [testData.currentTests]);
+
   /**
    * Updates decisions for the checked tests - doesn't allow duplicates
    * @param checkedTests - The tests that are currently checked
@@ -59,7 +67,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    * @param checkedPerts - The tests that are currently checked
    * @param decision - Decision of the button pressed
    */
- function pertDecisionHandler(checkedPerts: perturbedTestType[], decision: string) {
+  function pertDecisionHandler(checkedPerts: perturbedTestType[], decision: string) {
     const temp: perturbedTestType[] = [];
     // Remove the test from all decisions
     checkedPerts.forEach((checkedPert: perturbedTestType) => {
@@ -72,11 +80,12 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     });
     testData.pert_decisions[decision.toLowerCase()].push(...temp);
   }
+
   /**
    * Updates decisions for the checked tests
    * @param decision "approved" | "denied" | "invalid" The decision to make
    */
-  async function decisionHandler(decision: string) {
+  async function decisionHandler(decision: "approved" | "denied" | "invalid") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
     testDecisionHandler(checkedTests, decision);
 
@@ -93,7 +102,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     // Handle perturbed test decisions
 
     let checkedPerts = testData.currentTests.map((test: testType) =>
-        test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
+      test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
 
     // Update pert decisions in db
     // set First char to uppercase
@@ -163,8 +172,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
           </div>
         ) : (
           <button
-            className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
-            onClick={perturbHandler}
+            className={`flex h-8 w-48 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
+            onClick={isAnyDecided ? perturbHandler : () => { }}
           >
             Perturb Essays
           </button>
@@ -172,31 +181,46 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
       </div>
 
       {/* Add Test */}
+      {isAddingTest ? (
+        <div className="flex h-28 w-[60%] items-center justify-around gap-4 px-6">
+          <div
+            className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+          >
+            <ThreeDots className="h-3 w-8" />
+          </div>
+          <div
+            className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+          >
+            <ThreeDots className="h-3 w-8" />
+          </div>
+        </div>
+      ) : (
+        <div className="flex h-28 w-[60%] items-center justify-around gap-4 px-6">
+          <textarea className="h-full w-[80%] resize-none border border-gray-300 rounded p-1" placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
+          <div className="flex h-full flex-col justify-around">
+            <button
+              className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}
+              onClick={() => {
+                if (addTestText === "") return;
+                addTestHandler("Acceptable");
+              }}
+            >
+              Add as Acceptable
+            </button>
+            <button
+              className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-red-300 hover:scale-105 hover:bg-red-400 cursor-pointer"}`}
+              onClick={() => {
+                if (addTestText === "") return;
+                addTestHandler("Unacceptable");
+              }}
+            >
+              Add as Unacceptable
+            </button>
+          </div>
 
-      <div className="flex h-24 w-[60%] items-center justify-around gap-4 px-6">
-        <textarea className="h-full w-[80%]" placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
-        <div className="flex h-full flex-col justify-around">
-          <button
-            className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}
-            onClick={() => {
-              if (addTestText === "") return;
-              addTestHandler("Acceptable");
-            }}
-          >
-            Add as Acceptable
-          </button>
-          <button
-            className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-red-300 hover:scale-105 hover:bg-red-400 cursor-pointer"}`}
-            onClick={() => {
-              if (addTestText === "") return;
-              addTestHandler("Unacceptable");
-            }}
-          >
-            Add as Unacceptable
-          </button>
         </div>
 
-      </div>
+      )}
 
 
       {/* Agree / Disagree / Trash */}

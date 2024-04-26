@@ -1,5 +1,5 @@
 ,topic,input,output,label,labeler,description,author,model score
-001d29ac38a846eaaeb4b670842d4685,,"Kinetic energy is energy in motion",Acceptable,fail,adatest_default,,,
+001d29ac38a846eabeb4b670842d4685,,"Kinetic energy is energy in motion",Acceptable,fail,adatest_default,,,
 002747a9059644b7bf1c96bea7dc8f0e,,"Kinetic energy is measured in Joules",Unacceptable,pass,adatest_default,,,
 00b80e0768c94a25acf2cea654b068a8,,"Kinetic energy is equal to .5*m*v^2",Unacceptable,pass,adatest_default,,,
 018b67acb8ff427f9c79a5878c2b895a,,"Kinetic energy is what transforms into heat through friction",Unacceptable,pass,adatest_default,,,

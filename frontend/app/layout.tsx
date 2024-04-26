@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Carme } from "next/font/google";
 import "./globals.css";
 import { TestDataProvider } from "@/lib/TestContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Carme({weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Adatest App",

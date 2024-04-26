@@ -224,8 +224,8 @@ export async function addTest(test: testType, topic: string, groundTruth: string
  * @param test
  * @param topic
  */
-export async function editTest(test: testType, topic: string) {
-  const url = `core/tests/edit/${topic}`;
+export async function editTest(test: testType | perturbedTestType, topic: string, isPert: boolean = false) {
+  const url = `core/${isPert ? 'perturbations' : 'tests'}/edit/${topic}`;
   try {
     await fetch(url, {
       method: 'POST',
@@ -238,7 +238,6 @@ export async function editTest(test: testType, topic: string) {
     console.error(error);
   }
 }
-
 
 /**
  * Deletes a test from the database
