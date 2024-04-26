@@ -7,7 +7,6 @@ import { editTest, logAction } from "@/lib/Service";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import PerturbRow from "@/app/components/PerturbRow";
 import { TestDataContext } from "@/lib/TestContext";
-import { testDataType } from "@/lib/Types";
 
 
 type rowProps = {
@@ -19,7 +18,7 @@ type rowProps = {
 const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
   // Get test data
-  const { setTestData, testData, currentTopic } = useContext(TestDataContext);
+  const { currentTopic } = useContext(TestDataContext);
 
   // if the perturbation dropdown is showing
   const [isShowingPerts, setIsShowingPerts] = useState<boolean>(false);
@@ -70,7 +69,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
   return (
     <>
-      <div className={'border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 bg-gray-50'}>
+      <div className={`border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}>
         <div className={'w-full items-center flex'}>
           {/* CheckBox */}
           <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
@@ -83,7 +82,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
 
           {/* Test Essay */}
           <div className={"w-[55%] flex justify-around items-center"}>
-            <textarea className={'text-md font-light w-[80%] px-2 resize-none bg-gray-50'} value={newTest} ref={textareaRef}
+            <textarea className={`text-md font-light w-[80%] px-2 resize-none ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
               onChange={(e) => onEssayChange(e.target.value)} />
             <button className={`h-6 w-[15%] rounded-xl border 
             ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transition ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
@@ -92,7 +91,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
                   onEditTest().catch();
                 }
               }}>
-              Edit
+              Save
             </button>
           </div>
 
@@ -162,7 +161,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
         </div>
       </div>
       {isShowingPerts && pertList && pertList.length !== 0 && pertList.map((pert: perturbedTestType, index: number) =>
-        <PerturbRow key={index} pertTest={pert} />
+        <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
       )}
     </>
   )

@@ -358,6 +358,35 @@ def edit_test(request, topic):
 
 
 @api_view(['POST'])
+def edit_perturbation(request, topic):
+    # byte_string = request.body
+    # body = byte_string.decode("utf-8")
+    # data = json.loads(body)
+
+    # Get test from request body
+    test = json.loads(request.body.decode('utf-8'))['test']
+    print('test')
+    print(test)
+
+
+    new_label = check_lab(topic, test['title'])
+
+    perturbTest = Perturbation.objects.get(id=test["id"])
+    parentTest = Test.objects.get(id=perturbTest.test_parent.id)
+    print('parent:')
+    print(parentTest)
+
+    perturbTest.title = test["title"]
+    perturbTest.label = test["label"]
+    perturbTest.validity = "Unapproved"
+    perturbTest.save()
+
+    test = Perturbation.objects.all()
+    serializer = PerturbationSerializer(test, context={'request': request}, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
 def log_action(request):
     byte_string = request.body
     body = byte_string.decode("utf-8")
