@@ -21,6 +21,18 @@ sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
 cd ../backend || return
 pip install --upgrade pip
 pip install notebook==6.1.5
-pip install -r mistral_requirements.txt
+pip install Django
+pip install django_cors_headers
+pip install django_rest_framework
+pip install django_nextjs
+pip install python-dotenv
+pip install peft
+pip install git+https://github.com/aayushb03/adatest_mod/@bca00d16a43bd5c75c2b54c0d80243e1aec7b7ea
+pip install openai
+pip install checklist
+pip install SentencePiece
+pip install bitsandbytes
+
+pip install --upgrade huggingface_hub
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
 
