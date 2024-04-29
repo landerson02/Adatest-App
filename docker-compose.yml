@@ -11,13 +11,7 @@ services:
     volumes:
       - ./frontend:/app
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      args:
-        - MODEL=$MODEL
-        - HUGGINGFACE_TOKEN=$HUGGINGFACE_TOKEN
-        - OPENAI_API_KEY=$OPENAI_API_KEY
+    image: ada_backend:latest
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility

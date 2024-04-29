@@ -136,7 +136,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
         </div>
         <div className={"flex w-[13%] justify-center items-center pr-2"}>
           <div className={"text-xl whitespace-nowrap"}>
-            Your Grade
+            Decision
           </div>
         </div>
         <div className={'w-[10%] text-center font-light'}>Criteria</div>
