@@ -61,7 +61,7 @@ bash vm_setup.sh
 This should install and give permissions to everything for the app and Docker to run. 
 Due to the nature of docker, it is unable to use gpu during build, and I have not quite yet figured it out yet. Therefore,
 run the application locally to use the gpu by running 
-``` python manage.py runserver ``` in the backend folder and ```npm run dev``` in the frontend folder.
+go to backend folder: ``` python manage.py runserver ``` then go to frontend folder: ```npm run dev```
 
 You may need to open another terminal window to run the following command to ssh into the vm again to run the application:
 ``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
