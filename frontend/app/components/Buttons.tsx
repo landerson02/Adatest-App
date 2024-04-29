@@ -158,7 +158,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
               onClick={generateHandler}
             >
-              Generate More Essays
+              Generate More Statements
             </button>
           )}
         </div>
