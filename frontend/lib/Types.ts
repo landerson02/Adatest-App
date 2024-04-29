@@ -38,3 +38,23 @@ export type testDataType = {
   test_decisions: TestDecisionsType;
   pert_decisions: PertDecisionsType;
 };
+
+export type graphDataType = {
+  [key: string]: {
+    [key: string]: testType[] | perturbedTestType[];
+  };
+}
+
+export type optionsType = {
+  labels: string[];
+  datasets: [{
+      label: string,
+      data: number[],
+      backgroundColor: string
+  },
+  {
+      label: string,
+      data: number[],
+      backgroundColor: string
+  }]
+}

@@ -2,6 +2,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import { Bar } from 'react-chartjs-2';
 import { TestDataContext } from "@/lib/TestContext";
+import {graphDataType, optionsType} from "@/lib/Types";
 
 import {
     Chart as ChartJS,
@@ -28,54 +29,68 @@ type taskGraphProps = {
 }
 const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     const {testData} = useContext(TestDataContext);
+
     // Currently selected Perturbation from the filter used in the last graph
-    const [selectedPerturbation, setSelectedPerturbation] = useState<string>('spelling'); // New state
-    const [topicData, setTopicData] = useState<any>({}); // New state
-    const [pertData, setPertData] = useState<any>({}); // New state
-    const [criteriaData, setCriteriaData] = useState<any>({}); // New state
-    const [totalTests, setTotalTests] = useState<number>(0); // New state
-    
-    const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+    const [selectedPerturbation, setSelectedPerturbation] = useState<string>('base');
+    // Holds data for all the tests graded by topic
+    const [isLoading, setIsLoading] = useState(true);
+    // data for the graph for all the tests graded by topic
+    const [graphTopic, setGraphTopic] = useState<graphDataType>();
+    // data for the graph for all tests graded by perturbation
+    const [graphPert, setGraphPert] = useState<graphDataType>();
+    // data for the graph for all tests graded by criteria
+    const [graphCriteria, setGraphCriteria] = useState<graphDataType>();
+    //Holds total tests to display in visualization
+
+    const [dataTopic, setDataTopic] = useState<optionsType>();
+    const [dataPert, setDataPert] = useState<optionsType>();
+    const [dataCriteria, setDataCriteria] = useState<optionsType>();
+    const [totalTests, setTotalTests] = useState<number>(0);
+
     const decisionValidity = ['approved', 'denied'];
     const topicTypes = ['PE', 'KE', 'LCE'];
-    
+    const decisionTypes = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
+    const decisionLabels = ['acceptable', 'unacceptable'];
+
     // Use effect that updates topic data when testData.tests are updated -> sets data for topic graph
     useEffect(() => {
+        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+        let topics : graphDataType= {}
         async function fetchTests() {
-            let tests: any = {};
             decisionValidity.forEach(validity => {
-                tests[validity] = {};
+                topics[validity] = {};
                 topicTypes.forEach(type => {
-                    tests[validity][type] = tests.filter((test: testType) => test.topic === type && test.validity === validity);
+                    topics[validity][type] = tests.filter((test: testType) => test.topic === type && test.validity === validity);
                 });
             });
-            setTopicData(tests);
         }
-        fetchTests();
-    }, [testData.tests, setTopicData]);
-
-    // Sets the data for the tests that are graded by topic
-    const data_topic = {
-        labels: topicTypes,
-        datasets: [{
-            label: 'Matching Your Evaluation',
-            data: [topicData[decisionValidity[0]][topicTypes[0]].length, topicData[decisionValidity[0]][topicTypes[1]].length,
-                topicData[decisionValidity[0]][topicTypes[2]].length],
-            backgroundColor: '#52C41A'
-        },
-        {
-            label: 'Not Matching Your Evaluation',
-            data: [topicData[decisionValidity[1]][topicTypes[0]].length, topicData[decisionValidity[1]][topicTypes[1]].length,
-                topicData[decisionValidity[1]][topicTypes[2]].length],
-            backgroundColor: '#FF4D4F'
-        }]
-    };
+        setIsLoading(true);
+        fetchTests().then(() => {
+           // Sets the data for the tests that are graded by topic
+            setDataTopic({
+                labels: topicTypes,
+                datasets: [{
+                    label: 'Matching Your Evaluation',
+                    data: [topics[decisionValidity[0]][topicTypes[0]].length, topics[decisionValidity[0]][topicTypes[1]].length,
+                        topics[decisionValidity[0]][topicTypes[2]].length],
+                    backgroundColor: '#52C41A'
+                },
+                {
+                    label: 'Not Matching Your Evaluation',
+                    data: [topics[decisionValidity[1]][topicTypes[0]].length, topics[decisionValidity[1]][topicTypes[1]].length,
+                        topics[decisionValidity[1]][topicTypes[2]].length],
+                    backgroundColor: '#FF4D4F'
+                }]
+            });
+            setIsLoading(false);
+        });
+    }, [testData.tests]);
 
     // useEffect that updates pertData when testData.tests are updated -> sets data for perturbation graph
-    const decisionTypes = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     useEffect(() => {
+        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+        let perts: graphDataType = {};
         async function fetchPerts() {
-            const perts: any = {};
             decisionValidity.forEach(validity => {
                 perts[validity] = {};
                 decisionTypes.forEach(type => {
@@ -85,64 +100,71 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                     perts[validity][type] = testData.pert_decisions[validity].filter((pert: any) => pert.type.toLowerCase() === type.toLowerCase());
                 });
             });
-            setPertData(perts);
         }
-        fetchPerts();
-    }, [testData, setPertData, pertData]);
-    // Sets the data for the graph for all the perturbations graded by type
-
-    const data_perturbations = {
-        labels: decisionTypes,
-        datasets: [{
-            label: 'Matching Your Evaluation',
-            data: [pertData[decisionValidity[0]][decisionTypes[0]], pertData[decisionValidity[0]][decisionTypes[1]].length, pertData[decisionValidity[0]][decisionTypes[2]].length,
-                pertData[decisionValidity[0]][decisionTypes[3]].length, pertData[decisionValidity[0]][decisionTypes[4]].length,
-                pertData[decisionValidity[0]][decisionTypes[5]].length, pertData[decisionValidity[0]][decisionTypes[6]].length],
-            backgroundColor: '#52C41A'
-        },
-        {
-            label: 'Not Matching Your Evaluation',
-            data: [pertData[decisionValidity[1]][decisionTypes[0]], pertData[decisionValidity[1]][decisionTypes[1]].length,
-                pertData[decisionValidity[1]][decisionTypes[2]].length, pertData[decisionValidity[1]][decisionTypes[3]].length,
-                pertData[decisionValidity[1]][decisionTypes[4]].length, pertData[decisionValidity[1]][decisionTypes[5]].length,
-                pertData[decisionValidity[1]][decisionTypes[6]].length],
-            backgroundColor: '#FF4D4F'
-        }]
-    };
-
-    // Sets the data needed for the graphs in criteria_data based on selected perturbation
-    const decisionLabels = ['acceptable', 'unacceptable'];
-    const criteria_data: any = {};
-        decisionValidity.forEach(validity => {
-            criteria_data[validity] = {};
-            decisionLabels.forEach(label => {
-                if(selectedPerturbation === 'base') {
-                    criteria_data[validity][label] = tests.filter((test: testType) =>
-                        test.validity.toLowerCase() === validity && test.label.toLowerCase() === label
-                    );
-                } else {
-                     criteria_data[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
-                    pert.label.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
-                }
+        setIsLoading(true);
+        fetchPerts().then(() => {
+           // Sets the data for the tests that are graded by topic
+            setDataPert({
+                labels: decisionTypes,
+                datasets: [{
+                    label: 'Matching Your Evaluation',
+                    data: [perts[decisionValidity[0]][decisionTypes[0]].length, perts[decisionValidity[0]][decisionTypes[1]].length, perts[decisionValidity[0]][decisionTypes[2]].length,
+                        perts[decisionValidity[0]][decisionTypes[3]].length, perts[decisionValidity[0]][decisionTypes[4]].length,
+                        perts[decisionValidity[0]][decisionTypes[5]].length, perts[decisionValidity[0]][decisionTypes[6]].length],
+                    backgroundColor: '#52C41A'
+                },
+                {
+                    label: 'Not Matching Your Evaluation',
+                    data: [perts[decisionValidity[1]][decisionTypes[0]].length, perts[decisionValidity[1]][decisionTypes[1]].length,
+                        perts[decisionValidity[1]][decisionTypes[2]].length, perts[decisionValidity[1]][decisionTypes[3]].length,
+                        perts[decisionValidity[1]][decisionTypes[4]].length, perts[decisionValidity[1]][decisionTypes[5]].length,
+                        perts[decisionValidity[1]][decisionTypes[6]].length],
+                    backgroundColor: '#FF4D4F'
+                }]
+            });
+            setIsLoading(false);
         });
-    });
+    }, [testData]);
 
-    const data_criteria = {
-        labels: ['Acceptable', 'Unacceptable'],
-        datasets: [{
-            label: 'Matching Your Evaluation',
-            data: [criteria_data[decisionValidity[0]][decisionLabels[0]].length,
-                criteria_data[decisionValidity[0]][decisionLabels[1]].length],
-            backgroundColor: '#52C41A'
-        },
-        {
-            label: 'Not Matching Your Evaluation',
-            data: [criteria_data[decisionValidity[1]][decisionLabels[0]].length,
-                criteria_data[decisionValidity[1]][decisionLabels[1]].length],
-            backgroundColor: '#FF4D4F'
-        }]
-    };
-
+    // useEffect that updates pertData when testData.tests are updated -> sets data for perturbation graph
+    useEffect(() => {
+        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+        let criterias: graphDataType = {};
+        async function fetchCrits() {
+            decisionValidity.forEach(validity => {
+                criterias[validity] = {};
+                decisionLabels.forEach(label => {
+                    if(selectedPerturbation === 'base') {
+                        criterias[validity][label] = tests.filter((test: testType) =>
+                            test.validity.toLowerCase() === validity && test.label.toLowerCase() === label
+                        );
+                    } else {
+                         criterias[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
+                        pert.label.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
+                    }
+                });
+            });
+        }
+        setIsLoading(true);
+        fetchCrits().then(() => {
+           // Sets the data for the tests that are graded by topic
+            setDataCriteria({
+            labels: ['Acceptable', 'Unacceptable'],
+            datasets: [{
+                label: 'Matching Your Evaluation',
+                data: [criterias[decisionValidity[0]][decisionLabels[0]].length,
+                        criterias[decisionValidity[0]][decisionLabels[1]].length],
+                backgroundColor: '#52C41A'
+                }, {
+                label: 'Not Matching Your Evaluation',
+                data: [criterias[decisionValidity[1]][decisionLabels[0]].length,
+                    criterias[decisionValidity[1]][decisionLabels[1]].length],
+                backgroundColor: '#FF4D4F'
+                }]
+            });
+            setIsLoading(false);
+        });
+        }, [testData]);
     // fixing type error for options
     const createOptions = (title: string) => ({
         indexAxis: "y",
@@ -188,14 +210,14 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                 </div>
             </div>
             <div className={'w-full h-52'}>
-                <Bar data={data_topic} options={createOptions("Tests by Topic")}> </Bar>
+                <Bar data={graphTopic} options={createOptions("Tests by Topic")}> </Bar>
             </div>
             <div className={'w-full h-44'}>
-                <Bar data={data_criteria} options={
+                <Bar data={graphCriteria} options={
                     createOptions(`Tests by Grade: ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>
             </div>
             <div className={'w-full h-96'}>
-                <Bar data={data_perturbations} options={createOptions("Tests by Criteria")}> </Bar>
+                <Bar data={graphPert} options={createOptions("Tests by Criteria")}> </Bar>
             </div>
         </div>
     )
