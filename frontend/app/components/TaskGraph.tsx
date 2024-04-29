@@ -27,17 +27,27 @@ const TaskGraph = () => {
     const {testData} = useContext(TestDataContext);
     // Currently selected Perturbation from the filter used in the last graph
     const [selectedPerturbation, setSelectedPerturbation] = useState<string>('spelling'); // New state
-    // setting values for first graph based on test data decision values
-    const totalTests = testData.test_decisions.KE.approved.length + testData.test_decisions.KE.denied.length
-        + testData.test_decisions.PE.approved.length + testData.test_decisions.PE.denied.length
-        + testData.test_decisions.LCE.approved.length + testData.test_decisions.LCE.denied.length;
+
+    // Grabs all tests from the test data
+    const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+    const decisionValidity = ['approved', 'denied'];
+    const topicTypes = ['PE', 'KE', 'LCE'];
+
+    // Gets all data for topic graph
+    let topicData: any = {};
+    decisionValidity.forEach(validity => {
+        topicData[validity] = {};
+        topicTypes.forEach(type => {
+            topicData[validity][type] = tests.filter((test: testType) => test.topic === type && test.validity === validity);
+        });
+    });
 
     // Sets the data for the tests that are graded by topic
     const data_topic = {
-        labels: ['PE', 'KE', 'LCE'],
+        labels: topicTypes,
         datasets: [{
             label: 'Matching Your Evaluation',
-            data: [testData.test_decisions.PE.approved.length, testData.test_decisions.KE.approved.length, testData.test_decisions.LCE.approved.length],
+            data: [topicData[], testData.test_decisions.KE.approved.length, testData.test_decisions.LCE.approved.length],
             backgroundColor: '#52C41A'
         },
         {
@@ -48,7 +58,6 @@ const TaskGraph = () => {
     };
 
     // Sets the data for the graph for all the perturbations graded by type
-    const decisionValidity = ['approved', 'denied'];
     const decisionTypes = ['Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const pert_data: any = {};
     decisionValidity.forEach(validity => {
@@ -59,18 +68,17 @@ const TaskGraph = () => {
     });
 
     const data_perturbations = {
-        labels: decisionTypes,
+        labels: ["Base", ...decisionTypes],
         datasets: [{
             label: 'Matching Your Evaluation',
-            data: [pert_data[decisionValidity[0]][decisionTypes[0]].length, pert_data[decisionValidity[0]][decisionTypes[1]].length,
-                pert_data[decisionValidity[0]][decisionTypes[2]].length, pert_data[decisionValidity[0]][decisionTypes[3]].length,
-                pert_data[decisionValidity[0]][decisionTypes[4]].length, pert_data[decisionValidity[0]][decisionTypes[5]].length,
-                pert_data[decisionValidity[0]][decisionTypes[6]].length],
+            data: [totalApproved, pert_data[decisionValidity[0]][decisionTypes[1]].length, pert_data[decisionValidity[0]][decisionTypes[2]].length,
+                pert_data[decisionValidity[0]][decisionTypes[3]].length, pert_data[decisionValidity[0]][decisionTypes[4]].length,
+                pert_data[decisionValidity[0]][decisionTypes[5]].length, pert_data[decisionValidity[0]][decisionTypes[6]].length],
             backgroundColor: '#52C41A'
         },
         {
             label: 'Not Matching Your Evaluation',
-            data: [pert_data[decisionValidity[1]][decisionTypes[0]].length, pert_data[decisionValidity[1]][decisionTypes[1]].length,
+            data: [totalDenied, pert_data[decisionValidity[1]][decisionTypes[1]].length,
                 pert_data[decisionValidity[1]][decisionTypes[2]].length, pert_data[decisionValidity[1]][decisionTypes[3]].length,
                 pert_data[decisionValidity[1]][decisionTypes[4]].length, pert_data[decisionValidity[1]][decisionTypes[5]].length,
                 pert_data[decisionValidity[1]][decisionTypes[6]].length],
@@ -84,6 +92,9 @@ const TaskGraph = () => {
         decisionValidity.forEach(validity => {
             criteria_data[validity] = {};
             decisionLabels.forEach(label => {
+                if(selectedPerturbation === 'base') {
+                    return;
+                }
                 criteria_data[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
                 pert.label.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
         });
@@ -146,7 +157,7 @@ const TaskGraph = () => {
                 <Options onPerturbationChange={setSelectedPerturbation}/>
                 <div className={'justify-center mt-7 float-start w-full'}>
                     <p> Graded Essays in Total </p>
-                    <p className={'text-4xl font-serif'}> {totalTests} </p>
+                    <p className={'text-4xl font-serif'}> {tests.length} </p>
                 </div>
             </div>
             <div className={'w-full h-52'}>
