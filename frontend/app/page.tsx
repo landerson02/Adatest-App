@@ -20,9 +20,15 @@ export default function Home() {
 
   // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
   const [filteredBy, setFilteredBy] = useState<string>('');
+  const [gradeFilter, setGradeFilter] = useState<string>('');
+  const [filterMap, setFilterMap] = useState<{ [key: string]: string }>({
+    'label': '',
+    'grade': '',
+    'pert': '',
+  });
 
   // Boolean for if first checkbox is auto-selected
-  const [isAutoCheck, setIsAutoSelect] = useState<boolean>(true);
+  const [isAutoCheck, setIsAutoSelect] = useState<boolean>(false);
 
   // Boolean for if perturbations are being generated
   const [isPerturbing, setIsPerturbing] = useState(false);
@@ -97,14 +103,36 @@ export default function Home() {
         testArrays[type] = await fetchAndProcessTests(type);
         testArrays[type].forEach((test: testType) => {
           test.perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.test_parent === test.id);
+
+          // Filter perts
+          if (filterMap.pert !== '') {
+            test.perturbedTests = test.perturbedTests.filter((pt: perturbedTestType) => pt.type.toLowerCase() === filterMap['pert'].toLowerCase());
+          }
         });
       }
 
       // curTests are the ones that are currently being displayed
       let curTests: testType[] = [...testArrays[currentTopic]];
-      if (filteredBy !== '') {
-        curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filteredBy);
+
+      // Filter tests
+      if (filterMap['label'] !== '') {
+        curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filterMap['label']);
       }
+      if (filterMap['grade'] !== '') {
+        let filtering: string = '';
+        if (filterMap['grade'] === 'Agreed') {
+          filtering = 'approved';
+        } else if (filterMap['grade'] === 'Disagreed') {
+          filtering = 'denied';
+        } else if (filterMap['grade'] === 'Ungraded') {
+          filtering = 'unapproved';
+        } else {
+          console.error('Invalid grade filter');
+          filtering = '';
+        }
+        curTests = curTests.filter((test: testType) => test.validity.toLowerCase() === filtering);
+      }
+
       if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
 
       let newTestData: testDataType = {
@@ -123,7 +151,7 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests();
-  }, [isCurrent, currentTopic, filteredBy, isAutoCheck, isPerturbing]);
+  }, [isCurrent, currentTopic, filteredBy, filterMap, gradeFilter, isAutoCheck, isPerturbing]);
 
   /**
    * Update displayed tests when the topic changes
@@ -169,6 +197,10 @@ export default function Home() {
           toggleCheck={toggleCheck}
           isCurrent={isCurrent}
           setIsCurrent={setIsCurrent}
+          gradeFilter={gradeFilter}
+          setGradeFilter={setGradeFilter}
+          filterMap={filterMap}
+          setFilterMap={setFilterMap}
         />
         <Buttons
           currentTopic={currentTopic}
