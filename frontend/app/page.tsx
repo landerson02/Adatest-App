@@ -151,7 +151,7 @@ export default function Home() {
           if (test.validity == 'Unapproved') continue;
           newTestDecisions[topic][test.validity.toLowerCase()].push(test);
           for (const perturbedTest of test.perturbedTests) {
-            if (perturbedTest.validity == 'unapproved') continue;
+            if (perturbedTest.validity == 'Unapproved') continue;
             newPertDecisions[perturbedTest.validity.toLowerCase()].push(perturbedTest);
           }
         }
