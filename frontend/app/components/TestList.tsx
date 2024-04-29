@@ -107,14 +107,14 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
           <div>
-            {filteredBy === '' ?
+            {filterMap['label'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} /> :
               <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} />
             }
             {isSelectingGradeFilter &&
               <div className="absolute z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
                 <ul className="text-gray-700">
-                  {filteredBy === '' ?
+                  {filterMap['label'] === '' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('', 'label')}>None
                     </li> :
@@ -122,7 +122,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                       onClick={() => handleFilterChange('', 'label')}>None
                     </li>
                   }
-                  {filteredBy === 'acceptable' ?
+                  {filterMap['label'] === 'acceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li> :
@@ -130,7 +130,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                       onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li>
                   }
-                  {filteredBy === 'unacceptable' ?
+                  {filterMap['label'] === 'unacceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('unacceptable', 'label')}>Unacceptable
                     </li> :
@@ -146,7 +146,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>Decision</div>
           <div>
-            {gradeFilter === '' ?
+            {filterMap['grade'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} /> :
               <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} />
             }
@@ -189,7 +189,6 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
             </div>
           }
         </div>
-        <div className={'w-[10%] text-center font-light'}>Criteria</div>
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (
