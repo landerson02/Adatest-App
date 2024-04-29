@@ -10,15 +10,23 @@ import { logAction } from "@/lib/Service";
 type testListProps = {
   setFilteredBy: (groupBy: string) => void,
   filteredBy: string,
+  gradeFilter: string,
+  setGradeFilter: (gradeFilter: string) => void,
   toggleCheck: (test: testType) => void,
   isCurrent: boolean,
   setIsCurrent: (isCurrent: boolean) => void,
+  filterMap: { [key: string]: string },
+  setFilterMap: (filterMap: { [key: string]: string }) => void,
 }
 
-const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurrent }: testListProps) => {
+const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurrent, gradeFilter, setGradeFilter, filterMap, setFilterMap }: testListProps) => {
 
   // Filtering states
-  const [isSelectingFilter, setIsSelectingFilter] = useState<boolean>(false);
+  const [isSelectingGradeFilter, setIsSelectingGradeFilter] = useState<boolean>(false);
+  const [isSelectingDecisionFilter, setIsSelectingDecisionFilter] = useState<boolean>(false);
+  const [isSelectingPertFilter, setIsSelectingPertFilter] = useState<boolean>(false);
+
+  // const [gradeFilter, setGradeFilter] = useState<string>('');
 
   /**
    * Handle change of new filtering
@@ -26,19 +34,34 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
    */
   const handleSelectChange = (newChoice: string) => {
     setFilteredBy(newChoice);
-    setIsSelectingFilter(false);
+    setIsSelectingGradeFilter(false);
   }
+
+  /**
+   * Handle change of new decision filtering
+   * @param newChoice new choice to filter by
+   */
+  const handleDecisionSelectChange = (newChoice: string) => {
+    setGradeFilter(newChoice);
+    setIsSelectingDecisionFilter(false);
+  }
+
+  const handleFilterChange = (newFiltering: string, filterType: string) => {
+    let newMap = { ...filterMap };
+    newMap[filterType] = newFiltering;
+    setFilterMap(newMap);
+    setIsSelectingPertFilter(false);
+    setIsSelectingDecisionFilter(false);
+    setIsSelectingGradeFilter(false);
+  }
+
 
   // Boolean for select all checkbox
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
   // Load in test data
-  const { testData, setTestData, setCurrentTopic, currentTopic } = useContext(TestDataContext);
+  const { testData, setTestData } = useContext(TestDataContext);
 
-  // Update current tests when the grouping changes
-  useEffect(() => {
-    filterTests(filteredBy);
-  }, [filteredBy, isCurrent]);
 
   useEffect(() => {
     setIsAllSelected(testData.currentTests.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
@@ -67,20 +90,6 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
     }
   }
 
-  const filterTests = (grouping: string) => {
-    let newTests;
-    if (grouping === '') {
-      newTests = [...testData.tests[currentTopic]];
-    } else {
-      newTests = [...testData.tests[currentTopic]].filter((test: testType) => test.label.toLowerCase() === grouping);
-      logAction(["null"], `Filter by ${grouping}`);
-    }
-    let newTD: testDataType = {
-      ...testData,
-      currentTests: newTests
-    }
-    setTestData(newTD);
-  }
 
   return (
     <div className={'w-full h-screen flex flex-col overflow-y-scroll overflow-x-hidden'}>
@@ -99,34 +108,34 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
           <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
           <div>
             {filteredBy === '' ?
-              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingFilter(!isSelectingFilter)} /> :
-              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingFilter(!isSelectingFilter)} />
+              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} /> :
+              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} />
             }
-            {isSelectingFilter &&
+            {isSelectingGradeFilter &&
               <div className="absolute z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
                 <ul className="text-gray-700">
                   {filteredBy === '' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
-                      onClick={() => handleSelectChange('')}>None
+                      onClick={() => handleFilterChange('', 'label')}>None
                     </li> :
                     <li className="cursor-pointer py-1 px-3 hover:bg-gray-100"
-                      onClick={() => handleSelectChange('')}>None
+                      onClick={() => handleFilterChange('', 'label')}>None
                     </li>
                   }
                   {filteredBy === 'acceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
-                      onClick={() => handleSelectChange('acceptable')}>Acceptable
+                      onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li> :
                     <li className="cursor-pointer py-1 px-3 hover:bg-gray-100"
-                      onClick={() => handleSelectChange('acceptable')}>Acceptable
+                      onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li>
                   }
                   {filteredBy === 'unacceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
-                      onClick={() => handleSelectChange('unacceptable')}>Unacceptable
+                      onClick={() => handleFilterChange('unacceptable', 'label')}>Unacceptable
                     </li> :
                     <li className="cursor-pointer py-1 px-3 hover:bg-gray-100"
-                      onClick={() => handleSelectChange('unacceptable')}>Unacceptable
+                      onClick={() => handleFilterChange('unacceptable', 'label')}>Unacceptable
                     </li>
                   }
                 </ul>
@@ -134,12 +143,52 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
             }
           </div>
         </div>
-        <div className={"flex w-[13%] justify-center items-center pr-2"}>
-          <div className={"text-xl whitespace-nowrap"}>
-            Your Grade
+        <div className={'flex w-[17%] justify-center items-center pr-2'}>
+          <div className={'text-xl whitespace-nowrap'}>Decision</div>
+          <div>
+            {gradeFilter === '' ?
+              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} /> :
+              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} />
+            }
+            {isSelectingDecisionFilter &&
+              <div className="absolute z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
+                <ul className="text-gray-700">
+                  {['', 'Agreed', 'Disagreed', 'Ungraded'].map((type) => {
+                    return (
+                      <li
+                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === gradeFilter.toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                        onClick={() => handleFilterChange(type, 'grade')}
+                      >{type === '' ? 'None' : type}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            }
           </div>
         </div>
-        <div className={'w-[10%] text-center font-light'}>Criteria</div>
+        <div className={'w-[10%] flex justify-center items-center'}>
+          <div className={'text-center whitespace-nowrap font-light'}>Criteria</div>
+
+          {filterMap['pert'] === '' ?
+            <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} /> :
+            <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} />
+          }
+          {isSelectingPertFilter &&
+            <div className="absolute top-10 z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
+              <ul className="text-gray-700">
+                {['', 'Spelling', 'Negation', 'Synonym', 'Paraphrase', 'Acronym', 'Antonym', 'Spanish'].map((type) => {
+                  return (
+                    <li
+                      className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['pert'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                      onClick={() => handleFilterChange(type, 'pert')}
+                    >{type === '' ? 'None' : type}</li>
+                  )
+                })}
+              </ul>
+            </div>
+          }
+        </div>
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (
