@@ -1,3 +1,4 @@
+source .env
 #Docker
 sudo apt update -y
 sudo apt install -y docker
@@ -7,11 +8,12 @@ sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 #Frontend: React - NVM/NPM
+cd frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
-cd frontend || return
 nvm install node
 npm i
+sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
 
 #Backend: Python - Django
 cd ../backend || return
