@@ -87,7 +87,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    */
   async function decisionHandler(decision: "approved" | "denied" | "invalid") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testDecisionHandler(checkedTests, decision);
+    // testDecisionHandler(checkedTests, decision);
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
@@ -108,7 +108,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     // set First char to uppercase
     decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
-    pertDecisionHandler(checkedPerts, decision);
+    // pertDecisionHandler(checkedPerts, decision);
 
     setIsCurrent(false);
   }
@@ -175,7 +175,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
             className={`flex h-8 w-48 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
             onClick={isAnyDecided ? perturbHandler : () => { }}
           >
-            Perturb Essays
+            Analyze AI Behavior
           </button>
         )}
       </div>
@@ -183,15 +183,18 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
       {/* Add Test */}
       {isAddingTest ? (
         <div className="flex h-28 w-[60%] items-center justify-around gap-4 px-6">
-          <div
-            className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
-          >
-            <ThreeDots className="h-3 w-8" />
-          </div>
-          <div
-            className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
-          >
-            <ThreeDots className="h-3 w-8" />
+          <textarea className="h-full w-[80%] resize-none border border-gray-200 rounded p-1" disabled placeholder="Add new test here..." value={addTestText} onChange={(e) => { setAddTestText(e.target.value) }} />
+          <div className="flex h-full flex-col justify-around">
+            <div
+              className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+            >
+              <ThreeDots className="h-3 w-8" />
+            </div>
+            <div
+              className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+            >
+              <ThreeDots className="h-3 w-8" />
+            </div>
           </div>
         </div>
       ) : (
