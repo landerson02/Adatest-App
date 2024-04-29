@@ -189,6 +189,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
             </div>
           }
         </div>
+        <div className={'w-[10%] text-center font-light'}>Criteria</div>
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (

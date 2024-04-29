@@ -138,7 +138,7 @@ const TaskGraph = () => {
     });
 
     return (
-        <div className={'float-end border-gray-600 w-full h-full justify-start items-center flex flex-col'}>
+        <div className={'float-end overflow-auto w-full h-full justify-start items-center flex flex-col'}>
             <div className={'w-full h-[15]%'}>
                 <div className={'bg-gray-100 w-full h-[25%] justify-center items-center flex border-b border-gray-200'}>
                     <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
@@ -149,15 +149,15 @@ const TaskGraph = () => {
                     <p className={'text-4xl font-serif'}> {totalTests} </p>
                 </div>
             </div>
-            <div className={'w-full h-[22%]'}>
+            <div className={'w-full h-52'}>
                 <Bar data={data_topic} options={createOptions("Tests by Topic")}> </Bar>
             </div>
-            <div className={'w-full h-[35%]'}>
-                <Bar data={data_perturbations} options={createOptions("Tests by Criteria")}> </Bar>
-            </div>
-            <div className={'w-full h-[21%]'}>
+            <div className={'w-full h-44'}>
                 <Bar data={data_criteria} options={
                     createOptions(`Acceptable Tests by ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>
+            </div>
+            <div className={'w-full h-96'}>
+                <Bar data={data_perturbations} options={createOptions("Tests by Criteria")}> </Bar>
             </div>
         </div>
     )
