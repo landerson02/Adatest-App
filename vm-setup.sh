@@ -18,3 +18,7 @@ cd ../backend || return
 pip install --upgrade pip
 pip install notebook==6.1.5
 pip install -r mistral_requirements.txt
+
+cp daemon.json /etc/docker/daemon.json
+sudo systemctl restart docker
+
