@@ -43,8 +43,6 @@ cu5_pipeline = CustomEssayPipeline(model=cu5_model, tokenizer=cu5_tokenizer)
 
 
 # HELPER FUNCTIONS
-
-
 # helpe function to generate ids
 
 def generate_random_id():
@@ -78,9 +76,9 @@ def index(request):
 
 
 if MODEL_TYPE == "mistral":
-
     # Create your views here.
     model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+    print("Loading " + model_name_or_path + " from hugging face")
     nf4_config = BitsAndBytesConfig(  # quantization 4-bit
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
@@ -96,10 +94,10 @@ if MODEL_TYPE == "mistral":
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
     # load in LORA fine-tune for student answer examples
-    lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
-    model = PeftModel.from_pretrained(
-        model, lora_model_path, torch_dtype=torch.float16, force_download=True,
-    )
+    # lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
+    # model = PeftModel.from_pretrained(
+    #     model, lora_model_path, torch_dtype=torch.float16, force_download=True,
+    # )
     mistral_pipeline = MistralPipeline(model, tokenizer)
     spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
     negation_pipeline = MistralPipeline(model, tokenizer, task="negation")

@@ -18,8 +18,8 @@ if "MODEL" not in os.environ:
 
 MODEL_TYPE = os.getenv('MODEL')
 
-if MODEL_TYPE == "mistral":
-    from peft import PeftModel  # for fine-tuning
+# if MODEL_TYPE == "mistral":
+    # from peft import PeftModel  # for fine-tuning
 
 def load_model(model_name):
     model = T5ForConditionalGeneration.from_pretrained(model_name)
@@ -41,11 +41,11 @@ class CustomEssayPipeline(Pipeline):
 
     def preprocess(self, essay):
         prompt = f"According to the following essay, classify the student's definition of LCE as {{option_1: Acceptable}}, {{option_2: Unacceptable}}\n{essay}"
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=512)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=300)
         return inputs
 
     def _forward(self, inputs, **kwargs):
-        outputs = self.model.generate(inputs['input_ids'], attention_mask=inputs['attention_mask'], max_new_tokens=50)
+        outputs = self.model.generate(inputs['input_ids'], attention_mask=inputs['attention_mask'], max_new_tokens=40)
         return outputs
 
     def postprocess(self, model_outputs):
@@ -108,7 +108,7 @@ class MistralPipeline(Pipeline):
     def _forward(self, model_inputs, do_sample, max_length):
         outputs = self.model.generate(
             inputs=model_inputs,
-            max_length=max_length + 100,
+            max_length=max_length + 50,
             do_sample=do_sample,
             pad_token_id=self.tokenizer.eos_token_id,
             num_return_sequences=1
@@ -123,6 +123,7 @@ class MistralPipeline(Pipeline):
         # result = re.sub(r'</s>', '', result)
         result = result.replace('<s>', '')
         result = result.replace('</s>', '')
+        result = re.sub(r'\([^)]*\)', '', result)
 
         result = result.replace('\n', '')
         result = result.replace('  ', '')
@@ -130,7 +131,7 @@ class MistralPipeline(Pipeline):
         return generation
 
     ## NORA: changed max_len, maybe change max_length dependentg on the input essay...
-    def __call__(self, essay, do_sample=True, max_length=250, num_return_sequences=0, pad_token_id=None, stopping_criteria=0):
+    def __call__(self, essay, do_sample=True, max_length=80, num_return_sequences=0, pad_token_id=None, stopping_criteria=0):
         if (self.task == "spelling"):
             for i in range(len(essay) // 20):
                 essay = Perturb.add_typos(essay)
@@ -145,23 +146,21 @@ class MistralPipeline(Pipeline):
             return [{'generated_text': essay}]
 
         if (self.task == "base"):
-            # prompt = f"You are a teenage student that writes in simple sentences. Given the following sentences, I will give you a definition of a concept, and you will write similar sentences defining the same concept. Here are the definitions: {essay}"
-            prompt = f"Write in simple sentences. For each sentence, write similar sentences about the same subject: {essay}"
-
+            prompt = f"Use simple vocabulary. For each sentence, write a sentence about the same concept: {essay}"
         # elif (self.task == "spelling"):
         #     prompt = f"Add typos to the following sentences. Here are the sentences: {essay}"
         elif (self.task == "paraphrase"):
-            prompt = f"Rephrase each of the following sentences. Do not add numbers or punctuation: {essay}"
+            prompt = f"Rephrase the sentence in simple words. Do not add numbers or punctuation: {essay}"
         # elif (self.task == "acronyms"):
         #     prompt = f"Add acronyns to each of the following sentences. Here are the sentences: {essay}"
         elif (self.task == "synonyms"):
-            prompt = f"Replace some words in each sentence with synonyms: {essay}"
+            prompt = f"Replace a word with a synonym in this sentence. Do not explain the answer: {essay}"
         elif (self.task == "antonyms"):
-            prompt = f"Replace some words in each sentence with antonyms: {essay}"
+            prompt = f"Replace a word with an antonym in this sentence. Do not explain the answer: {essay}"
         elif (self.task == "negation"):
-            prompt = f"Add negation to each of the following sentences: {essay}"
+            prompt = f"Negate this sentence: {essay}"
         else:
-            prompt = f"Translate a couple words in each sentence to spanish: {essay}"
+            prompt = f"Translate a couple words to spanish in this sentence. Do not explain the answer: {essay}"
 
         inputs = self.preprocess(prompt)
         outputs = self._forward(inputs, do_sample, max_length)
@@ -218,7 +217,7 @@ def create_obj(mistral=None, essayPipeline=None, type=None):
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
     if mistral is None:
-
+        print("Using OPENAI")
         if "OPENAI_API_KEY" not in os.environ:
             raise ValueError("the env file is missing the OPENAI_API_KEY")
 
