@@ -158,7 +158,7 @@ class MistralPipeline(Pipeline):
         elif (self.task == "antonyms"):
             prompt = f"Replace a word with an antonym in this sentence. Do not explain the answer: {essay}"
         elif (self.task == "negation"):
-            prompt = f"Negate this sentence: {essay}"
+            prompt = f"Negate this sentence. Do not explain the answer: {essay}"
         else:
             prompt = f"Translate a couple words to spanish in this sentence. Do not explain the answer: {essay}"
 
