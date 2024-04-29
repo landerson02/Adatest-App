@@ -264,7 +264,7 @@ def approve_list(request, topic):
         id = obj["id"]
         testData = Test.objects.get(id=id)
 
-        testData.group_truth = testData.label
+        testData.ground_truth = testData.label
         testData.validity = "Approved"
 
         df_row = df.loc[df['input'] == testData.title]
