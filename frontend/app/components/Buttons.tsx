@@ -87,7 +87,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    */
   async function decisionHandler(decision: "approved" | "denied" | "invalid") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testDecisionHandler(checkedTests, decision);
+    // testDecisionHandler(checkedTests, decision);
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
@@ -108,7 +108,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     // set First char to uppercase
     decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
-    pertDecisionHandler(checkedPerts, decision);
+    // pertDecisionHandler(checkedPerts, decision);
 
     setIsCurrent(false);
   }

@@ -135,6 +135,28 @@ export default function Home() {
 
       if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
 
+      const newTestDecisions = testData.test_decisions;
+      const newPertDecisions = testData.pert_decisions
+      for (const key1 in newTestDecisions) {
+        for (const key2 in newTestDecisions[key1]) {
+          newTestDecisions[key1][key2] = []; // Set the array to an empty array
+        }
+      }
+      for (const key1 in newPertDecisions) {
+        newPertDecisions[key1] = []; // Set the array to an empty array
+      }
+
+      for (const topic of topics) {
+        for (const test of testArrays[topic]) {
+          if (test.validity == 'Unapproved') continue;
+          newTestDecisions[topic][test.validity.toLowerCase()].push(test);
+          for (const perturbedTest of test.perturbedTests) {
+            if (perturbedTest.validity == 'Unapproved') continue;
+            newPertDecisions[perturbedTest.validity.toLowerCase()].push(perturbedTest);
+          }
+        }
+      }
+
       let newTestData: testDataType = {
         tests: {
           PE: testArrays['PE'],
@@ -144,13 +166,13 @@ export default function Home() {
           CU5: testArrays['CU5'],
         },
         currentTests: curTests,
-        test_decisions: testData.test_decisions,
-        pert_decisions: testData.pert_decisions,
+        test_decisions: newTestDecisions,
+        pert_decisions: newPertDecisions,
       }
       setTestData(newTestData);
       setIsCurrent(true);
     }
-    fetchTests();
+    fetchTests().catch();
   }, [isCurrent, currentTopic, filteredBy, filterMap, gradeFilter, isAutoCheck, isPerturbing]);
 
   /**
