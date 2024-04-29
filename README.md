@@ -93,7 +93,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 ```
 Then, after restarting terminal window, run the following command:
 ```
-cd Adatest-App/frontend
+cd /frontend
 nvm install node
 npm i 
 ```

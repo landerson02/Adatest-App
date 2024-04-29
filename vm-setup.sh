@@ -11,6 +11,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 cd frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 nvm install node
 npm i
 sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
