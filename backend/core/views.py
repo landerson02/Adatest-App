@@ -503,10 +503,17 @@ def generate_perturbations(request, topic):
                 perturbed_test = testData.title
 
             perturbed_label = check_lab(topic, perturbed_test)
+
+            if testData.ground_truth == perturbed_label:
+                if perturb_str == "negation" or perturb_str == "antonyms":
+                    perturbed_validity = "Denied"
+                else:
+                    perturbed_validity = "Approved"
+
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_str)
+                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity)
             perturbData.save()
 
     allPerturbs = Perturbation.objects.all()
