@@ -509,6 +509,11 @@ def generate_perturbations(request, topic):
                     perturbed_validity = "Denied"
                 else:
                     perturbed_validity = "Approved"
+            else:
+                if perturb_str == "negation" or perturb_str == "antonyms":
+                    perturbed_validity = "Approved"
+                else:
+                    perturbed_validity = "Denied"
 
             perturbed_id = generate_random_id()
 
