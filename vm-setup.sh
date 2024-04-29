@@ -22,6 +22,3 @@ pip install notebook==6.1.5
 pip install -r mistral_requirements.txt
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
 
-cp daemon.json /etc/docker/daemon.json
-sudo systemctl restart docker
-
