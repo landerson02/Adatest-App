@@ -11,7 +11,8 @@ import {
     LinearScale,
     Tooltip,
     Legend,
-    Title
+    Title,
+    ChartData
 } from 'chart.js';
 import {perturbedTestType, testDataType, testType} from "@/lib/Types";
 import {getPerturbations, getTests} from "@/lib/Service";
@@ -35,7 +36,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     // Holds data for all the tests graded by topic
     const [isLoading, setIsLoading] = useState(true);
 
-    const [dataTopic, setDataTopic] = useState();
+    const [dataTopic: ChartData, setDataTopic] = useState();
     const [dataPert, setDataPert] = useState();
     const [dataCriteria, setDataCriteria] = useState();
     const [totalTests, setTotalTests] = useState<number>(0);

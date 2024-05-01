@@ -48,7 +48,7 @@ Then, on a terminal in a folder that contains adatest.pem on your local computer
 Next, go to the Lambda Cloud team page to start up an instance (any instance type is fine but A10 is best,
 Region: Viriginia-East, Attach Adatest Filesystem, and make it use adatest key) Once the instance is launched, 
 grab the ssh command (should look like ssh ubuntu@1280.136.135) copy the address (without the ssh) and 
-replace it with the 'address' in the code tag below. 
+replace it with the 'address' in the code below. 
 
 Then ssh into the vm with the command:
 ``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
@@ -58,13 +58,19 @@ Once in the vm, you will be able to navigate into the Adatest folder and run the
 cd Adatest/Adatest-App
 bash vm_setup.sh
 ```
-This should install and give permissions to everything for the app and Docker to run. 
-Due to the nature of docker, it is unable to use gpu during build, and I have not quite yet figured it out yet. Therefore,
-run the application locally to use the gpu by running 
-``` python manage.py runserver ``` in the backend folder and ```npm run dev``` in the frontend folder.
+## To Run Locally (Without Docker)
+This should install and give permissions to everything for the app to run without docker. Run the application locally to use the gpu by running 
+``` python manage.py runserver ``` in the backend folder and ```npm run dev``` in the frontend folder. You can add a "&"
+at the end of the command to run it in the background, so you don't need to open another terminal. 
 
-You may need to open another terminal window to run the following command to ssh into the vm again to run the application:
+However, you may open another terminal window to run the previous commands.  To ssh into the vm again to run the application:
 ``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
+
+## To Run With Docker (currently not working)
+To run the application with docker, you will first need to run the shell script to set everything up for it
+```
+bash docker-gpu.sh
+```
 
 To stop the application, run the following command:
 ``` docker-compose down ```
