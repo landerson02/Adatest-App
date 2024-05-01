@@ -34,12 +34,8 @@ pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
 ke_model, ke_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
-# TODO: Load the correct CU0 and CU5 models, might have to make new pipelines for these
-cu0_model, cu0_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
-cu0_pipeline = CustomEssayPipeline(model=cu0_model, tokenizer=cu0_tokenizer)
-
-cu5_model, cu5_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
-cu5_pipeline = CustomEssayPipeline(model=cu5_model, tokenizer=cu5_tokenizer)
+cu0_pipeline = CUPipeline("CU0")
+cu5_pipeline = CUPipeline("CU5")
 
 
 # HELPER FUNCTIONS
@@ -58,15 +54,19 @@ def check_lab(type, inp):
         pipeline = pe_pipeline
     elif type == "LCE":
         pipeline = lce_pipeline
-
-    else:
+    elif type == "KE":
         pipeline = ke_pipeline
+    elif type == "CU0":
+        pipeline = cu0_pipeline
+    elif type == "CU5":
+        pipeline = cu5_pipeline
+    else:
+        return "Unacceptable"
 
     lab = pipeline(inp)
 
     if lab[0] == 'unacceptable' or lab[0] == 'Unacceptable':
         return "Unacceptable"
-
     else:
         return "Acceptable"
 
@@ -133,7 +133,7 @@ obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="K
 obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
 obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
-df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
+df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df, "CU0": obj_cu0.df, "CU5": obj_cu5.df}
 
 
 # create default vals in db
