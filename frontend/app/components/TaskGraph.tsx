@@ -2,7 +2,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import { Bar } from 'react-chartjs-2';
 import { TestDataContext } from "@/lib/TestContext";
-import {graphDataType, optionsType} from "@/lib/Types";
+import {graphDataType} from "@/lib/Types";
 
 import {
     Chart as ChartJS,
@@ -34,17 +34,10 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     const [selectedPerturbation, setSelectedPerturbation] = useState<string>('base');
     // Holds data for all the tests graded by topic
     const [isLoading, setIsLoading] = useState(true);
-    // data for the graph for all the tests graded by topic
-    const [graphTopic, setGraphTopic] = useState<graphDataType>();
-    // data for the graph for all tests graded by perturbation
-    const [graphPert, setGraphPert] = useState<graphDataType>();
-    // data for the graph for all tests graded by criteria
-    const [graphCriteria, setGraphCriteria] = useState<graphDataType>();
-    //Holds total tests to display in visualization
 
-    const [dataTopic, setDataTopic] = useState<optionsType>();
-    const [dataPert, setDataPert] = useState<optionsType>();
-    const [dataCriteria, setDataCriteria] = useState<optionsType>();
+    const [dataTopic, setDataTopic] = useState();
+    const [dataPert, setDataPert] = useState();
+    const [dataCriteria, setDataCriteria] = useState();
     const [totalTests, setTotalTests] = useState<number>(0);
 
     const decisionValidity = ['approved', 'denied'];
@@ -66,6 +59,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
         }
         setIsLoading(true);
         fetchTests().then(() => {
+            console.log(topics);
            // Sets the data for the tests that are graded by topic
             setDataTopic({
                 labels: topicTypes,
@@ -210,14 +204,14 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                 </div>
             </div>
             <div className={'w-full h-52'}>
-                <Bar data={graphTopic} options={createOptions("Tests by Topic")}> </Bar>
+                <Bar data={dataTopic} options={createOptions("Tests by Topic")}> </Bar>
             </div>
             <div className={'w-full h-44'}>
-                <Bar data={graphCriteria} options={
+                <Bar data={dataCriteria} options={
                     createOptions(`Tests by Grade: ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>
             </div>
             <div className={'w-full h-96'}>
-                <Bar data={graphPert} options={createOptions("Tests by Criteria")}> </Bar>
+                <Bar data={dataPert} options={createOptions("Tests by Criteria")}> </Bar>
             </div>
         </div>
     )

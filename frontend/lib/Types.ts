@@ -45,16 +45,3 @@ export type graphDataType = {
   };
 }
 
-export type optionsType = {
-  labels: string[];
-  datasets: [{
-      label: string,
-      data: number[],
-      backgroundColor: string
-  },
-  {
-      label: string,
-      data: number[],
-      backgroundColor: string
-  }]
-}
