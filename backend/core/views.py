@@ -234,14 +234,14 @@ def test_generate(request, topic):
         data = obj_cu0.df
         for index, row in data.iterrows():
             if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=row['output'])
+                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=check_lab("CU0", row['input']))
                 test.save()
     elif topic == "CU5":
         obj_cu5.generate()
         data = obj_cu5.df
         for index, row in data.iterrows():
             if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=row['output'])
+                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=check_lab("CU5", row['input']))
                 test.save()
 
     testData = Test.objects.filter(topic__icontains=topic)
