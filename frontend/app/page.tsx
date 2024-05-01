@@ -18,9 +18,10 @@ export default function Home() {
   // Boolean for if the tests are being generated
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
-  const [filteredBy, setFilteredBy] = useState<string>('');
-  const [gradeFilter, setGradeFilter] = useState<string>('');
+  // Map that contains all current filters ('' is no filter)
+  // 'label' -> (un)acceptable
+  // 'grade' -> (dis)agreed, ungraded
+  // 'pert' -> type of perturbation
   const [filterMap, setFilterMap] = useState<{ [key: string]: string }>({
     'label': '',
     'grade': '',
@@ -173,7 +174,7 @@ export default function Home() {
       setIsCurrent(true);
     }
     fetchTests().catch();
-  }, [isCurrent, currentTopic, filteredBy, filterMap, gradeFilter, isAutoCheck, isPerturbing]);
+  }, [isCurrent, currentTopic, filterMap, isAutoCheck, isPerturbing]);
 
   /**
    * Update displayed tests when the topic changes
@@ -214,13 +215,8 @@ export default function Home() {
           />
         </div>
         <TestList
-          setFilteredBy={setFilteredBy}
-          filteredBy={filteredBy}
           toggleCheck={toggleCheck}
-          isCurrent={isCurrent}
           setIsCurrent={setIsCurrent}
-          gradeFilter={gradeFilter}
-          setGradeFilter={setGradeFilter}
           filterMap={filterMap}
           setFilterMap={setFilterMap}
         />

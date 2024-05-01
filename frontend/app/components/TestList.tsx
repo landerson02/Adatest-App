@@ -8,44 +8,26 @@ import { TestDataContext } from "@/lib/TestContext";
 import { logAction } from "@/lib/Service";
 
 type testListProps = {
-  setFilteredBy: (groupBy: string) => void,
-  filteredBy: string,
-  gradeFilter: string,
-  setGradeFilter: (gradeFilter: string) => void,
   toggleCheck: (test: testType) => void,
-  isCurrent: boolean,
   setIsCurrent: (isCurrent: boolean) => void,
   filterMap: { [key: string]: string },
   setFilterMap: (filterMap: { [key: string]: string }) => void,
 }
 
-const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurrent, gradeFilter, setGradeFilter, filterMap, setFilterMap }: testListProps) => {
+const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap }: testListProps) => {
 
   // Filtering states
   const [isSelectingGradeFilter, setIsSelectingGradeFilter] = useState<boolean>(false);
   const [isSelectingDecisionFilter, setIsSelectingDecisionFilter] = useState<boolean>(false);
   const [isSelectingPertFilter, setIsSelectingPertFilter] = useState<boolean>(false);
 
-  // const [gradeFilter, setGradeFilter] = useState<string>('');
+
 
   /**
-   * Handle change of new filtering
-   * @param newChoice new choice to filter by
+   * Handle the change of a filter
+   * @param newFiltering the new filter ((un)acceptable, (dis)agreed, pert type, etc.)
+   * @param filterType the type of filter (label, grade, pert)
    */
-  const handleSelectChange = (newChoice: string) => {
-    setFilteredBy(newChoice);
-    setIsSelectingGradeFilter(false);
-  }
-
-  /**
-   * Handle change of new decision filtering
-   * @param newChoice new choice to filter by
-   */
-  const handleDecisionSelectChange = (newChoice: string) => {
-    setGradeFilter(newChoice);
-    setIsSelectingDecisionFilter(false);
-  }
-
   const handleFilterChange = (newFiltering: string, filterType: string) => {
     let newMap = { ...filterMap };
     newMap[filterType] = newFiltering;
@@ -156,7 +138,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                   {['', 'Agreed', 'Disagreed', 'Ungraded'].map((type) => {
                     return (
                       <li
-                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === gradeFilter.toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['grade'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
                         onClick={() => handleFilterChange(type, 'grade')}
                       >{type === '' ? 'None' : type}
                       </li>
@@ -193,15 +175,15 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
 
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent} />
+          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent} isPertsFiltered={filterMap['pert'] !== ''} />
         })
-      ) : (filteredBy !== '') ? (
+      ) : (filterMap['label'] !== '') ? (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
-          There are no '{filteredBy}' essays to show. <br />Either generate more essays or select a different filter.
+          There are no '{filterMap['label']}' essays to show. <br />Either generate more essays or select a different filter.
         </div>
       ) : (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
-          Please Select 'Generate More Essays' to Continue
+          Please Select 'Generate More Statements' to Continue
         </div>
       )}
     </div>
