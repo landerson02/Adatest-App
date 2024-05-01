@@ -87,7 +87,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
    */
   async function decisionHandler(decision: "approved" | "denied" | "invalid") {
     let checkedTests = testData.currentTests.filter((test: testType) => test.isChecked);
-    testDecisionHandler(checkedTests, decision);
+    // testDecisionHandler(checkedTests, decision);
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
@@ -108,7 +108,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     // set First char to uppercase
     decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
-    pertDecisionHandler(checkedPerts, decision);
+    // pertDecisionHandler(checkedPerts, decision);
 
     setIsCurrent(false);
   }
@@ -158,7 +158,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
               onClick={generateHandler}
             >
-              Generate More Essays
+              Generate More Statements
             </button>
           )}
         </div>
