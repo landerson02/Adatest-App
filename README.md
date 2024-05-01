@@ -56,9 +56,9 @@ Then ssh into the vm with the command:
 Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script
 ```
 cd Adatest/Adatest-App
-bash vm_setup.sh
+bash vm-setup.sh
 ```
-This should install and give permissions to everything for the app and Docker to run. 
+This installs and give permissions to everything for the app and Docker to run. 
 Due to the nature of docker, it is unable to use gpu during build, and I have not quite yet figured it out yet. Therefore,
 run the application locally to use the gpu by running 
 go to backend folder: ``` python manage.py runserver ``` then go to frontend folder: ```npm run dev```
