@@ -13,9 +13,10 @@ type rowProps = {
   test: testType,
   toggleCheck: (test: testType) => void,
   setIsCurrent: (isCurrent: boolean) => void,
+  isPertsFiltered: boolean,
 }
 
-const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
+const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered }: rowProps) => {
 
   // Get test data
   const { currentTopic } = useContext(TestDataContext);
@@ -144,7 +145,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
             {isShowingPerts ? (
               <IoIosArrowDropupCircle
                 className="w-6 h-6 text-blue-600 hover:cursor-pointer"
-                onClick={() => setIsShowingPerts(!isShowingPerts)}
+                onClick={() => setIsShowingPerts(false)}
               />
             ) : (
               <IoIosArrowDropdownCircle
@@ -153,16 +154,20 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
                   if (pertList?.length == 0) {
                     return;
                   }
-                  setIsShowingPerts(!isShowingPerts)
+                  setIsShowingPerts(true);
                 }}
               />
             )}
           </div>
         </div>
       </div>
-      {isShowingPerts && pertList && pertList.length !== 0 && pertList.map((pert: perturbedTestType, index: number) =>
-        <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
-      )}
+      {/* Show perts if the dropdown is open OR if the perturbations are filtered */}
+      {/* Auto show if filtered because theres only 1 */}
+      {(isPertsFiltered || isShowingPerts)
+        && pertList && pertList.length !== 0
+        && pertList.map((pert: perturbedTestType, index: number) =>
+          <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
+        )}
     </>
   )
 }
