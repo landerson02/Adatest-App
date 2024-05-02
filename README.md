@@ -10,11 +10,10 @@ Clone the repository
 
 Create a .env file in /backend with the following content:
 ```
-MODEL=modelname
+MODEL=modelname # mistral or openai
 HUGGING_FACE_TOKEN=your_hugging_face_token # only needed if modelname=mistral
 OPENAI_API_KEY=your_openai_api_key # only needed if modelname=openai
 ```
-where modelname is the name of the model you want to use. (mistral or openai)
 
 ### If using Docker:
 - run the following command to start the application: ``` docker-compose up ```
