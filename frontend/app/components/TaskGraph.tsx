@@ -36,7 +36,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     // Holds data for all the tests graded by topic
     const [isLoading, setIsLoading] = useState(true);
 
-    const [dataTopic: ChartData, setDataTopic] = useState();
+    const [dataTopic, setDataTopic] = useState();
     const [dataPert, setDataPert] = useState();
     const [dataCriteria, setDataCriteria] = useState();
     const [totalTests, setTotalTests] = useState<number>(0);
@@ -46,9 +46,11 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     const decisionTypes = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const decisionLabels = ['acceptable', 'unacceptable'];
 
+
+
     // Use effect that updates topic data when testData.tests are updated -> sets data for topic graph
     useEffect(() => {
-        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE);
+        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE, testData.tests.CU0, testData.tests.CU5);
         let topics : graphDataType= {}
         async function fetchTests() {
             decisionValidity.forEach(validity => {
