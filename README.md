@@ -10,11 +10,10 @@ Clone the repository
 
 Create a .env file in /backend with the following content:
 ```
-MODEL=modelname
+MODEL=modelname # mistral or openai
 HUGGING_FACE_TOKEN=your_hugging_face_token # only needed if modelname=mistral
 OPENAI_API_KEY=your_openai_api_key # only needed if modelname=openai
 ```
-where modelname is the name of the model you want to use. (mistral or openai)
 
 ### If using Docker:
 - run the following command to start the application: ``` docker-compose up ```
@@ -56,11 +55,11 @@ Then ssh into the vm with the command:
 Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script
 ```
 cd Adatest/Adatest-App
-bash vm_setup.sh
+bash vm-setup.sh
 ```
 ## To Run Locally (Without Docker)
-This should install and give permissions to everything for the app to run without docker. Run the application locally to use the gpu by running 
-``` python manage.py runserver ``` in the backend folder and ```npm run dev``` in the frontend folder. You can add a "&"
+This installs and give permissions to everything for the app and Docker to run. Run the application locally to use the gpu by running 
+go to backend folder: ``` python manage.py runserver ``` then go to frontend folder: ```npm run dev``` You can add a "&"
 at the end of the command to run it in the background, so you don't need to open another terminal. 
 
 However, you may open another terminal window to run the previous commands.  To ssh into the vm again to run the application:
