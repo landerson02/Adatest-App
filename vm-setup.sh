@@ -28,6 +28,7 @@ pip install bitsandbytes
 pip install --upgrade huggingface_hub
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
 source ~/.bashrc
+git pull
 
 
 

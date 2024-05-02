@@ -19,8 +19,6 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   // Boolean for if perturbations are being generated
   const [isPerturbing, setIsPerturbing] = useState(false);
-  // Boolean for if any perturbations have been generated
-  const [isPerturbed, setIsPerturbed] = useState(false);
 
   // Map that contains all current filters ('' is no filter)
   // 'label' -> (un)acceptable
@@ -171,6 +169,7 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
+      console.log(newTestData);
       setTestData(newTestData);
       setIsCurrent(true);
     }
@@ -203,7 +202,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph isPerturbed={isPerturbed}/>
+        <TaskGraph/>
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
@@ -228,7 +227,6 @@ export default function Home() {
           setIsCurrent={setIsCurrent}
           isPerturbing={isPerturbing}
           setIsPerturbing={setIsPerturbing}
-          setIsPerturbed={setIsPerturbed}
         />
       </main>
     </div>
