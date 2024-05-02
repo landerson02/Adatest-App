@@ -13,9 +13,10 @@ type ButtonsProps = {
   setIsCurrent: (isCurrent: boolean) => void,
   isPerturbing: boolean,
   setIsPerturbing: (isPerturbing: boolean) => void,
+  setIsPerturbed: (isPerturbed: boolean) => void,
 }
 
-export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPerturbing, isPerturbing }: ButtonsProps) => {
+export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPerturbing, isPerturbing, setIsPertrurbed}: ButtonsProps) => {
 
   // Get the test data
   const { testData } = useContext(TestDataContext);
@@ -126,6 +127,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     await logAction(["null"], "Perturb Essays");
     await createPerturbations(testData.currentTests.filter((test) => test.validity == "Approved" || test.validity == "Denied"), currentTopic);
     setIsPerturbing(false);
+    setIsPertrurbed(true);
   }
 
   async function addTestHandler(label: string) {
