@@ -169,7 +169,6 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
-      console.log(newTestData);
       setTestData(newTestData);
       setIsCurrent(true);
     }

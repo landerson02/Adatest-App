@@ -49,7 +49,7 @@ const TaskGraph = () => {
     const validityLabels = ['approved', 'denied'];
     const topicLabels = ['PE', 'KE', 'LCE', 'CU0', 'CU5'];
     const criteriaLabels = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
-    const gradeLabels = ['acceptable', 'unacceptable'];
+    const gradeLabels = ['Acceptable', 'Unacceptable'];
 
     useEffect(() => {
         if(testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
@@ -90,7 +90,7 @@ const TaskGraph = () => {
                 gradeLabels.forEach(label => {
                     if(selectedPerturbation === 'base') {
                         temp[validity][label] = tests.filter((test: testType) =>
-                            test.validity.toLowerCase() === validity && test.label.toLowerCase() === label
+                            test.validity.toLowerCase() === validity && test.label.toLowerCase() === label.toLowerCase()
                         );
                     } else {
                         temp[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
@@ -106,10 +106,11 @@ const TaskGraph = () => {
             validityLabels.forEach(validity => { // in this array, array[0] = approved, array[1] = denied
                 temp[validity] = {};
                 criteriaLabels.forEach(type => { // in this array, array[0][0] = approved and Base, and so on for that list
-                    if(type === 'Base') {
+                    if(type === criteriaLabels[0]) {
                        temp[validity][type] = tests.filter((test: testType) => test.validity.toLowerCase() === validity.toLowerCase());
+                    } else {
+                       temp[validity][type] = testData.pert_decisions[validity].filter((pert: any) => pert.type.toLowerCase() === type.toLowerCase());
                     }
-                    temp[validity][type] = testData.pert_decisions[validity].filter((pert: any) => pert.type.toLowerCase() === type.toLowerCase());
                 });
             });
             setCriteria(temp);
@@ -119,6 +120,7 @@ const TaskGraph = () => {
         fetchTests();
         fetchCriteria();
         fetchGrade();
+        console.log(criteria);
         setIsLoading(false);
     }, [testData, selectedPerturbation]);
 
@@ -248,13 +250,11 @@ const TaskGraph = () => {
                 </div>
                 {isPerturbed && <Options onPerturbationChange={setSelectedPerturbation}/>}
             </div>
-            <div className={'w-full h-44'}>
-                {gradeData && <Bar data={gradeData} options=
-                    {createOptions(`Tests by Grade and Criteria: ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>}
-            </div>
             <div className={'w-full h-64'}>
-                {topicData && <Bar data={topicData} options=
-                    {createOptions(`Tests by Topic and Criteria: ${selectedPerturbation[0].toUpperCase() + selectedPerturbation.slice(1).toLowerCase()}`)}> </Bar>}
+                {topicData && <Bar data={topicData} options={createOptions('Tests by Topic')}> </Bar>}
+            </div>
+            <div className={'w-full h-44'}>
+                {gradeData && <Bar data={gradeData} options={createOptions('Tests by Grade')}> </Bar>}
             </div>
             <div className={'w-full h-96'}>
                 {isPerturbed && criteriaData &&
