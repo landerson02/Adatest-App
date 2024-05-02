@@ -17,6 +17,8 @@ export default function Home() {
 
   // Boolean for if the tests are being generated
   const [isGenerating, setIsGenerating] = useState(false);
+  // Boolean for if perturbations are being generated
+  const [isPerturbing, setIsPerturbing] = useState(false);
 
   // Map that contains all current filters ('' is no filter)
   // 'label' -> (un)acceptable
@@ -30,9 +32,6 @@ export default function Home() {
 
   // Boolean for if first checkbox is auto-selected
   const [isAutoCheck, setIsAutoSelect] = useState<boolean>(false);
-
-  // Boolean for if perturbations are being generated
-  const [isPerturbing, setIsPerturbing] = useState(false);
 
   // Load test decision context
   const {
@@ -170,6 +169,7 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
+      console.log(newTestData);
       setTestData(newTestData);
       setIsCurrent(true);
     }
@@ -202,7 +202,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph />
+        <TaskGraph/>
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}

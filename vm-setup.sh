@@ -1,12 +1,4 @@
 source .env
-#Docker
-sudo apt update -y
-sudo apt install -y docker
-sudo service docker start
-sudo usermod -a -G docker ubuntu
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
 #Frontend: React - NVM/NPM
 cd frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
@@ -35,4 +27,8 @@ pip install bitsandbytes
 
 pip install --upgrade huggingface_hub
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
+source ~/.bashrc
+git pull
+
+
 

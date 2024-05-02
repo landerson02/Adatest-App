@@ -24,6 +24,7 @@ const Options = ({onPerturbationChange} : optionsProps) => {
             onChange={(e) => handlePerturbationChange(e.target.value)}
             className={'align-right mr-10 justify-end border border-gray-300 p-1 text-black rounded-lg'}
         >
+            <option value={'base'}>Base</option>
             <option value={'spelling'}>Spelling</option>
             <option value={'negation'}>Negation</option>
             <option value={'synonyms'}>Synonyms</option>

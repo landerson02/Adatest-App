@@ -1,5 +1,5 @@
 #Pull the official base image
-FROM python:3.9
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 # Set environment variables to ones in .env file
 ARG MODEL
@@ -8,6 +8,7 @@ ARG OPENAI_API_KEY
 ENV MODEL ${MODEL?modelnotset}
 ENV HUGGINGFACE_TOKEN ${HUGGINGFACE_TOKEN?hftokennotset}
 ENV OEPNAI_API_KEY ${OPENAI_API_KEY?oakeynotset}
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64/stubs/:$LD_LIBRARY_PATH
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
