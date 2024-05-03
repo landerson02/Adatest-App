@@ -5,6 +5,7 @@ export type perturbedTestType = {
   title: string; // The essay
   type: string; // Type of perturbation
   validity: string; // Approved, Denied, Invalid, Unapproved (default)
+  ground_truth: string; // Ground truth of the perturbed test
   isChecked: boolean; // Checkbox state
 };
 
@@ -18,6 +19,7 @@ export type testType = {
   title: string; // Actual test
   topic: string; // Concept - PE, KE, LCE
   validity: string; // Approved, Denied, Invalid, Unapproved (default)
+  ground_truth: string; // Ground truth of the test
   isChecked: boolean; // Checkbox state
   perturbedTests: perturbedTestType[];
 };

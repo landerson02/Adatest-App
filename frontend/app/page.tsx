@@ -87,7 +87,6 @@ export default function Home() {
             }
           });
         }
-
         return data;
       }
 
@@ -136,7 +135,7 @@ export default function Home() {
       if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
 
       const newTestDecisions = testData.test_decisions;
-      const newPertDecisions = testData.pert_decisions
+      const newPertDecisions = testData.pert_decisions;
       for (const key1 in newTestDecisions) {
         for (const key2 in newTestDecisions[key1]) {
           newTestDecisions[key1][key2] = []; // Set the array to an empty array
@@ -169,6 +168,7 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
+      console.log(newPertDecisions)
       setTestData(newTestData);
       setIsCurrent(true);
     }

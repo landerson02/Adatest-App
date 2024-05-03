@@ -90,11 +90,11 @@ const TaskGraph = () => {
                 gradeLabels.forEach(label => {
                     if(selectedPerturbation === 'base') {
                         temp[validity][label] = tests.filter((test: testType) =>
-                            test.validity.toLowerCase() === validity && test.label.toLowerCase() === label.toLowerCase()
+                            test.validity.toLowerCase() === validity && test.ground_truth.toLowerCase() === label.toLowerCase()
                         );
                     } else {
                         temp[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
-                        pert.label.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
+                        pert.ground_truth.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
                     }
                 });
             });
@@ -120,7 +120,6 @@ const TaskGraph = () => {
         fetchTests();
         fetchCriteria();
         fetchGrade();
-        console.log(criteria);
         setIsLoading(false);
     }, [testData, selectedPerturbation]);
 

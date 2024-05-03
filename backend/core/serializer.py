@@ -4,7 +4,7 @@ from . models import *
 class TestSerializer(serializers.ModelSerializer): 
     class Meta: 
         model = Test 
-        fields = ('id', 'title', 'topic', 'validity', 'label')
+        fields = ('id', 'title', 'topic', 'validity', 'label', 'ground_truth')
 
 
 class LogSerializer(serializers.ModelSerializer):
@@ -22,5 +22,5 @@ class ReactSerializer(serializers.ModelSerializer):
 class PerturbationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perturbation
-        fields = ('test_parent', 'label', 'id', 'title', 'type', 'validity')
+        fields = ('test_parent', 'label', 'id', 'title', 'type', 'validity', 'ground_truth')
 
