@@ -1,2 +1,2 @@
 npx kill-port 3000
-npx kill-port 8000
+lsof -t -i tcp:8000 | xargs kill -9

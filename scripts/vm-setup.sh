@@ -8,7 +8,6 @@ export NVM_DIR="$HOME/.nvm"
 nvm install node
 npm i
 sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
-npm run dev &
 
 #Backend: Python - Django
 cd ../backend || return
@@ -29,7 +28,6 @@ pip install bitsandbytes
 # Huggingface login token to use model
 pip install --upgrade huggingface_hub
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
-python3 manage.py runserver &
 
 # Updates source environment vars
 source ~/.bashrc
