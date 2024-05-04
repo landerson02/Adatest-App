@@ -131,6 +131,18 @@ export async function logAction(test_ids: string[], action: string) {
   }
 }
 
+export async function saveLogs() {
+    const url = `core/logs/save`;
+    try {
+        await fetch(url, {
+        method: 'POST',
+        cache: "no-store",
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
 /**
  * Reset the tests in the database

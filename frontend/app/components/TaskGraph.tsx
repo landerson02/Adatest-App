@@ -87,14 +87,14 @@ const TaskGraph = () => {
             let temp: graphDataType = {};
             validityLabels.forEach(validity => {
                 temp[validity] = {};
-                gradeLabels.forEach(label => {
+                gradeLabels.forEach(grade => {
                     if(selectedPerturbation === 'base') {
-                        temp[validity][label] = tests.filter((test: testType) =>
-                            test.validity.toLowerCase() === validity && test.ground_truth.toLowerCase() === label.toLowerCase()
+                        temp[validity][grade] = tests.filter((test: testType) =>
+                            test.validity.toLowerCase() === validity && test.ground_truth.toLowerCase() === grade.toLowerCase()
                         );
                     } else {
-                        temp[validity][label] = testData.pert_decisions[validity].filter((pert: any) =>
-                        pert.ground_truth.toLowerCase() === label.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
+                        temp[validity][grade] = testData.pert_decisions[validity].filter((pert: any) =>
+                        pert.ground_truth.toLowerCase() === grade.toLowerCase() && pert.type.toLowerCase() === selectedPerturbation.toLowerCase());
                     }
                 });
             });
@@ -105,11 +105,11 @@ const TaskGraph = () => {
             let temp: graphDataType = {};
             validityLabels.forEach(validity => { // in this array, array[0] = approved, array[1] = denied
                 temp[validity] = {};
-                criteriaLabels.forEach(type => { // in this array, array[0][0] = approved and Base, and so on for that list
-                    if(type === criteriaLabels[0]) {
-                       temp[validity][type] = tests.filter((test: testType) => test.validity.toLowerCase() === validity.toLowerCase());
+                criteriaLabels.forEach(criteria => { // in this array, array[0][0] = approved and Base, and so on for that list
+                    if(criteria === criteriaLabels[0]) {
+                       temp[validity][criteria] = tests.filter((test: testType) => test.validity.toLowerCase() === validity.toLowerCase());
                     } else {
-                       temp[validity][type] = testData.pert_decisions[validity].filter((pert: any) => pert.type.toLowerCase() === type.toLowerCase());
+                       temp[validity][criteria] = testData.pert_decisions[validity].filter((pert: any) => pert.type.toLowerCase() === criteria.toLowerCase());
                     }
                 });
             });
