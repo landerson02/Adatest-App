@@ -25,14 +25,17 @@ ChartJS.register(BarElement,
     Legend,
     Title);
 
-const TaskGraph = () => {
+type taskGraphProps = {
+    isPerturbed: boolean,
+}
+const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     const {testData} = useContext(TestDataContext);
 
     // Currently selected Perturbation from the filter used in the last graph
     const [selectedPerturbation, setSelectedPerturbation] = useState<string>('base');
     // Holds data for all the tests graded by topic
     const [isLoading, setIsLoading] = useState(true);
-    const [isPerturbed, setIsPerturbed] = useState<boolean>(false);
+
 
     // Use States to handle the data for the charts - topic, criteria (perturbation), and grade (acceptable vs unacceptable)
     const [topicData, setTopicData] = useState<ChartData <'bar', number []>>();
@@ -50,14 +53,6 @@ const TaskGraph = () => {
     const topicLabels = ['PE', 'KE', 'LCE', 'CU0', 'CU5'];
     const criteriaLabels = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const gradeLabels = ['Acceptable', 'Unacceptable'];
-
-    useEffect(() => {
-        if(testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
-            setIsPerturbed(true);
-        } else {
-            setIsPerturbed(false);
-        }
-    }, [testData]);
 
     // Use effect that updates topic data when testData.tests are updated -> sets data for topic
     useEffect(() => {
@@ -237,6 +232,7 @@ const TaskGraph = () => {
         borderRadius: 5,
     });
 
+    // @ts-ignore
     return (
         <div className={'float-end overflow-auto w-full h-full justify-start items-center flex flex-col'}>
             <div className={'w-full h-[15]%'}>
