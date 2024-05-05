@@ -146,7 +146,8 @@ def init_database(request):
     obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
     obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
-    data = obj_lce.df.head(11)
+    # PE KE LCE for this user study will have nothing
+    data = obj_lce.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
@@ -154,7 +155,7 @@ def init_database(request):
                    ground_truth=row['output'])
         obj.save()
 
-    data = obj_pe.df.head(11)
+    data = obj_pe.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
@@ -162,7 +163,7 @@ def init_database(request):
                    ground_truth=row['output'])
         obj.save()
 
-    data = obj_ke.df.head(11)
+    data = obj_ke.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue

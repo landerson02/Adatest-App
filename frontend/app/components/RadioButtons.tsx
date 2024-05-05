@@ -15,11 +15,11 @@ type RadioButtonProps = {
 function RadioButton({ text, isSelected }: RadioButtonProps) {
   return (
     isSelected ? (
-      <div className={'w-16 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
+      <div className={'w-48 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
         {text}
       </div>
     ) : (
-      <div className={'w-16 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
+      <div className={'w-48 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
         {text}
       </div>
     )
@@ -61,22 +61,22 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
   }
 
   return (
-    <div className={'flex justify-between items-center w-full'}>
-      <div className={'flex gap-2'}>
-        <div onClick={handleTopicChange('PE')}>
-          <RadioButton text={'PE'} isSelected={currentTopic === 'PE'}/>
-        </div>
-        <div onClick={handleTopicChange('KE')}>
-          <RadioButton text={'KE'} isSelected={currentTopic === 'KE'}/>
-        </div>
-        <div onClick={handleTopicChange('LCE')}>
-          <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>
-        </div>
+    <div className={'flex justify-between items-center w-full pl-2'}>
+      <div className={'flex gap-4'}>
+        {/*<div onClick={handleTopicChange('PE')}>*/}
+        {/*  <RadioButton text={'PE'} isSelected={currentTopic === 'PE'}/>*/}
+        {/*</div>*/}
+        {/*<div onClick={handleTopicChange('KE')}>*/}
+        {/*  <RadioButton text={'KE'} isSelected={currentTopic === 'KE'}/>*/}
+        {/*</div>*/}
+        {/*<div onClick={handleTopicChange('LCE')}>*/}
+        {/*  <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>*/}
+        {/*</div>*/}
         <div onClick={handleTopicChange('CU0')}>
-          <RadioButton text={'CU0'} isSelected={currentTopic === 'CU0'}/>
+          <RadioButton text={'Height/PE'} isSelected={currentTopic === 'CU0'}/>
         </div>
         <div onClick={handleTopicChange('CU5')}>
-          <RadioButton text={'CU5'} isSelected={currentTopic === 'CU5'}/>
+          <RadioButton text={'Mass/Energy'} isSelected={currentTopic === 'CU5'}/>
         </div>
       </div>
 
