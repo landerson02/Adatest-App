@@ -64,6 +64,7 @@ This installs and give permissions to everything for the app and Docker to run.
 ```
 cd Adatest/Adatest-App/scripts
 bash vm-setup.sh
+source ~/.bashrc
 ```
 In the same directory, stop run the application, run following command: 
 ```
