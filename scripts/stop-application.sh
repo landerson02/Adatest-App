@@ -1,6 +1,3 @@
-# Updates source environment vars
-source ~/.bashrc
-
 # Kill frontend
 npx kill-port 3000
 
