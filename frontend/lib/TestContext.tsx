@@ -56,14 +56,15 @@ type testDataContextType = {
 export const TestDataContext = createContext<testDataContextType>({
   testData: initTestData,
   setTestData: () => { },
-  currentTopic: 'PE',
+  // Default topic for now
+  currentTopic: 'CU0',
   setCurrentTopic: () => {
   },
 });
 
 export const TestDataProvider = ({ children }: any) => {
   const [testData, setTestData] = useState<testDataType>(initTestData);
-  const [currentTopic, setCurrentTopic] = useState<string>('PE');
+  const [currentTopic, setCurrentTopic] = useState<string>('CU0');
   return (
     <TestDataContext.Provider value={{ testData, setTestData, currentTopic, setCurrentTopic }}>
       {children}
