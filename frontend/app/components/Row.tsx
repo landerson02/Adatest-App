@@ -13,9 +13,11 @@ type rowProps = {
   test: testType,
   toggleCheck: (test: testType) => void,
   setIsCurrent: (isCurrent: boolean) => void,
+  isPertsFiltered: boolean,
+  isPerturbed: boolean,
 }
 
-const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
+const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: rowProps) => {
 
   // Get test data
   const { currentTopic } = useContext(TestDataContext);
@@ -81,7 +83,7 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
           </div>
 
           {/* Test Essay */}
-          <div className={"w-[55%] flex justify-around items-center"}>
+          <div className={isPerturbed ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
             <textarea className={`text-md font-light w-[80%] px-2 resize-none ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
               onChange={(e) => onEssayChange(e.target.value)} />
             <button className={`h-6 w-[15%] rounded-xl border 
@@ -139,30 +141,36 @@ const Row = ({ test, toggleCheck, setIsCurrent }: rowProps) => {
             }
           </div>
 
-          {/* Perturbation drop down button */}
-          <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
-            {isShowingPerts ? (
-              <IoIosArrowDropupCircle
-                className="w-6 h-6 text-blue-600 hover:cursor-pointer"
-                onClick={() => setIsShowingPerts(!isShowingPerts)}
-              />
-            ) : (
-              <IoIosArrowDropdownCircle
-                className={`w-6 h-6  ${pertList?.length == 0 ? 'hidden' : 'hover:cursor-pointer text-blue-600'}`}
-                onClick={() => {
-                  if (pertList?.length == 0) {
-                    return;
-                  }
-                  setIsShowingPerts(!isShowingPerts)
-                }}
-              />
-            )}
-          </div>
+          {/* Perturbation drop down button */
+          isPerturbed &&
+            <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
+              {isShowingPerts ? (
+                <IoIosArrowDropupCircle
+                  className="w-6 h-6 text-blue-600 hover:cursor-pointer"
+                  onClick={() => setIsShowingPerts(false)}
+                />
+              ) : (
+                <IoIosArrowDropdownCircle
+                  className={`w-6 h-6  ${pertList?.length == 0 ? 'hidden' : 'hover:cursor-pointer text-blue-600'}`}
+                  onClick={() => {
+                    if (pertList?.length == 0) {
+                      return;
+                    }
+                    setIsShowingPerts(true);
+                  }}
+                />
+              )}
+            </div>
+          }
         </div>
       </div>
-      {isShowingPerts && pertList && pertList.length !== 0 && pertList.map((pert: perturbedTestType, index: number) =>
-        <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
-      )}
+      {/* Show perts if the dropdown is open OR if the perturbations are filtered */}
+      {/* Auto show if filtered because theres only 1 */}
+      {(isPertsFiltered || isShowingPerts)
+        && pertList && pertList.length !== 0
+        && pertList.map((pert: perturbedTestType, index: number) =>
+          <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
+        )}
     </>
   )
 }

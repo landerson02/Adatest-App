@@ -18,9 +18,6 @@ if "MODEL" not in os.environ:
 
 MODEL_TYPE = os.getenv('MODEL')
 
-# if MODEL_TYPE == "mistral":
-    # from peft import PeftModel  # for fine-tuning
-
 def load_model(model_name):
     model = T5ForConditionalGeneration.from_pretrained(model_name)
     tokenizer = T5Tokenizer.from_pretrained(model_name)
@@ -88,22 +85,116 @@ class CustomEssayPipeline(Pipeline):
         return kwargs
 
 
-import checklist
-from checklist.editor import Editor
+from torch import nn
+from transformers import RobertaModel
+import torch.nn.functional as F
+from transformers import AutoTokenizer
+from huggingface_hub import hf_hub_download
+
+
+class Essay_Classifier(nn.Module):
+
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+
+        self.pretrained_model = RobertaModel.from_pretrained(config['model_name'], return_dict=True)
+
+        for param in self.pretrained_model.parameters():
+            param.requires_grad = False
+
+        if self.pretrained_model.pooler is not None:
+            self.pretrained_model.pooler.dense.weight.requires_grad = True
+            self.pretrained_model.pooler.dense.bias.requires_grad = True
+            nn.init.kaiming_uniform_(self.pretrained_model.pooler.dense.weight, nonlinearity='relu')
+            nn.init.zeros_(self.pretrained_model.pooler.dense.bias)
+
+        self.hidden = nn.Linear(self.pretrained_model.config.hidden_size, self.pretrained_model.config.hidden_size)
+        self.batch_norm = nn.BatchNorm1d(self.pretrained_model.config.hidden_size)
+        self.layer_norm = nn.LayerNorm(self.pretrained_model.config.hidden_size)
+        self.classifier = nn.Linear(self.pretrained_model.config.hidden_size, config['n_labels'])
+        nn.init.kaiming_uniform_(self.classifier.weight, nonlinearity='relu')  # xavier --> kaiming
+        self.dropout = nn.Dropout(p=config.get('dropout_rate', 0.1))
+
+    def forward(self, input_ids, attention_mask):
+        # RoBERTa layer
+        output = self.pretrained_model(input_ids=input_ids, attention_mask=attention_mask)
+        pooled_output = torch.mean(output.last_hidden_state, 1)
+        hidden_output = self.hidden(pooled_output)
+        hidden_output = self.layer_norm(hidden_output)
+        hidden_output = F.relu(hidden_output)
+
+        hidden_output = hidden_output + pooled_output
+
+        hidden_output = self.dropout(hidden_output)
+
+        logits = self.classifier(hidden_output)
+
+        return logits
+
+
+class CUPipeline:
+    def __init__(self, model_type):
+        if model_type == "CU0":
+            repo = "aanandan/BERT_AIBAT_CU0"
+            file = "sentenceLevel_CU0_BehavTest_Apr15.pth"
+        else:
+            repo = "aanandan/BERT_AIBAT_CU5"
+            file = "sentenceLevel_CU5_BehavTest_Apr15.pth"
+
+        model_path = hf_hub_download(repo_id=repo, filename=file)
+
+        # Update the configuration
+        self.config = {
+            'model_name': 'roberta-large',
+            'n_labels': 2,
+        }
+        self.classifier = Essay_Classifier(self.config)
+        if torch.cuda.is_available():
+            device = 'cuda'
+        else:
+            device = 'cpu'
+        self.classifier.load_state_dict(torch.load(model_path, map_location=torch.device(device)))
+        self.tokenizer = AutoTokenizer.from_pretrained('roberta-large')
+        self.mapper = {'acceptable': 1, "unacceptable": 0}
+
+    def __call__(self, sample):
+        self.classifier.eval()
+        tokens = self.tokenizer.encode_plus(sample,
+                                            add_special_tokens=True,
+                                            return_tensors='pt',
+                                            truncation=True,
+                                            padding='max_length',
+                                            max_length=512,
+                                            return_attention_mask=True)
+
+        input_ids = tokens.input_ids.flatten().unsqueeze(0)
+        attention_mask = tokens.attention_mask.flatten().unsqueeze(0)
+
+        with torch.no_grad():
+            logits = self.classifier(input_ids, attention_mask)
+
+            inverse_mapper = {v: k for k, v in self.mapper.items()}
+            preds = torch.argmax(logits, dim=1)
+
+            return [inverse_mapper[pred.item()] for pred in preds]
+
+
 from checklist.perturb import Perturb
+
 
 class MistralPipeline(Pipeline):
     def __init__(self, model, tokenizer, task="base"):
-      super().__init__(model=model, tokenizer=tokenizer, task=task)
+        super().__init__(model=model, tokenizer=tokenizer, task=task)
 
     def preprocess(self, prompt):
-      messages = [
-        {"role": "user", "content": prompt}
-      ]
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
 
-      encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
-      input_ids = encodeds.to("cuda")
-      return input_ids
+        encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
+        input_ids = encodeds.to("cuda")
+        return input_ids
 
     def _forward(self, model_inputs, do_sample, max_length):
         outputs = self.model.generate(
@@ -112,7 +203,7 @@ class MistralPipeline(Pipeline):
             do_sample=do_sample,
             pad_token_id=self.tokenizer.eos_token_id,
             num_return_sequences=1
-            )
+        )
         return outputs
 
     def postprocess(self, model_outputs):
@@ -127,11 +218,12 @@ class MistralPipeline(Pipeline):
 
         result = result.replace('\n', '')
         result = result.replace('  ', '')
-        generation = {'generated_text' : result}
+        generation = {'generated_text': result}
         return generation
 
-    ## NORA: changed max_len, maybe change max_length dependentg on the input essay...
-    def __call__(self, essay, do_sample=True, max_length=80, num_return_sequences=0, pad_token_id=None, stopping_criteria=0):
+    # NORA: changed max_len, maybe change max_length dependentg on the input essay...
+    def __call__(self, essay, do_sample=True, max_length=80, num_return_sequences=0, pad_token_id=None,
+                 stopping_criteria=0):
         if (self.task == "spelling"):
             for i in range(len(essay) // 20):
                 essay = Perturb.add_typos(essay)
@@ -172,12 +264,12 @@ class MistralPipeline(Pipeline):
         kwargs["model"] = self.model
         kwargs["tokenizer"] = self.tokenizer
         kwargs["task"] = self.task
-        valid_tasks = ["base","spelling","paraphrase","acronyms","synonyms","antonyms","negation","spanish"]
+        valid_tasks = ["base", "spelling", "paraphrase", "acronyms", "synonyms", "antonyms", "negation", "spanish"]
         if "task" in kwargs:
-          if kwargs["task"] not in valid_tasks:
-            raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
+            if kwargs["task"] not in valid_tasks:
+                raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
         else:
-          raise ValueError(f"Please provide capability")
+            raise ValueError(f"Please provide capability")
         return kwargs
 
 
@@ -211,7 +303,6 @@ class AdaClass():
         self.df.loc[self.df['Input'] == test]["Validity"] = "Approved"
 
 
-
 def create_obj(mistral=None, essayPipeline=None, type=None):
     csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
@@ -232,9 +323,3 @@ def create_obj(mistral=None, essayPipeline=None, type=None):
     obj = AdaClass(browser)
 
     return obj
-
-#obj = create_obj(type = "PE")
-#obj.generate()
-#print(obj.df.iloc)
-
- 

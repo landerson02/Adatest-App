@@ -34,12 +34,8 @@ pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
 ke_model, ke_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
-# TODO: Load the correct CU0 and CU5 models, might have to make new pipelines for these
-cu0_model, cu0_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
-cu0_pipeline = CustomEssayPipeline(model=cu0_model, tokenizer=cu0_tokenizer)
-
-cu5_model, cu5_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
-cu5_pipeline = CustomEssayPipeline(model=cu5_model, tokenizer=cu5_tokenizer)
+cu0_pipeline = CUPipeline("CU0")
+cu5_pipeline = CUPipeline("CU5")
 
 
 # HELPER FUNCTIONS
@@ -58,15 +54,19 @@ def check_lab(type, inp):
         pipeline = pe_pipeline
     elif type == "LCE":
         pipeline = lce_pipeline
-
-    else:
+    elif type == "KE":
         pipeline = ke_pipeline
+    elif type == "CU0":
+        pipeline = cu0_pipeline
+    elif type == "CU5":
+        pipeline = cu5_pipeline
+    else:
+        return "Unacceptable"
 
     lab = pipeline(inp)
 
     if lab[0] == 'unacceptable' or lab[0] == 'Unacceptable':
         return "Unacceptable"
-
     else:
         return "Acceptable"
 
@@ -133,7 +133,7 @@ obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="K
 obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
 obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
-df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df}
+df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df, "CU0": obj_cu0.df, "CU5": obj_cu5.df}
 
 
 # create default vals in db
@@ -146,7 +146,8 @@ def init_database(request):
     obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
     obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
 
-    data = obj_lce.df.head(11)
+    # PE KE LCE for this user study will have nothing
+    data = obj_lce.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
@@ -154,7 +155,7 @@ def init_database(request):
                    ground_truth=row['output'])
         obj.save()
 
-    data = obj_pe.df.head(11)
+    data = obj_pe.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
@@ -162,7 +163,7 @@ def init_database(request):
                    ground_truth=row['output'])
         obj.save()
 
-    data = obj_ke.df.head(11)
+    data = obj_ke.df.head(0)
     for index, row in data.iterrows():
         if row['input'] == '':
             continue
@@ -234,14 +235,14 @@ def test_generate(request, topic):
         data = obj_cu0.df
         for index, row in data.iterrows():
             if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=row['output'])
+                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=check_lab("CU0", row['input']))
                 test.save()
     elif topic == "CU5":
         obj_cu5.generate()
         data = obj_cu5.df
         for index, row in data.iterrows():
             if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=row['output'])
+                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=check_lab("CU5", row['input']))
                 test.save()
 
     testData = Test.objects.filter(topic__icontains=topic)
@@ -502,6 +503,17 @@ def generate_perturbations(request, topic):
 
             perturbed_label = check_lab(topic, perturbed_test)
 
+            if perturb_str == "negation" or perturb_str == "antonyms":
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Unacceptable"
+                else:
+                    perturbed_gt = "Acceptable"
+            else:
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Acceptable"
+                else:
+                    perturbed_gt = "Unacceptable"
+
             if testData.ground_truth == perturbed_label:
                 if perturb_str == "negation" or perturb_str == "antonyms":
                     perturbed_validity = "Denied"
@@ -516,7 +528,7 @@ def generate_perturbations(request, topic):
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity)
+                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity, ground_truth=perturbed_gt)
             perturbData.save()
 
     allPerturbs = Perturbation.objects.all()
@@ -545,8 +557,13 @@ def validate_perturbations(request, validation):
         perturbData = Perturbation.objects.get(id=id)
 
         if validation == "Approved":
+            perturbData.ground_truth = perturbData.label
             perturbData.validity = "Approved"
         elif validation == "Denied":
+            if perturbData.label == "Unacceptable":
+                perturbData.ground_truth = "Acceptable"
+            else:
+                perturbData.ground_truth = "Unacceptable"
             perturbData.validity = "Denied"
         else:
             perturbData.validity = "Invalid"

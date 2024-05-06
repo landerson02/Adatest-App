@@ -28,5 +28,6 @@ class Perturbation(models.Model):
     title = models.TextField()
     type = models.CharField(max_length=20, default="spelling")
     validity = models.CharField(max_length=50, default="Unapproved")
+    ground_truth = models.CharField(max_length=20, default="Unknown")
 
 

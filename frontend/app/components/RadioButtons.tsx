@@ -1,5 +1,5 @@
 'use client';
-import { logAction, resetDB } from "@/lib/Service";
+import {logAction, resetDB, saveLogs} from "@/lib/Service";
 import { useContext, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
@@ -15,11 +15,11 @@ type RadioButtonProps = {
 function RadioButton({ text, isSelected }: RadioButtonProps) {
   return (
     isSelected ? (
-      <div className={'w-16 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
+      <div className={'w-48 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
         {text}
       </div>
     ) : (
-      <div className={'w-16 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
+      <div className={'w-48 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
         {text}
       </div>
     )
@@ -53,30 +53,33 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
   async function resetTests() {
-    logAction(["null"], 'Resetting Tests');
-    setIsResetting(true);
-    await resetDB();
-    setIsResetting(false);
-    setIsCurrent(false);
+    await logAction(["null"], 'Resetting Tests');
+    if(confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
+      setIsResetting(true);
+      await saveLogs();
+      await resetDB();
+      setIsResetting(false);
+      setIsCurrent(false);
+    }
   }
 
   return (
-    <div className={'flex justify-between items-center w-full'}>
-      <div className={'flex gap-2'}>
-        <div onClick={handleTopicChange('PE')}>
-          <RadioButton text={'PE'} isSelected={currentTopic === 'PE'}/>
-        </div>
-        <div onClick={handleTopicChange('KE')}>
-          <RadioButton text={'KE'} isSelected={currentTopic === 'KE'}/>
-        </div>
-        <div onClick={handleTopicChange('LCE')}>
-          <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>
-        </div>
+    <div className={'flex justify-between items-center w-full pl-2'}>
+      <div className={'flex gap-4'}>
+        {/*<div onClick={handleTopicChange('PE')}>*/}
+        {/*  <RadioButton text={'PE'} isSelected={currentTopic === 'PE'}/>*/}
+        {/*</div>*/}
+        {/*<div onClick={handleTopicChange('KE')}>*/}
+        {/*  <RadioButton text={'KE'} isSelected={currentTopic === 'KE'}/>*/}
+        {/*</div>*/}
+        {/*<div onClick={handleTopicChange('LCE')}>*/}
+        {/*  <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>*/}
+        {/*</div>*/}
         <div onClick={handleTopicChange('CU0')}>
-          <RadioButton text={'CU0'} isSelected={currentTopic === 'CU0'}/>
+          <RadioButton text={'Height/PE'} isSelected={currentTopic === 'CU0'}/>
         </div>
         <div onClick={handleTopicChange('CU5')}>
-          <RadioButton text={'CU5'} isSelected={currentTopic === 'CU5'}/>
+          <RadioButton text={'Mass/Energy'} isSelected={currentTopic === 'CU5'}/>
         </div>
       </div>
 
@@ -87,7 +90,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
           </div>
         ) : (
           <button className={'flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
-            Reset Tests
+            End Session
           </button>
         )}
       </div>

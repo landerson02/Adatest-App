@@ -8,44 +8,27 @@ import { TestDataContext } from "@/lib/TestContext";
 import { logAction } from "@/lib/Service";
 
 type testListProps = {
-  setFilteredBy: (groupBy: string) => void,
-  filteredBy: string,
-  gradeFilter: string,
-  setGradeFilter: (gradeFilter: string) => void,
   toggleCheck: (test: testType) => void,
-  isCurrent: boolean,
   setIsCurrent: (isCurrent: boolean) => void,
   filterMap: { [key: string]: string },
   setFilterMap: (filterMap: { [key: string]: string }) => void,
+  isPerturbed: boolean,
 }
 
-const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurrent, gradeFilter, setGradeFilter, filterMap, setFilterMap }: testListProps) => {
+const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPerturbed }: testListProps) => {
 
   // Filtering states
   const [isSelectingGradeFilter, setIsSelectingGradeFilter] = useState<boolean>(false);
   const [isSelectingDecisionFilter, setIsSelectingDecisionFilter] = useState<boolean>(false);
   const [isSelectingPertFilter, setIsSelectingPertFilter] = useState<boolean>(false);
 
-  // const [gradeFilter, setGradeFilter] = useState<string>('');
+
 
   /**
-   * Handle change of new filtering
-   * @param newChoice new choice to filter by
+   * Handle the change of a filter
+   * @param newFiltering the new filter ((un)acceptable, (dis)agreed, pert type, etc.)
+   * @param filterType the type of filter (label, grade, pert)
    */
-  const handleSelectChange = (newChoice: string) => {
-    setFilteredBy(newChoice);
-    setIsSelectingGradeFilter(false);
-  }
-
-  /**
-   * Handle change of new decision filtering
-   * @param newChoice new choice to filter by
-   */
-  const handleDecisionSelectChange = (newChoice: string) => {
-    setGradeFilter(newChoice);
-    setIsSelectingDecisionFilter(false);
-  }
-
   const handleFilterChange = (newFiltering: string, filterType: string) => {
     let newMap = { ...filterMap };
     newMap[filterType] = newFiltering;
@@ -107,14 +90,14 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
           <div>
-            {filteredBy === '' ?
+            {filterMap['label'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} /> :
               <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} />
             }
             {isSelectingGradeFilter &&
               <div className="absolute z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
                 <ul className="text-gray-700">
-                  {filteredBy === '' ?
+                  {filterMap['label'] === '' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('', 'label')}>None
                     </li> :
@@ -122,7 +105,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                       onClick={() => handleFilterChange('', 'label')}>None
                     </li>
                   }
-                  {filteredBy === 'acceptable' ?
+                  {filterMap['label'] === 'acceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li> :
@@ -130,7 +113,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                       onClick={() => handleFilterChange('acceptable', 'label')}>Acceptable
                     </li>
                   }
-                  {filteredBy === 'unacceptable' ?
+                  {filterMap['label'] === 'unacceptable' ?
                     <li className="cursor-pointer py-1 px-3 bg-gray-100"
                       onClick={() => handleFilterChange('unacceptable', 'label')}>Unacceptable
                     </li> :
@@ -146,7 +129,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>Decision</div>
           <div>
-            {gradeFilter === '' ?
+            {filterMap['grade'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} /> :
               <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} />
             }
@@ -156,7 +139,7 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
                   {['', 'Agreed', 'Disagreed', 'Ungraded'].map((type) => {
                     return (
                       <li
-                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === gradeFilter.toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['grade'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
                         onClick={() => handleFilterChange(type, 'grade')}
                       >{type === '' ? 'None' : type}
                       </li>
@@ -167,42 +150,44 @@ const TestList = ({ setFilteredBy, filteredBy, toggleCheck, isCurrent, setIsCurr
             }
           </div>
         </div>
-        <div className={'w-[10%] flex justify-center items-center'}>
-          <div className={'text-center whitespace-nowrap font-light'}>Criteria</div>
+        {isPerturbed &&
+          <div className={'w-[10%] flex justify-center items-center'}>
+            <div className={'text-center whitespace-nowrap font-light'}>Criteria</div>
 
-          {filterMap['pert'] === '' ?
-            <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} /> :
-            <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} />
-          }
-          {isSelectingPertFilter &&
-            <div className="absolute top-10 z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
-              <ul className="text-gray-700">
-                {['', 'Spelling', 'Negation', 'Synonym', 'Paraphrase', 'Acronym', 'Antonym', 'Spanish'].map((type) => {
-                  return (
-                    <li
-                      className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['pert'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
-                      onClick={() => handleFilterChange(type, 'pert')}
-                    >{type === '' ? 'None' : type}</li>
-                  )
-                })}
-              </ul>
-            </div>
-          }
-        </div>
-        <div className={'w-[10%] text-center font-light'}>Criteria</div>
+            {filterMap['pert'] === '' ?
+              <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} /> :
+              <RiFilterFill className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingPertFilter(!isSelectingPertFilter)} />
+            }
+            {isSelectingPertFilter &&
+              <div className="absolute top-10 z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
+                <ul className="text-gray-700">
+                  {['', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'].map((type) => {
+                    return (
+                      <li
+                        className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['pert'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
+                        onClick={() => handleFilterChange(type, 'pert')}
+                      >{type === '' ? 'None' : type}</li>
+                    )
+                  })}
+                </ul>
+              </div>
+            }
+          </div>
+        }
       </div>
 
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent} />
+          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent}
+                      isPertsFiltered={filterMap['pert'] !== ''}  isPerturbed={isPerturbed}/>
         })
-      ) : (filteredBy !== '') ? (
+      ) : (filterMap['label'] !== '') ? (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
-          There are no '{filteredBy}' essays to show. <br />Either generate more essays or select a different filter.
+          There are no '{filterMap['label']}' essays to show. <br />Either generate more essays or select a different filter.
         </div>
       ) : (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
-          Please Select 'Generate More Essays' to Continue
+          Please Select 'Generate More Statements' to Continue
         </div>
       )}
     </div>

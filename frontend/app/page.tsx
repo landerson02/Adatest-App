@@ -17,10 +17,16 @@ export default function Home() {
 
   // Boolean for if the tests are being generated
   const [isGenerating, setIsGenerating] = useState(false);
+  // Boolean for if perturbations are being generated
+  const [isPerturbing, setIsPerturbing] = useState(false);
+    // Boolean for if tests have been perturbed
+  const [isPerturbed, setIsPerturbed] = useState<boolean>(false);
 
-  // Current topic filtered by: 'Acceptable', 'Unacceptable', '' - (default)
-  const [filteredBy, setFilteredBy] = useState<string>('');
-  const [gradeFilter, setGradeFilter] = useState<string>('');
+
+  // Map that contains all current filters ('' is no filter)
+  // 'label' -> (un)acceptable
+  // 'grade' -> (dis)agreed, ungraded
+  // 'pert' -> type of perturbation
   const [filterMap, setFilterMap] = useState<{ [key: string]: string }>({
     'label': '',
     'grade': '',
@@ -30,15 +36,23 @@ export default function Home() {
   // Boolean for if first checkbox is auto-selected
   const [isAutoCheck, setIsAutoSelect] = useState<boolean>(false);
 
-  // Boolean for if perturbations are being generated
-  const [isPerturbing, setIsPerturbing] = useState(false);
-
   // Load test decision context
   const {
     testData,
     setTestData,
     currentTopic,
   } = useContext(TestDataContext);
+
+  /**
+   * Use effect to toggle whether there have been any perturbations
+   */
+  useEffect(() => {
+      if(testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
+          setIsPerturbed(true);
+      } else {
+          setIsPerturbed(false);
+      }
+  }, [testData]);
 
   /**
    * Toggle if a test is checked
@@ -87,7 +101,6 @@ export default function Home() {
             }
           });
         }
-
         return data;
       }
 
@@ -136,7 +149,8 @@ export default function Home() {
       if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
 
       const newTestDecisions = testData.test_decisions;
-      const newPertDecisions = testData.pert_decisions
+      const newPertDecisions = testData.pert_decisions;
+
       for (const key1 in newTestDecisions) {
         for (const key2 in newTestDecisions[key1]) {
           newTestDecisions[key1][key2] = []; // Set the array to an empty array
@@ -169,11 +183,12 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
+      console.log(newPertDecisions)
       setTestData(newTestData);
       setIsCurrent(true);
     }
     fetchTests().catch();
-  }, [isCurrent, currentTopic, filteredBy, filterMap, gradeFilter, isAutoCheck, isPerturbing]);
+  }, [isCurrent, currentTopic, filterMap, isAutoCheck, isPerturbing]);
 
   /**
    * Update displayed tests when the topic changes
@@ -201,7 +216,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph />
+        <TaskGraph isPerturbed={isPerturbed}/>
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
@@ -214,15 +229,11 @@ export default function Home() {
           />
         </div>
         <TestList
-          setFilteredBy={setFilteredBy}
-          filteredBy={filteredBy}
           toggleCheck={toggleCheck}
-          isCurrent={isCurrent}
           setIsCurrent={setIsCurrent}
-          gradeFilter={gradeFilter}
-          setGradeFilter={setGradeFilter}
           filterMap={filterMap}
           setFilterMap={setFilterMap}
+          isPerturbed={isPerturbed}
         />
         <Buttons
           currentTopic={currentTopic}
