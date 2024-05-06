@@ -1,4 +1,4 @@
-source .env
+source ../backend/.env
 #Frontend: React - NVM/NPM
 cd ../frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
@@ -19,7 +19,7 @@ pip install django_rest_framework
 pip install django_nextjs
 pip install python-dotenv
 pip install peft
-pip install git+https://github.com/aayushb03/adatest_mod/@bca00d16a43bd5c75c2b54c0d80243e1aec7b7ea
+pip install git+https://github.com/nytseng/adatest_mod@split-fix
 pip install openai
 pip install checklist
 pip install SentencePiece
@@ -27,10 +27,8 @@ pip install bitsandbytes
 
 # Huggingface login token to use model
 pip install --upgrade huggingface_hub
-huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
+huggingface-cli login --token $LOGIN_TOKEN --add-to-git-credential
 
-# Updates source environment vars
-source ~/.bashrc
 # Updates project
 git pull
 
