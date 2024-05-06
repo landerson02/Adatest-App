@@ -50,7 +50,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
 
     // Arrays to store labels to be used in graphs
     const validityLabels = ['approved', 'denied'];
-    const topicLabels = ['PE', 'KE', 'LCE', 'CU0', 'CU5'];
+    const topicLabels = ['CU0', 'CU5'];
     const criteriaLabels = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const gradeLabels = ['Acceptable', 'Unacceptable'];
 
@@ -123,24 +123,18 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
         // Sets the data for the tests that are graded by topic
         if (topics) {
             const tData: ChartData<'bar', number []> = {
-                labels: topicLabels,
+                labels: ['Height/PE', 'Mass/Energy'],
                 datasets: [{
                     label: 'Matching Your Evaluation',
                     // keys: ['PE', 'KE', 'LCE', 'CU0', 'CU5']
                     data: [topics[validityLabels[0]][topicLabels[0]].length,
-                        topics[validityLabels[0]][topicLabels[1]].length,
-                        topics[validityLabels[0]][topicLabels[2]].length,
-                        topics[validityLabels[0]][topicLabels[3]].length,
-                        topics[validityLabels[0]][topicLabels[4]].length],
+                        topics[validityLabels[0]][topicLabels[1]].length],
                     backgroundColor: '#52C41A'
                     },
                 {
                     label: 'Not Matching Your Evaluation',
                     data: [topics[validityLabels[1]][topicLabels[0]].length,
-                        topics[validityLabels[1]][topicLabels[1]].length,
-                        topics[validityLabels[1]][topicLabels[2]].length,
-                        topics[validityLabels[1]][topicLabels[3]].length,
-                        topics[validityLabels[1]][topicLabels[4]].length],
+                        topics[validityLabels[1]][topicLabels[1]].length],
                     parsing: {
                         xAxisKey: 'key',
                         yAxisKey: 'value'
@@ -245,7 +239,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                 </div>
                 {isPerturbed && <Options onPerturbationChange={setSelectedPerturbation}/>}
             </div>
-            <div className={'w-full h-64'}>
+            <div className={'w-full h-44'}>
                 {topicData && <Bar data={topicData} options={createOptions('Tests by Topic')}> </Bar>}
             </div>
             <div className={'w-full h-44'}>
