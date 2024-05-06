@@ -150,6 +150,7 @@ export default function Home() {
 
       const newTestDecisions = testData.test_decisions;
       const newPertDecisions = testData.pert_decisions;
+
       for (const key1 in newTestDecisions) {
         for (const key2 in newTestDecisions[key1]) {
           newTestDecisions[key1][key2] = []; // Set the array to an empty array
