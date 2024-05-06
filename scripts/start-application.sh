@@ -1,6 +1,3 @@
-# Updates source environment vars
-source ~/.bashrc
-
 # Run frontend
 cd ../frontend || return
 npm run dev &
