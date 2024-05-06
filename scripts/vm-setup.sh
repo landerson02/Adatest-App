@@ -1,4 +1,4 @@
-source .env
+source ../backend/.env
 #Frontend: React - NVM/NPM
 cd ../frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
