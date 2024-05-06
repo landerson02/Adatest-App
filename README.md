@@ -19,7 +19,7 @@ OPENAI_API_KEY=your_openai_api_key # only needed if modelname=openai
 - run the following command to start the application: ``` docker-compose up ```
  - Stop the application with the following command: ``` docker-compose down ```
 
-### If not using Docker:
+### If not using Docker: 
 #### Backend:
 - in /backend, set up a conda environment and run the following commands to install packages:
 ```
@@ -27,15 +27,21 @@ pip install --upgrade pip
 pip install notebook==6.1.5
 pip install -r ${MODEL}_requirements.txt
 ```
-- run the following command to start the backend server
-  - ``` python manage.py runserver ```
+
 
 #### Frontend:
-- in /frontend, run the following commands:
+- in /frontend, run the following commands to install packages:
 ```
-npm i
-# npm i only needs to be run once
-npm run dev
+npm install
+```
+#### Running the application:
+- in /scripts, run the following command to run the application: 
+```
+bash start-application.sh
+```
+- in /scripts, run the following command to stop the application:
+```
+bash stop-application.sh
 ```
 Docker or not, the application will be available at http://localhost:8000
 
@@ -52,22 +58,25 @@ replace it with the 'address' in the code below.
 Then ssh into the vm with the command:
 ``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
 
-Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script
+## To Run Locally (Without Docker)
+Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script.
+This installs and give permissions to everything for the app and Docker to run. 
 ```
-cd Adatest/Adatest-App
+cd Adatest/Adatest-App/scripts
 bash vm-setup.sh
 ```
-## To Run Locally (Without Docker)
-This installs and give permissions to everything for the app and Docker to run. Run the application locally to use the gpu by running 
-go to backend folder: ``` python manage.py runserver ``` then go to frontend folder: ```npm run dev``` You can add a "&"
-at the end of the command to run it in the background, so you don't need to open another terminal. 
-
-However, you may open another terminal window to run the previous commands.  To ssh into the vm again to run the application:
-``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
-
+In the same directory, stop run the application, run following command: 
+```
+bash start-application.sh
+```
+To stop the application, run the following command:
+```
+bash stop-application.sh
+```
 ## To Run With Docker (currently not working)
 To run the application with docker, you will first need to run the shell script to set everything up for it
 ```
+cd Adatest/Adatest-App/scripts
 bash docker-gpu.sh
 ```
 
@@ -79,6 +88,18 @@ To start the application, run the following command:
 
 The application will be available at http://localhost:8000
 
+## Retrieving Log Files
+Once you end a session in the VM, it will save log files to the /Adatest/Adatest-App/backend folder.
+To retrieve these files, you will need to use the scp command. 
+
+In the same directory as the adatest.pem file, run the following command:
+```
+scp -i adatest.pem ubuntu@<address>:/home/ubuntu/Adatest/Adatest-App/backend/log.txt <destination in local>
+```
+You will need to replace the "address" with the address of the VM and "destination in local" with the location 
+you want to save the log file to on your local computer. This command saves the file "log.txt" to the location you specify, 
+but you will also need to save the files "perturbations.txt" and "tests.txt" in the same way. Just replace the "log.txt" 
+in the scp command with the file you want to save.
 # In Case vm_setup.sh fails
 The VM won't have any packages installed, use the following commands to download docker-compose:
 ```

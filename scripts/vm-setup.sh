@@ -1,6 +1,6 @@
 source .env
 #Frontend: React - NVM/NPM
-cd frontend || return
+cd ../frontend || return
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -25,10 +25,15 @@ pip install checklist
 pip install SentencePiece
 pip install bitsandbytes
 
+# Huggingface login token to use model
 pip install --upgrade huggingface_hub
 huggingface-cli login --token ${HUGGINGFACE_TOKEN} --add-to-git-credential
+
+# Updates source environment vars
 source ~/.bashrc
+# Updates project
 git pull
+
 
 
 

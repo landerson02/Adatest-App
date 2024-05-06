@@ -1,5 +1,5 @@
 'use client';
-import { logAction, resetDB } from "@/lib/Service";
+import {logAction, resetDB, saveLogs} from "@/lib/Service";
 import { useContext, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
@@ -53,11 +53,14 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
   async function resetTests() {
-    logAction(["null"], 'Resetting Tests');
-    setIsResetting(true);
-    await resetDB();
-    setIsResetting(false);
-    setIsCurrent(false);
+    await logAction(["null"], 'Resetting Tests');
+    if(confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
+      setIsResetting(true);
+      await saveLogs();
+      await resetDB();
+      setIsResetting(false);
+      setIsCurrent(false);
+    }
   }
 
   return (
@@ -87,7 +90,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
           </div>
         ) : (
           <button className={'flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
-            Reset Tests
+            End Session
           </button>
         )}
       </div>

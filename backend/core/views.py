@@ -502,6 +502,17 @@ def generate_perturbations(request, topic):
 
             perturbed_label = check_lab(topic, perturbed_test)
 
+            if perturb_str == "negation" or perturb_str == "antonyms":
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Unacceptable"
+                else:
+                    perturbed_gt = "Acceptable"
+            else:
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Acceptable"
+                else:
+                    perturbed_gt = "Unacceptable"
+
             if testData.ground_truth == perturbed_label:
                 if perturb_str == "negation" or perturb_str == "antonyms":
                     perturbed_validity = "Denied"
@@ -516,7 +527,7 @@ def generate_perturbations(request, topic):
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity)
+                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity, ground_truth=perturbed_gt)
             perturbData.save()
 
     allPerturbs = Perturbation.objects.all()
@@ -545,8 +556,13 @@ def validate_perturbations(request, validation):
         perturbData = Perturbation.objects.get(id=id)
 
         if validation == "Approved":
+            perturbData.ground_truth = perturbData.label
             perturbData.validity = "Approved"
         elif validation == "Denied":
+            if perturbData.label == "Unacceptable":
+                perturbData.ground_truth = "Acceptable"
+            else:
+                perturbData.ground_truth = "Unacceptable"
             perturbData.validity = "Denied"
         else:
             perturbData.validity = "Invalid"
