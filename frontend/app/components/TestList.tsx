@@ -86,7 +86,7 @@ const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPertur
           )}
           {/*Select All*/}
         </div>
-        <div className={'text-xl text-center w-[55%]'}>Statements</div>
+        <div className={`text-xl text-center ${isPerturbed ? "w-[55%]" : "w-[65%]"}`}>Statements</div>
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
           <div>
@@ -126,7 +126,7 @@ const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPertur
             }
           </div>
         </div>
-        <div className={'flex w-[17%] justify-center items-center pr-2'}>
+        <div className={'flex w-[13%] justify-center items-center pr-2'}>
           <div className={'text-xl whitespace-nowrap'}>Decision</div>
           <div>
             {filterMap['grade'] === '' ?
@@ -179,7 +179,7 @@ const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPertur
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
           return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent}
-                      isPertsFiltered={filterMap['pert'] !== ''}  isPerturbed={isPerturbed}/>
+            isPertsFiltered={filterMap['pert'] !== ''} isPerturbed={isPerturbed} />
         })
       ) : (filterMap['label'] !== '') ? (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
