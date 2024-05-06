@@ -376,7 +376,7 @@ def edit_perturbation(request, topic):
     print(parentTest)
 
     perturbTest.title = test["title"]
-    perturbTest.label = test["label"]
+    perturbTest.label = new_label
     perturbTest.validity = "Unapproved"
     perturbTest.save()
 
