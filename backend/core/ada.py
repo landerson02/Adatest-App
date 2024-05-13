@@ -1,14 +1,14 @@
-from dotenv import load_dotenv
 import os
 import re
 
 import pandas as pd
-from adatest import *
-
-from transformers import T5ForConditionalGeneration, T5Tokenizer, BitsAndBytesConfig, AutoModelForCausalLM
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from transformers import Pipeline
 import torch
+from adatest import *
+from dotenv import load_dotenv
+from transformers import (AutoModelForCausalLM,
+                          AutoModelForSequenceClassification, AutoTokenizer,
+                          BitsAndBytesConfig, Pipeline,
+                          T5ForConditionalGeneration, T5Tokenizer)
 
 load_dotenv()
 
@@ -85,11 +85,10 @@ class CustomEssayPipeline(Pipeline):
         return kwargs
 
 
-from torch import nn
-from transformers import RobertaModel
 import torch.nn.functional as F
-from transformers import AutoTokenizer
 from huggingface_hub import hf_hub_download
+from torch import nn
+from transformers import AutoTokenizer, RobertaModel
 
 
 class Essay_Classifier(nn.Module):
@@ -235,6 +234,8 @@ class MistralPipeline(Pipeline):
             essay = essay.replace("kinetic energy", "KE")
             essay = essay.replace("Law of conservation of energy", "LCE")
             essay = essay.replace("law of conservation of energy", "LCE")
+            essay = essay.replace("total energy", "TE")
+            essay = essay.replace("Total energy", "TE")
             return [{'generated_text': essay}]
 
         if (self.task == "base"):

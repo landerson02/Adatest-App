@@ -8,7 +8,6 @@ import { testType, testDataType, perturbedTestType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
 import Buttons from "@/app/components/Buttons";
-import Options from "@/app/components/Options";
 
 export default function Home() {
 
@@ -19,7 +18,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   // Boolean for if perturbations are being generated
   const [isPerturbing, setIsPerturbing] = useState(false);
-    // Boolean for if tests have been perturbed
+  // Boolean for if tests have been perturbed
   const [isPerturbed, setIsPerturbed] = useState<boolean>(false);
 
 
@@ -47,11 +46,11 @@ export default function Home() {
    * Use effect to toggle whether there have been any perturbations
    */
   useEffect(() => {
-      if(testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
-          setIsPerturbed(true);
-      } else {
-          setIsPerturbed(false);
-      }
+    if (testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
+      setIsPerturbed(true);
+    } else {
+      setIsPerturbed(false);
+    }
   }, [testData]);
 
   /**
@@ -121,6 +120,11 @@ export default function Home() {
           if (filterMap.pert !== '') {
             test.perturbedTests = test.perturbedTests.filter((pt: perturbedTestType) => pt.type.toLowerCase() === filterMap['pert'].toLowerCase());
           }
+
+          // Filter by label
+          if (filterMap.label !== '') {
+            test.perturbedTests = test.perturbedTests.filter((pt: perturbedTestType) => pt.label.toLowerCase() === filterMap['label'].toLowerCase());
+          }
         });
       }
 
@@ -128,9 +132,13 @@ export default function Home() {
       let curTests: testType[] = [...testArrays[currentTopic]];
 
       // Filter tests
+
+      // By label
       if (filterMap['label'] !== '') {
-        curTests = curTests.filter((test: testType) => test.label.toLowerCase() === filterMap['label']);
+        curTests = curTests.filter((test: testType) => test.perturbedTests.length != 0 || test.label.toLowerCase() === filterMap['label']);
       }
+
+      // By user decision
       if (filterMap['grade'] !== '') {
         let filtering: string = '';
         if (filterMap['grade'] === 'Agreed') {
@@ -183,7 +191,6 @@ export default function Home() {
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
       }
-      console.log(newPertDecisions)
       setTestData(newTestData);
       setIsCurrent(true);
     }
@@ -216,7 +223,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph isPerturbed={isPerturbed}/>
+        <TaskGraph isPerturbed={isPerturbed} />
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
