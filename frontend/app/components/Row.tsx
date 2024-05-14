@@ -84,7 +84,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
 
           {/* Test Essay */}
           <div className={isPerturbed ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
-            <textarea className={`text-md font-light w-[80%] px-2 resize-none ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
+            <textarea className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
               onChange={(e) => onEssayChange(e.target.value)} />
             <button className={`h-6 w-[15%] rounded-xl border 
             ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transition ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
@@ -142,7 +142,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
           </div>
 
           {/* Perturbation drop down button */
-          isPerturbed &&
+            isPerturbed &&
             <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
               {isShowingPerts ? (
                 <IoIosArrowDropupCircle
