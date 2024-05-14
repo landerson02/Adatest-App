@@ -8,3 +8,4 @@ DS_Store
 __pycache__
 backend/db.sqlite3
 backend/core/migrations/000[2-9]_*.py
+backend/*.csv
