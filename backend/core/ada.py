@@ -252,8 +252,10 @@ class MistralPipeline(Pipeline):
             prompt = f"Replace a word with an antonym in this sentence. Do not explain the answer: {essay}"
         elif (self.task == "negation"):
             prompt = f"Negate this sentence. Do not explain the answer: {essay}"
-        else:
+        elif (self.task == "spanish"):
             prompt = f"Translate a couple words to spanish in this sentence. Do not explain the answer: {essay}"
+        else:
+            prompt = essay
 
         inputs = self.preprocess(prompt)
         outputs = self._forward(inputs, do_sample, max_length)
@@ -265,7 +267,8 @@ class MistralPipeline(Pipeline):
         kwargs["model"] = self.model
         kwargs["tokenizer"] = self.tokenizer
         kwargs["task"] = self.task
-        valid_tasks = ["base", "spelling", "paraphrase", "acronyms", "synonyms", "antonyms", "negation", "spanish"]
+        valid_tasks = ["base", "spelling", "paraphrase", "acronyms", "synonyms", "antonyms", "negation", "spanish",
+                       "custom"]
         if "task" in kwargs:
             if kwargs["task"] not in valid_tasks:
                 raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
