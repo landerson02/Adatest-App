@@ -278,7 +278,7 @@ export async function validatePerturbations(tests: perturbedTestType[], validati
  * @param prompt AI Prompt
  * @param testDirection Direction of the test(INV, DIR)
  * @param topic Topic of the perturbation
- * @returns //TODO: ??????
+ * @returns List of perturbed tests
  */
 export async function addNewPerturbation(tests: testType[], type: string, prompt: string, testDirection: string, topic: string) {
   const url = `core/perturbations/add/${topic}`;
@@ -308,7 +308,7 @@ export async function addNewPerturbation(tests: testType[], type: string, prompt
  * @param statement Statement to test
  * @param direction Direction of the test(INV, DIR)
  * @param topic Topic of the perturbation
- * @returns //TODO: ??????
+ * @returns A perturbed test object
  */
 export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string, topic: string) {
   const url = `core/perturbations/test/${topic}`;

@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { ThreeDots } from "react-loading-icons";
+import { addNewPerturbation, testNewPerturbation } from '@/lib/Service';
+import { TestDataContext } from '@/lib/TestContext';
+import { perturbedTestType } from '@/lib/Types';
 
-type AddPertFormProps = {}
 
-const AddPertForm: React.FC<AddPertFormProps> = () => {
+const AddPertForm = () => {
+
+  const { currentTopic, testData, setTestData } = useContext(TestDataContext);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
@@ -24,15 +28,32 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
   // Calls the API to test the prompt on the statement
   const handleTestPerturbation = () => {
     // Check if all inputs are valid
-    if (isTestingPert || !testStatement || !aiPrompt) {
+    if (isTestingPert || !testStatement || !aiPrompt || !testDirection) {
       setIsFailedTest(true);
       return;
     }
     setIsFailedTest(false);
 
     setIsTestingPert(true);
-    // TODO: add logic
-    setIsTestingPert(false);
+
+    // Test the pert
+    async function testPert() {
+      // Get results
+      const testedPert: perturbedTestType = await testNewPerturbation(type, aiPrompt, testStatement, testDirection, currentTopic);
+
+      // Check if valid response
+      if (!testedPert) {
+        console.error('Failed to test perturbation');
+        setIsTestingPert(false);
+        return;
+      }
+
+      setTestResult(testedPert.title);
+
+      setIsTestingPert(false);
+    }
+
+    testPert();
   };
 
   // Creates a new perturbation type
@@ -46,9 +67,34 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
     setIsFailedSubmit(false);
     setIsSubmitting(true);
 
-    //TODO: add logic
+    // Generate and load new perts
+    async function submitPert() {
+      // Get new perts
+      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests, type, aiPrompt, testDirection, currentTopic);
 
-    setIsSubmitting(false);
+      // Check if valid response
+      if (!newPerts) {
+        console.error('Failed to generate new perturbations');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Update the context with the new perturbations
+      let newTestData = { ...testData };
+      newTestData.tests[currentTopic].forEach((test) => {
+        newPerts.forEach((pTest) => {
+          if (test.id === pTest.test_parent) {
+            test.perturbedTests.push(pTest);
+          }
+        });
+      });
+
+      setTestData(newTestData);
+
+      setIsSubmitting(false);
+    }
+
+    submitPert();
   }
 
   return (
@@ -61,6 +107,8 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
       <div className={"flex flex-col items-center justify-center p-2 h-full"}>
 
         <form className={"bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"} onSubmit={handleSubmit}>
+
+          {/* Type input */}
           <div className={"mb-4"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
               Type:
@@ -71,6 +119,8 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
               value={type} onChange={(e) => setType(e.target.value)}
             />
           </div>
+
+          {/* AI Prompt input */}
           <div className={"mb-4"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="prompt">
               AI Prompt:
@@ -82,6 +132,26 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
             />
           </div>
 
+          {/* Test direction radio buttons */}
+          <div className="mb-4">
+            <span className="text-gray-700">Test Direction:</span>
+            <div className="mt-2">
+              <label className="inline-flex items-center">
+                <input type="radio" className="form-radio" name="testDirection" value="INV"
+                  checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                />
+                <span className="ml-2">INV</span>
+              </label>
+              <label className="inline-flex items-center ml-6">
+                <input type="radio" className="form-radio" name="testDirection" value="DIR"
+                  checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
+                />
+                <span className="ml-2">DIR</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Testing prompt */}
           <div className={"mb-4"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
               Test Statement:
@@ -111,23 +181,7 @@ const AddPertForm: React.FC<AddPertFormProps> = () => {
           </div>
 
 
-          <div className="mb-4">
-            <span className="text-gray-700">Test Direction:</span>
-            <div className="mt-2">
-              <label className="inline-flex items-center">
-                <input type="radio" className="form-radio" name="testDirection" value="INV"
-                  checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
-                />
-                <span className="ml-2">INV</span>
-              </label>
-              <label className="inline-flex items-center ml-6">
-                <input type="radio" className="form-radio" name="testDirection" value="DIR"
-                  checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
-                />
-                <span className="ml-2">DIR</span>
-              </label>
-            </div>
-          </div>
+          {/* Submit button */}
           <div className="flex items-center justify-between">
             {isSubmitting ? (
               <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
