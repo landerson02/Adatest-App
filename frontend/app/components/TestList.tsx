@@ -161,7 +161,7 @@ const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPertur
             {isSelectingPertFilter &&
               <div className="absolute top-10 z-10 mt-2 w-32 bg-white border border-gray-200 rounded shadow-xl">
                 <ul className="text-gray-700">
-                  {['', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'].map((type) => {
+                  {['', 'Spelling', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'].map((type) => {
                     return (
                       <li
                         className={`cursor-pointer py-1 px-3 ${type.toLowerCase() === filterMap['pert'].toLowerCase() ? 'bg-gray-100' : 'hover:bg-gray-100'}`}

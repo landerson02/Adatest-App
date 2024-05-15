@@ -4,6 +4,8 @@ import { perturbedTestType, testType } from "@/lib/Types";
 import { useContext, useState, useEffect } from "react";
 import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest, validatePerturbations } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
+import AddPertForm from "@/app/components/AddPertForm";
+import Popup from "@/app/components/Popup";
 
 
 type ButtonsProps = {
@@ -22,6 +24,10 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
   // If currently adding a test
   const [isAddingTest, setIsAddingTest] = useState(false);
+
+  // Creating perturbations
+  const [isCreatingPert, setIsCreatingPert] = useState(false);
+  const [isCreatePertModalOpen, setIsCreatePertModalOpen] = useState(false);
 
   // Text of the test to be added
   const [addTestText, setAddTestText] = useState("");
@@ -109,13 +115,13 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
           {/* Generate */}
           {isGenerating ? (
             <div
-              className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+              className="flex h-8 w-52 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
             >
               <ThreeDots className="h-3 w-8" />
             </div>
           ) : (
             <button
-              className="flex h-8 w-48 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
+              className="flex h-8 w-52 cursor-pointer items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-blue-900"
               onClick={generateHandler}
             >
               Generate More Statements
@@ -126,18 +132,42 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
         {/* Perturb */}
         {isPerturbing ? (
           <div
-            className="flex h-8 w-48 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+            className="flex h-8 w-52 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
           >
             <ThreeDots className="h-3 w-8" />
           </div>
         ) : (
           <button
-            className={`flex h-8 w-48 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
+            className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
             onClick={isAnyDecided ? perturbHandler : () => { }}
           >
             Analyze AI Behavior
           </button>
         )}
+
+        {/* Create New Perturbation */}
+        {isCreatingPert ? (
+          <div
+            className="flex h-8 w-52 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
+          >
+            <ThreeDots className="h-3 w-8" />
+          </div>
+        ) : (
+          <button
+            className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
+            onClick={() => setIsCreatePertModalOpen(true)}
+          >
+            Create Perturbation
+          </button>
+        )}
+
+        {isCreatePertModalOpen &&
+          <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
+            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent}/>
+          </Popup>
+        }
+
+
       </div>
 
       {/* Add Test */}

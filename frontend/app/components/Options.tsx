@@ -3,9 +3,10 @@ import {logAction} from "@/lib/Service";
 
 type optionsProps = {
     onPerturbationChange: (perturbation: string) => void; // New prop
+    criteriaLabels: string[]; // New prop
 }
 
-const Options = ({onPerturbationChange} : optionsProps) => {
+const Options = ({onPerturbationChange, criteriaLabels} : optionsProps) => {
   const [selectedPerturbation, setSelectedPerturbation] = useState<string>(''); // New state
 
   const handlePerturbationChange = (newChoice: string) => { // New handler
@@ -24,14 +25,9 @@ const Options = ({onPerturbationChange} : optionsProps) => {
             onChange={(e) => handlePerturbationChange(e.target.value)}
             className={'align-right mr-10 justify-end border border-gray-300 p-1 text-black rounded-lg'}
         >
-            <option value={'base'}>Base</option>
-            <option value={'spelling'}>Spelling</option>
-            <option value={'negation'}>Negation</option>
-            <option value={'synonyms'}>Synonyms</option>
-            <option value={'paraphrase'}>Paraphrase</option>
-            <option value={'acronyms'}>Acronyms</option>
-            <option value={'antonyms'}>Antonyms</option>
-            <option value={'spanish'}>Spanish</option>
+            {criteriaLabels.map((label, index) => (
+                <option key={index} value={label.toLowerCase()}> {label} </option>
+            ))}
         </select>
     </div>
   )

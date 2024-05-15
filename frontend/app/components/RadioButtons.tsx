@@ -1,5 +1,5 @@
 'use client';
-import {logAction, resetDB, saveLogs} from "@/lib/Service";
+import { logAction, resetDB, saveLogs } from "@/lib/Service";
 import { useContext, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
@@ -15,11 +15,11 @@ type RadioButtonProps = {
 function RadioButton({ text, isSelected }: RadioButtonProps) {
   return (
     isSelected ? (
-      <div className={'w-48 h-12 border border-black rounded-md flex justify-center items-center bg-blue-400 text-3xl shadow-2xl scale-105'}>
+      <div className={'w-36 h-8 border border-black rounded-md flex justify-center items-center bg-blue-400 text-xl shadow-2xl scale-105'}>
         {text}
       </div>
     ) : (
-      <div className={'w-48 h-12 border border-black rounded-md text-3xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
+      <div className={'w-36 h-8 border border-black rounded-md text-xl flex justify-center items-center bg-blue-100 hover:bg-blue-400 shadow-2xl cursor-pointer transition hover:scale-105'}>
         {text}
       </div>
     )
@@ -54,7 +54,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
 
   async function resetTests() {
     await logAction(["null"], 'Resetting Tests');
-    if(confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
+    if (confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
       setIsResetting(true);
       await saveLogs();
       await resetDB();
@@ -76,10 +76,10 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck, setIsCurrent }: RadioButton
         {/*  <RadioButton text={'LCE'} isSelected={currentTopic === 'LCE'}/>*/}
         {/*</div>*/}
         <div onClick={handleTopicChange('CU0')}>
-          <RadioButton text={'Height/PE'} isSelected={currentTopic === 'CU0'}/>
+          <RadioButton text={'Height/PE'} isSelected={currentTopic === 'CU0'} />
         </div>
         <div onClick={handleTopicChange('CU5')}>
-          <RadioButton text={'Mass/Energy'} isSelected={currentTopic === 'CU5'}/>
+          <RadioButton text={'Mass/Energy'} isSelected={currentTopic === 'CU5'} />
         </div>
       </div>
 

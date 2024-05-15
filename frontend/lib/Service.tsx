@@ -132,15 +132,15 @@ export async function logAction(test_ids: string[], action: string) {
 }
 
 export async function saveLogs() {
-    const url = `core/logs/save`;
-    try {
-        await fetch(url, {
-        method: 'POST',
-        cache: "no-store",
-        });
-    } catch (error) {
-        console.error(error);
-    }
+  const url = `core/logs/save`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 
@@ -266,6 +266,66 @@ export async function validatePerturbations(tests: perturbedTestType[], validati
       },
       body: JSON.stringify(tests),
     });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Creates a new perturbation type
+ * @param tests List of tests to be perturbed
+ * @param type Type of perturbation (e.g. synonyms, spelling, etc.)
+ * @param prompt AI Prompt
+ * @param testDirection Direction of the test(INV, DIR)
+ * @param topic Topic of the perturbation
+ * @returns List of perturbed tests
+ */
+export async function addNewPerturbation(tests: testType[], type: string, prompt: string, testDirection: string, topic: string) {
+  const url = `core/perturbations/add/${topic}`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        test_list: tests,
+        prompt: prompt,
+        flip_label: testDirection === 'DIR',
+        pert_name: type,
+      }),
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Tests the new perturbation type
+ * @param type Type of perturbation (e.g. synonyms, spelling, etc.)
+ * @param prompt AI Prompt
+ * @param statement Statement to test
+ * @param direction Direction of the test(INV, DIR)
+ * @param topic Topic of the perturbation
+ * @returns A perturbed test object
+ */
+export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string, topic: string) {
+  const url = `core/perturbations/test/${topic}`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        test_case: statement,
+        prompt: prompt,
+        flip_label: direction === 'DIR',
+        pert_name: type,
+      }),
+    });
+    return await res.json();
   } catch (error) {
     console.error(error);
   }

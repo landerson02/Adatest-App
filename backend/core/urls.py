@@ -27,6 +27,8 @@ urlpatterns = [
     path('core/perturbations/get', views.get_perturbations),
     path('core/perturbations/validate/<str:validation>', views.validate_perturbations),
     path('core/perturbations/edit/<str:topic>', views.edit_perturbation),
+    path('core/perturbations/add/<str:topic>', views.add_new_pert),
+    path('core/perturbations/test/<str:topic>', views.test_new_pert),
 ]
 
 
