@@ -108,6 +108,7 @@ export default function Home() {
 
       // Get all perturbed tests
       let perturbedTests: perturbedTestType[] = await getPerturbations();
+      console.log(perturbedTests)
       // Filter out invalid perturbations
       perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.validity != 'Invalid');
       // Assign perturbed tests to their parent tests

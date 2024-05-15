@@ -129,6 +129,10 @@ pipeline_map = {
     "spanish": spanish_pipeline
 }
 
+custom_pipeline_map = {
+    # will fill up with custom perturbations
+}
+
 obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
 obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
 obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
@@ -463,6 +467,9 @@ def test_clear(request):
     for perturbation in perturbations:
         perturbation.delete()
 
+    global custom_pipeline_map
+    custom_pipeline_map = {}
+
     return Response("All tests cleared!")
 
 
@@ -537,6 +544,49 @@ def generate_perturbations(request, topic):
                                        title=perturbed_test, type=perturb_str, validity=perturbed_validity, ground_truth=perturbed_gt)
             perturbData.save()
 
+        for perturb_str, pipeline in custom_pipeline_map.items():
+            if pertList.filter(type=perturb_str).exists():
+                continue
+
+            if custom_pipeline is not None:
+                perturbed_test = custom_pipeline(f'{pipeline["prompt"]}: {testData.title}')
+                print(perturb_str)
+                print(perturbed_test)
+                perturbed_test = perturbed_test[0]['generated_text']
+            else:
+                perturbed_test = testData.title
+
+            perturbed_label = check_lab(topic, perturbed_test)
+
+            if pipeline["flip_label"]:
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Unacceptable"
+                else:
+                    perturbed_gt = "Acceptable"
+            else:
+                if testData.ground_truth == "Acceptable":
+                    perturbed_gt = "Acceptable"
+                else:
+                    perturbed_gt = "Unacceptable"
+
+            if testData.ground_truth == perturbed_label:
+                if pipeline["flip_label"]:
+                    perturbed_validity = "Denied"
+                else:
+                    perturbed_validity = "Approved"
+            else:
+                if pipeline["flip_label"]:
+                    perturbed_validity = "Approved"
+                else:
+                    perturbed_validity = "Denied"
+
+            perturbed_id = generate_random_id()
+
+            perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
+                                    title=perturbed_test, type=perturb_str, validity=perturbed_validity, ground_truth=perturbed_gt)
+            perturbData.save()
+
+
     allPerturbs = Perturbation.objects.all()
     serializer = PerturbationSerializer(allPerturbs, context={'request': request}, many=True)
     return Response(serializer.data)
@@ -591,7 +641,12 @@ def add_new_pert(request, topic):
     flip_label = data['flip_label']
     pert_name = data['pert_name']
 
-    global custom_pipeline
+    global custom_pipeline, custom_pipeline_map
+
+    if pert_name in custom_pipeline_map.keys() or pert_name in pipeline_map.keys():
+        return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
+
+    custom_pipeline_map[pert_name] = {"prompt": prompt, "flip_label": flip_label}
 
     for test in test_list:
         id = test["id"]

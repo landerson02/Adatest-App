@@ -6,9 +6,10 @@ import { perturbedTestType } from '@/lib/Types';
 
 type AddPertFormProps = {
   closeModal: () => void,
+  setIsCurrent: (isCurrent: boolean) => void,
 }
 
-const AddPertForm = ({closeModal} : AddPertFormProps) => {
+const AddPertForm = ({closeModal, setIsCurrent} : AddPertFormProps) => {
 
   const { currentTopic, testData, setTestData } = useContext(TestDataContext);
 
@@ -65,7 +66,7 @@ const AddPertForm = ({closeModal} : AddPertFormProps) => {
     // Generate and load new perts
     async function submitPert() {
       // Get new perts
-      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests, type, aiPrompt, testDirection, currentTopic);
+      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "Approved" || test.validity == "Denied"), type, aiPrompt, testDirection, currentTopic);
 
       // Check if valid response
       if (!newPerts) {
@@ -75,16 +76,7 @@ const AddPertForm = ({closeModal} : AddPertFormProps) => {
       }
 
       // Update the context with the new perturbations
-      let newTestData = { ...testData };
-      newTestData.tests[currentTopic].forEach((test) => {
-        newPerts.forEach((pTest) => {
-          if (test.id === pTest.test_parent) {
-            test.perturbedTests.push(pTest);
-          }
-        });
-      });
-
-      setTestData(newTestData);
+      setIsCurrent(false);
       setIsSubmitting(false);
       closeModal();
     }
