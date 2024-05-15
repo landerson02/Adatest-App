@@ -27,8 +27,9 @@ ChartJS.register(BarElement,
 
 type taskGraphProps = {
     isPerturbed: boolean,
+    criteriaLabels: string[],
 }
-const TaskGraph = ({isPerturbed}: taskGraphProps) => {
+const TaskGraph = ({isPerturbed, criteriaLabels}: taskGraphProps) => {
     const {testData} = useContext(TestDataContext);
 
     // Currently selected Perturbation from the filter used in the last graph
@@ -51,7 +52,6 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
     // Arrays to store labels to be used in graphs
     const validityLabels = ['approved', 'denied'];
     const topicLabels = ['CU0', 'CU5'];
-    const criteriaLabels = ['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish'];
     const gradeLabels = ['Acceptable', 'Unacceptable'];
 
     // Use effect that updates topic data when testData.tests are updated -> sets data for topic
@@ -100,6 +100,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
             let temp: graphDataType = {};
             validityLabels.forEach(validity => { // in this array, array[0] = approved, array[1] = denied
                 temp[validity] = {};
+                console.log("At Fetch Criteria: " + criteriaLabels);
                 criteriaLabels.forEach(criteria => { // in this array, array[0][0] = approved and Base, and so on for that list
                     if(criteria === criteriaLabels[0]) {
                        temp[validity][criteria] = tests.filter((test: testType) => test.validity.toLowerCase() === validity.toLowerCase());
@@ -116,7 +117,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
         fetchCriteria();
         fetchGrade();
         setIsLoading(false);
-    }, [testData, selectedPerturbation]);
+    }, [testData, selectedPerturbation, criteriaLabels]);
 
     // useEffect that updates pertData when testData.tests are updated -> sets data for perturbation graph
     useEffect(() => {
@@ -126,7 +127,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                 labels: ['Height/PE', 'Mass/Energy'],
                 datasets: [{
                     label: 'Matching Your Evaluation',
-                    // keys: ['PE', 'KE', 'LCE', 'CU0', 'CU5']
+                    // keys: ['CU0', 'CU5']
                     data: [topics[validityLabels[0]][topicLabels[0]].length,
                         topics[validityLabels[0]][topicLabels[1]].length],
                     backgroundColor: '#52C41A'
@@ -145,30 +146,24 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
             setTopicData(tData);
         }
         if (criteria) {
+            let matchList = [];
+            let unmatchList = [];
+            console.log("At setting data: " + criteriaLabels);
+            console.log(criteria);
+            for(let i = 0; i < criteriaLabels.length; i++) {
+                matchList.push(criteria[validityLabels[0]][criteriaLabels[i]].length);
+                unmatchList.push(criteria[validityLabels[1]][criteriaLabels[i]].length);
+            }
             const cData: ChartData<'bar', number []> = {
                 labels: criteriaLabels,
                 datasets: [{
                     label: 'Matching Your Evaluation',
-                    data: [criteria[validityLabels[0]][criteriaLabels[0]].length,
-                        criteria[validityLabels[0]][criteriaLabels[1]].length,
-                        criteria[validityLabels[0]][criteriaLabels[2]].length,
-                        criteria[validityLabels[0]][criteriaLabels[3]].length,
-                        criteria[validityLabels[0]][criteriaLabels[4]].length,
-                        criteria[validityLabels[0]][criteriaLabels[5]].length,
-                        criteria[validityLabels[0]][criteriaLabels[6]].length,
-                        criteria[validityLabels[0]][criteriaLabels[7]].length],
+                    data: matchList,
                     backgroundColor: '#52C41A'
                 },
                 {
                     label: 'Not Matching Your Evaluation',
-                    data: [criteria[validityLabels[1]][criteriaLabels[0]].length,
-                        criteria[validityLabels[1]][criteriaLabels[1]].length,
-                        criteria[validityLabels[1]][criteriaLabels[2]].length,
-                        criteria[validityLabels[1]][criteriaLabels[3]].length,
-                        criteria[validityLabels[1]][criteriaLabels[4]].length,
-                        criteria[validityLabels[1]][criteriaLabels[5]].length,
-                        criteria[validityLabels[1]][criteriaLabels[6]].length,
-                        criteria[validityLabels[1]][criteriaLabels[7]].length],
+                    data: unmatchList,
                     backgroundColor: '#FF4D4F'
                 }]
             };
@@ -193,7 +188,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
             };
             setGradeData(gData);
         }
-    }, [topics, grades, criteria]);
+    }, [topics, grades, criteria, criteriaLabels]);
 
     const createOptions = (title: string) => ({
         indexAxis: "y",
@@ -237,7 +232,7 @@ const TaskGraph = ({isPerturbed}: taskGraphProps) => {
                     <p> Graded Essays in Total </p>
                     <p className={'text-4xl font-serif'}> {totalTests} </p>
                 </div>
-                {isPerturbed && <Options onPerturbationChange={setSelectedPerturbation}/>}
+                {isPerturbed && <Options onPerturbationChange={setSelectedPerturbation} criteriaLabels={criteriaLabels}/>}
             </div>
             <div className={'w-full h-44'}>
                 {topicData && <Bar data={topicData} options={createOptions('Tests by Topic')}> </Bar>}

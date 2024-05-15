@@ -13,7 +13,8 @@ export default function Home() {
 
   // Whether tests are most recent
   const [isCurrent, setIsCurrent] = useState<boolean>(false);
-
+  const [criteriaLabels, setCriteriaLabels] = useState<string[]>(['Base', 'Spelling',
+    'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish']);
   // Boolean for if the tests are being generated
   const [isGenerating, setIsGenerating] = useState(false);
   // Boolean for if perturbations are being generated
@@ -42,6 +43,19 @@ export default function Home() {
     currentTopic,
   } = useContext(TestDataContext);
 
+  useEffect(() => {
+    async function fetchCriteriaLabels() {
+      let perts = await getPerturbations();
+      let labels: string[] = [];
+      perts.forEach((pert: perturbedTestType) => {
+          if (!labels.includes(pert.type)) {
+          labels.push(pert.type);
+          }
+      });
+      setCriteriaLabels(labels);
+    }
+    fetchCriteriaLabels()
+  }, [isCurrent, isPerturbed]);
   /**
    * Use effect to toggle whether there have been any perturbations
    */
@@ -224,7 +238,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph isPerturbed={isPerturbed} />
+        <TaskGraph isPerturbed={isPerturbed} criteriaLabels={criteriaLabels}/>
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
