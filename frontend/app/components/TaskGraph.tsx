@@ -188,7 +188,7 @@ const TaskGraph = ({isPerturbed, criteriaLabels}: taskGraphProps) => {
             };
             setGradeData(gData);
         }
-    }, [topics, grades, criteria, criteriaLabels]);
+    }, [topics, grades, criteria]);
 
     const createOptions = (title: string) => ({
         indexAxis: "y",

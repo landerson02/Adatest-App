@@ -48,13 +48,14 @@ export default function Home() {
       let perts = await getPerturbations();
       let labels: string[] = [];
       perts.forEach((pert: perturbedTestType) => {
-          if (!labels.includes(pert.type)) {
-          labels.push(pert.type);
+          let label = pert.type[0].toUpperCase() + pert.type.slice(1).toLowerCase();
+          if (!labels.includes(label)) {
+          labels.push(label);
           }
       });
       setCriteriaLabels(labels);
     }
-    fetchCriteriaLabels()
+    fetchCriteriaLabels();
   }, [isCurrent, isPerturbed]);
   /**
    * Use effect to toggle whether there have been any perturbations
