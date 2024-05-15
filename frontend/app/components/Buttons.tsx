@@ -163,8 +163,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
         {isCreatePertModalOpen &&
           <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
-            <AddPertForm />
-
+            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)}/>
           </Popup>
         }
 

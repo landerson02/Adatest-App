@@ -647,52 +647,18 @@ def test_new_pert(request, topic):
 
     test_case = data['test_case']
     prompt = data['prompt']
-    flip_label = data['flip_label']
     pert_name = data['pert_name']
 
     global custom_pipeline
 
-    id = test_case["id"]
-    testData = Test.objects.get(id=id)
-
     if custom_pipeline is not None:
-        perturbed_test = custom_pipeline(f'{prompt}: {testData.title}')
+        perturbed_test = custom_pipeline(f'{prompt}: {test_case}')
         print(perturbed_test)
         perturbed_test = perturbed_test[0]['generated_text']
     else:
-        perturbed_test = testData.title
+        perturbed_test = test_case
 
-    perturbed_label = check_lab(topic, perturbed_test)
-
-    if flip_label:
-        if testData.ground_truth == "Acceptable":
-            perturbed_gt = "Unacceptable"
-        else:
-            perturbed_gt = "Acceptable"
-    else:
-        if testData.ground_truth == "Acceptable":
-            perturbed_gt = "Acceptable"
-        else:
-            perturbed_gt = "Unacceptable"
-
-    if testData.ground_truth == perturbed_label:
-        if flip_label:
-            perturbed_validity = "Denied"
-        else:
-            perturbed_validity = "Approved"
-    else:
-        if flip_label:
-            perturbed_validity = "Approved"
-        else:
-            perturbed_validity = "Denied"
-
-    perturbed_id = generate_random_id()
-
-    perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                               title=perturbed_test, type=pert_name, validity=perturbed_validity,
-                               ground_truth=perturbed_gt)
-
-    return Response(perturbData)
+    return Response(perturbed_test)
 
 class ReactView(APIView):
     serializer_class = ReactSerializer

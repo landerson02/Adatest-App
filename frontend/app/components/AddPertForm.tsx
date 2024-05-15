@@ -4,8 +4,11 @@ import { addNewPerturbation, testNewPerturbation } from '@/lib/Service';
 import { TestDataContext } from '@/lib/TestContext';
 import { perturbedTestType } from '@/lib/Types';
 
+type AddPertFormProps = {
+  closeModal: () => void,
+}
 
-const AddPertForm = () => {
+const AddPertForm = ({closeModal} : AddPertFormProps) => {
 
   const { currentTopic, testData, setTestData } = useContext(TestDataContext);
 
@@ -36,24 +39,16 @@ const AddPertForm = () => {
 
     setIsTestingPert(true);
 
-    // Test the pert
-    async function testPert() {
-      // Get results
-      const testedPert: perturbedTestType = await testNewPerturbation(type, aiPrompt, testStatement, testDirection, currentTopic);
-
-      // Check if valid response
-      if (!testedPert) {
+    // Test the perturbation
+    testNewPerturbation(type, aiPrompt, testStatement, testDirection, currentTopic).then((testedPert) => {
+      if (testedPert) {
+        setTestResult(testedPert.toString());
+        setIsTestingPert(false);
+      } else {
         console.error('Failed to test perturbation');
         setIsTestingPert(false);
-        return;
       }
-
-      setTestResult(testedPert.title);
-
-      setIsTestingPert(false);
-    }
-
-    testPert();
+    });
   };
 
   // Creates a new perturbation type
@@ -90,8 +85,8 @@ const AddPertForm = () => {
       });
 
       setTestData(newTestData);
-
       setIsSubmitting(false);
+      closeModal();
     }
 
     submitPert();
@@ -175,9 +170,11 @@ const AddPertForm = () => {
               )}
               {isFailedTest && <div className={'text-sm text-red-600 font-light ps-4'}>Please input a valid AI prompt and test statement</div>}
             </div>
-            <textarea
-              className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"}
-              id="testResult" value={testResult} readOnly placeholder={'Test output...'} />
+            <div
+              className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
+              id="testResult">
+                {testResult}
+            </div>
           </div>
 
 
