@@ -493,8 +493,12 @@ def generate_perturbations(request, topic):
     for obj in data:
         id = obj["id"]
         testData = Test.objects.get(id=id)
+        pertList = Perturbation.objects.filter(test_parent=testData)
 
         for perturb_str, pipeline in pipeline_map.items():
+            if pertList.filter(type=perturb_str).exists():
+                continue
+
             if pipeline is not None:
                 perturbed_test = pipeline(testData.title)
                 print(perturb_str)
