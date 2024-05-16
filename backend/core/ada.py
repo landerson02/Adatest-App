@@ -38,7 +38,7 @@ class CustomEssayPipeline(Pipeline):
 
     def preprocess(self, essay):
         prompt = f"According to the following essay, classify the student's definition of LCE as {{option_1: Acceptable}}, {{option_2: Unacceptable}}\n{essay}"
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=300)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=200)
         return inputs
 
     def _forward(self, inputs, **kwargs):
@@ -205,22 +205,33 @@ class MistralPipeline(Pipeline):
         )
         return outputs
 
-    def postprocess(self, model_outputs):
+    def postprocess(self, model_outputs, task=None):
         decoded = self.tokenizer.decode(model_outputs[0])
         result = re.sub(r'\[INST\].*?\[/INST\]', '', decoded)
         result = re.sub(r'<INST>.*?</INST>', '', result)
-        # result = re.sub(r'<s>', '', result)
-        # result = re.sub(r'</s>', '', result)
         result = result.replace('<s>', '')
         result = result.replace('</s>', '')
+        result = result.replace('Do not add comments: ', '')
         result = re.sub(r'\([^)]*\)', '', result)
+        result = re.sub(r'\[.+?\]', '', result)
+        #####
+        result = result.replace('  ', '').strip()
+        if task != None: # only do for spanish task. this is for rmving unwanted explanation
+            result = re.sub(r'\(.*', '', result).strip() 
+            result = re.sub(r'\[.*', '', result).strip()
+            result = re.sub(r'\n.*', '', result).strip() # delete anything after a linebreak, usually an unwanted explanation
+            if len(result) > 150:
+                result, unwanted = result.split('.', 1)
+                print("Splitting a long output:")
+                print("long output split[0] = " + result)
+                print("long output split[1] = " + unwanted)
+        result = result.replace(' .', '.').strip()
+        result = result if result.endswith('.') else result+'.'
+        #####
 
-        result = result.replace('\n', '')
-        result = result.replace('  ', '')
         generation = {'generated_text': result}
         return generation
 
-    # NORA: changed max_len, maybe change max_length dependentg on the input essay...
     def __call__(self, essay, do_sample=True, max_length=80, num_return_sequences=0, pad_token_id=None,
                  stopping_criteria=0):
         if (self.task == "spelling"):
@@ -239,7 +250,10 @@ class MistralPipeline(Pipeline):
             return [{'generated_text': essay}]
 
         if (self.task == "base"):
-            prompt = f"Use simple vocabulary. For each sentence, write a sentence about the same concept: {essay}"
+            prompt = f"Use simple vocabulary. For each sentence, write a sentence about the same concept: {essay}"            
+            inputs = self.preprocess(prompt)
+            outputs = self._forward(inputs, do_sample, max_length)
+            return [self.postprocess(outputs, task=None)]
         # elif (self.task == "spelling"):
         #     prompt = f"Add typos to the following sentences. Here are the sentences: {essay}"
         elif (self.task == "paraphrase"):
@@ -247,21 +261,21 @@ class MistralPipeline(Pipeline):
         # elif (self.task == "acronyms"):
         #     prompt = f"Add acronyns to each of the following sentences. Here are the sentences: {essay}"
         elif (self.task == "synonyms"):
-            prompt = f"Replace a word with a synonym in this sentence. Do not explain the answer: {essay}"
+            prompt = f"Replace only one word with a synonym in this sentence. Do not add comments: {essay}"
         elif (self.task == "antonyms"):
-            prompt = f"Replace a word with an antonym in this sentence. Do not explain the answer: {essay}"
+            prompt = f"Replace only one word with an antonym to make this sentence wrong. Do not add comments: {essay}"
         elif (self.task == "negation"):
-            prompt = f"Negate this sentence. Do not explain the answer: {essay}"
-        elif (self.task == "spanish"):
-            prompt = f"Translate a couple words to spanish in this sentence. Do not explain the answer: {essay}"
+            # prompt = f"Add one word (such as 'not') to invalidate this sentence. Do not explain the answer: {essay}"
+            prompt = f"Add a 'not' to make this sentence wrong. Do not add comments: {essay}"
+        elif (self.task == "spanish"): # prompt+parse is trickier, I added an addit. postprocess 
+            # prompt = f"Translate a couple words to spanish in this sentence. Do not explain the answer: {essay}"
+            prompt = f"Translate some words to Spanish in this sentence. Only reply with the revised text and do not add comments: {essay}"
         else:
             prompt = essay
 
         inputs = self.preprocess(prompt)
         outputs = self._forward(inputs, do_sample, max_length)
-        temp = []
-        temp.append(self.postprocess(outputs))
-        return temp
+        return [self.postprocess(outputs, task=self.task)]
 
     def _sanitize_parameters(self, **kwargs):
         kwargs["model"] = self.model

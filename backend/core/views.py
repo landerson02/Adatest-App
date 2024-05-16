@@ -121,7 +121,7 @@ else:
 
 pipeline_map = {
     "spelling": spelling_pipeline,
-    # "negation": negation_pipeline,
+    "negation": negation_pipeline,
     "synonyms": synonym_pipeline,
     "paraphrase": paraphrase_pipeline,
     "acronyms": acronyms_pipeline,
