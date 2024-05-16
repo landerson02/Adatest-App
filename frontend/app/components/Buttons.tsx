@@ -2,7 +2,7 @@
 import { TestDataContext } from "@/lib/TestContext";
 import { perturbedTestType, testType } from "@/lib/Types";
 import { useContext, useState, useEffect } from "react";
-import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest, validatePerturbations } from "@/lib/Service";
+import { createPerturbations, logAction, addTest, validatePerturbations, processTests } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 import AddPertForm from "@/app/components/AddPertForm";
 import Popup from "@/app/components/Popup";
@@ -46,7 +46,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
   const [isAnyDecided, setIsAnyDecided] = useState(false);
 
   useEffect(() => {
-    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "Approved" || test.validity === "Denied"));
+    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "approved" || test.validity === "denied"));
   }, [testData.currentTests]);
 
   /**
@@ -60,11 +60,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     let test_ids = checkedTests.map((test: testType) => test.id);
     await logAction(test_ids, decision);
 
-    // Update decisions in db
-    if (decision === "approved") await approveTests(checkedTests, currentTopic);
-    else if (decision === "denied") await denyTests(checkedTests, currentTopic);
-    else if (decision === "invalid") await trashTests(checkedTests, currentTopic);
-    else console.error("Invalid decision");
+    // Update decision in db
+    const data = await processTests(checkedTests, decision, currentTopic);
 
     // Handle perturbed test decisions
 
@@ -90,7 +87,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     if (isPerturbing) return;
     setIsPerturbing(true);
     await logAction(["null"], "Perturb Essays");
-    await createPerturbations(testData.currentTests.filter((test) => test.validity == "Approved" || test.validity == "Denied"), currentTopic);
+    await createPerturbations(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), currentTopic);
     setIsPerturbing(false);
   }
 
@@ -163,7 +160,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
         {isCreatePertModalOpen &&
           <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
-            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent}/>
+            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent} />
           </Popup>
         }
 

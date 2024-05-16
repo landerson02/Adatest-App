@@ -37,7 +37,7 @@ class CustomEssayPipeline(Pipeline):
         super().__init__(model, tokenizer, task)
 
     def preprocess(self, essay):
-        prompt = f"According to the following essay, classify the student's definition of LCE as {{option_1: Acceptable}}, {{option_2: Unacceptable}}\n{essay}"
+        prompt = f"According to the following essay, classify the student's definition of LCE as {{option_1: acceptable}}, {{option_2: unacceptable}}\n{essay}"
         inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=300)
         return inputs
 
@@ -299,12 +299,12 @@ class AdaClass():
         count = 0
         for row in self.df.iterrows():
             if row['topic'].contains('suggestions'):
-                if row["Validity"] == "Approved":
+                if row["Validity"] == "approved":
                     count += 1
         return count
 
     def approve(self, test):
-        self.df.loc[self.df['Input'] == test]["Validity"] = "Approved"
+        self.df.loc[self.df['Input'] == test]["Validity"] = "approved"
 
 
 def create_obj(mistral=None, essayPipeline=None, type=None):

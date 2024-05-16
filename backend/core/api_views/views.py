@@ -11,10 +11,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .ada import *
-from .ada import MistralPipeline
-from .models import *
-from .serializer import PerturbationSerializer, ReactSerializer, TestSerializer
+from ..ada import *
+from ..models import *
+from ..serializer import PerturbationSerializer, ReactSerializer, TestSerializer
 
 load_dotenv()
 # Check if MODEL is in .env file
@@ -61,14 +60,14 @@ def check_lab(type, inp):
     elif type == "CU5":
         pipeline = cu5_pipeline
     else:
-        return "Unacceptable"
+        return "unacceptable"
 
     lab = pipeline(inp)
 
-    if lab[0] == 'unacceptable' or lab[0] == 'Unacceptable':
-        return "Unacceptable"
+    if lab[0] == 'unacceptable' or lab[0] == 'unacceptable':
+        return "unacceptable"
     else:
-        return "Acceptable"
+        return "acceptable"
 
 
 def index(request):
@@ -212,156 +211,6 @@ def get_all(request):
     return Response(serializer.data)
 
 
-## generate tests using adatest
-@api_view(['POST'])
-def test_generate(request, topic):
-    if topic == "KE":
-        obj_ke.generate()
-        data = obj_ke.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_KE", label=row['output'])
-                test.save()
-    elif topic == "PE":
-        obj_pe.generate()
-        data = obj_pe.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_PE", label=row['output'])
-                test.save()
-    elif topic == "LCE":
-        obj_lce.generate()
-        data = obj_lce.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_LCE", label=row['output'])
-                test.save()
-    elif topic == "CU0":
-        obj_cu0.generate()
-        data = obj_cu0.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=check_lab("CU0", row['input']))
-                test.save()
-    elif topic == "CU5":
-        obj_cu5.generate()
-        data = obj_cu5.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=check_lab("CU5", row['input']))
-                test.save()
-
-    testData = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(testData, context={'request': request}, many=True)
-    return Response(serializer.data)
-
-
-## approve a list of tests
-@api_view(['POST'])
-def approve_list(request, topic):
-    byte_string = request.body
-
-    body = byte_string.decode("utf-8")
-
-    data = json.loads(body)
-
-    df = df_map[topic]
-
-    for obj in data:
-        id = obj["id"]
-        testData = Test.objects.get(id=id)
-
-        testData.ground_truth = testData.label
-        testData.validity = "Approved"
-
-        df_row = df.loc[df['input'] == testData.title]
-        df_row["topic"] = ""
-
-        testData.save()
-
-    allTests = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(allTests, context={'request': request}, many=True)
-
-    return Response(serializer.data)
-
-
-## deny a list of tests
-@api_view(['POST'])
-def deny_list(request, topic):
-    byte_string = request.body
-
-    body = byte_string.decode("utf-8")
-
-    data = json.loads(body)
-
-    for obj in data:
-        id = obj["id"]
-        testData = Test.objects.get(id=id)
-
-        testData.validity = "Denied"
-
-        if testData.label == "Unacceptable":
-            testData.ground_truth = "Acceptable"
-        else:
-            testData.ground_truth = "Unacceptable"
-
-        testData.save()
-
-    allTests = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(allTests, context={'request': request}, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['POST'])
-def add_test(request, topic, ground_truth):
-    byte_string = request.body
-
-    body = byte_string.decode("utf-8")
-
-    data = json.loads(body)
-    data = data['test']
-
-    gen_label = check_lab(topic, data['title'])
-    if gen_label == ground_truth:
-        validity = "Approved"
-    else:
-        validity = "Denied"
-
-    testData = Test(id=generate_random_id(), title=data['title'], topic=topic, validity=validity, label=gen_label,
-                    ground_truth=ground_truth)
-    testData.save()
-
-    allTests = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(allTests, context={'request': request}, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['POST'])
-def edit_test(request, topic):
-    byte_string = request.body
-
-    body = byte_string.decode("utf-8")
-
-    data = json.loads(body)
-    data = data['test']
-
-    gen_label = check_lab(topic, data['title'])
-
-    id_val = data['id']
-
-    testData = Test.objects.get(id=id_val)
-
-    testData.title = data['title']
-    testData.label = gen_label
-    testData.validity = "Unapproved"
-    testData.ground_truth = "Unknown"
-    testData.save()
-
-    allTests = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(allTests, context={'request': request}, many=True)
-    return Response(serializer.data)
-
-
 @api_view(['POST'])
 def edit_perturbation(request, topic):
     # byte_string = request.body
@@ -383,7 +232,7 @@ def edit_perturbation(request, topic):
 
     perturbTest.title = test["title"]
     perturbTest.label = new_label
-    perturbTest.validity = "Unapproved"
+    perturbTest.validity = "unapproved"
     perturbTest.save()
 
     test = Perturbation.objects.all()
@@ -429,48 +278,6 @@ def save_log(request):
     return Response("Data saved to CSV successfully!")
 
 
-# invalidate a list of tests and delete from df
-@api_view(['POST'])
-def invalidate_list(request, topic):
-    byte_string = request.body
-
-    body = byte_string.decode("utf-8")
-
-    data = json.loads(body)
-
-    df = df_map[topic]
-
-    for obj in data:
-        id = obj["id"]
-        testData = Test.objects.get(id=id)
-
-        testData.title = obj["title"]
-        indexAge = df[df['input'] == testData.title].index
-        df.drop(indexAge, inplace=True)
-
-        testData.validity = "Invalid"
-        testData.save()
-
-    allTests = Test.objects.filter(topic__icontains=topic)
-    serializer = TestSerializer(allTests, context={'request': request}, many=True)
-    return Response(serializer.data)
-
-
-@api_view(['DELETE'])
-def test_clear(request):
-    tests = Test.objects.all()
-    perturbations = Perturbation.objects.all()
-
-    for test in tests:
-        test.delete()
-
-    for perturbation in perturbations:
-        perturbation.delete()
-
-    global custom_pipeline_map
-    custom_pipeline_map = {}
-
-    return Response("All tests cleared!")
 
 
 @api_view(['DELETE'])
@@ -479,14 +286,6 @@ def log_clear(request):
     for log in logs:
         log.delete()
     return Response("All logs cleared!")
-
-
-@api_view(['DELETE'])
-def test_delete(request, pk):
-    test = Test.objects.get(id=pk)
-    test.delete()
-
-    return Response('Test Successfully Deleted!')
 
 
 @api_view(['POST'])
@@ -517,26 +316,26 @@ def generate_perturbations(request, topic):
             perturbed_label = check_lab(topic, perturbed_test)
 
             if perturb_str == "negation" or perturb_str == "antonyms":
-                if testData.ground_truth == "Acceptable":
-                    perturbed_gt = "Unacceptable"
+                if testData.ground_truth == "acceptable":
+                    perturbed_gt = "unacceptable"
                 else:
-                    perturbed_gt = "Acceptable"
+                    perturbed_gt = "acceptable"
             else:
-                if testData.ground_truth == "Acceptable":
-                    perturbed_gt = "Acceptable"
+                if testData.ground_truth == "acceptable":
+                    perturbed_gt = "acceptable"
                 else:
-                    perturbed_gt = "Unacceptable"
+                    perturbed_gt = "unacceptable"
 
             if testData.ground_truth == perturbed_label:
                 if perturb_str == "negation" or perturb_str == "antonyms":
-                    perturbed_validity = "Denied"
+                    perturbed_validity = "denied"
                 else:
-                    perturbed_validity = "Approved"
+                    perturbed_validity = "approved"
             else:
                 if perturb_str == "negation" or perturb_str == "antonyms":
-                    perturbed_validity = "Approved"
+                    perturbed_validity = "approved"
                 else:
-                    perturbed_validity = "Denied"
+                    perturbed_validity = "denied"
 
             perturbed_id = generate_random_id()
 
@@ -559,26 +358,26 @@ def generate_perturbations(request, topic):
             perturbed_label = check_lab(topic, perturbed_test)
 
             if pipeline["flip_label"]:
-                if testData.ground_truth == "Acceptable":
-                    perturbed_gt = "Unacceptable"
+                if testData.ground_truth == "acceptable":
+                    perturbed_gt = "unacceptable"
                 else:
-                    perturbed_gt = "Acceptable"
+                    perturbed_gt = "acceptable"
             else:
-                if testData.ground_truth == "Acceptable":
-                    perturbed_gt = "Acceptable"
+                if testData.ground_truth == "acceptable":
+                    perturbed_gt = "acceptable"
                 else:
-                    perturbed_gt = "Unacceptable"
+                    perturbed_gt = "unacceptable"
 
             if testData.ground_truth == perturbed_label:
                 if pipeline["flip_label"]:
-                    perturbed_validity = "Denied"
+                    perturbed_validity = "denied"
                 else:
-                    perturbed_validity = "Approved"
+                    perturbed_validity = "approved"
             else:
                 if pipeline["flip_label"]:
-                    perturbed_validity = "Approved"
+                    perturbed_validity = "approved"
                 else:
-                    perturbed_validity = "Denied"
+                    perturbed_validity = "denied"
 
             perturbed_id = generate_random_id()
 
@@ -605,24 +404,24 @@ def validate_perturbations(request, validation):
     body = byte_string.decode("utf-8")
     data = json.loads(body)
 
-    if validation not in ["Approved", "Denied", "Invalid"]:
+    if validation not in ["approved", "denied", "invalid"]:
         return Response("Invalid validation type", status=status.HTTP_400_BAD_REQUEST)
 
     for obj in data:
         id = obj["id"]
         perturbData = Perturbation.objects.get(id=id)
 
-        if validation == "Approved":
+        if validation == "approved":
             perturbData.ground_truth = perturbData.label
-            perturbData.validity = "Approved"
-        elif validation == "Denied":
-            if perturbData.label == "Unacceptable":
-                perturbData.ground_truth = "Acceptable"
+            perturbData.validity = "approved"
+        elif validation == "denied":
+            if perturbData.label == "unacceptable":
+                perturbData.ground_truth = "acceptable"
             else:
-                perturbData.ground_truth = "Unacceptable"
-            perturbData.validity = "Denied"
+                perturbData.ground_truth = "unacceptable"
+            perturbData.validity = "denied"
         else:
-            perturbData.validity = "Invalid"
+            perturbData.validity = "invalid"
 
         perturbData.save()
 
@@ -662,26 +461,26 @@ def add_new_pert(request, topic):
         perturbed_label = check_lab(topic, perturbed_test)
 
         if flip_label:
-            if testData.ground_truth == "Acceptable":
-                perturbed_gt = "Unacceptable"
+            if testData.ground_truth == "acceptable":
+                perturbed_gt = "unacceptable"
             else:
-                perturbed_gt = "Acceptable"
+                perturbed_gt = "acceptable"
         else:
-            if testData.ground_truth == "Acceptable":
-                perturbed_gt = "Acceptable"
+            if testData.ground_truth == "acceptable":
+                perturbed_gt = "acceptable"
             else:
-                perturbed_gt = "Unacceptable"
+                perturbed_gt = "unacceptable"
 
         if testData.ground_truth == perturbed_label:
             if flip_label:
-                perturbed_validity = "Denied"
+                perturbed_validity = "denied"
             else:
-                perturbed_validity = "Approved"
+                perturbed_validity = "approved"
         else:
             if flip_label:
-                perturbed_validity = "Approved"
+                perturbed_validity = "approved"
             else:
-                perturbed_validity = "Denied"
+                perturbed_validity = "denied"
 
         perturbed_id = generate_random_id()
 
@@ -715,22 +514,4 @@ def test_new_pert(request, topic):
 
     return Response(perturbed_test)
 
-class ReactView(APIView):
-    serializer_class = ReactSerializer
 
-    def get(self, request):
-        # detail = [ {"name": detail.topic,"detail": detail.topic, "id": detail.id, "topic": detail.topic}
-        # for detail in Test.objects.all()]
-        # return Response(detail)
-        dummy_data = [
-            {"test": "django1", "output": "Acceptable", "concept": "PE", "id": 1, "label": 'labelx'},
-            {"test": "django2", "output": "Unacceptable", "concept": "PE", "id": 2, "label": 'labelx'},
-            {"test": "django3", "output": "Acceptable", "concept": "PE", "id": 3, "label": 'labelx'},
-        ]
-        return Response(dummy_data)
-
-    def post(self, request):
-        serializer = ReactSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)

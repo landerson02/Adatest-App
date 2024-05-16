@@ -48,10 +48,10 @@ export default function Home() {
       let perts = await getPerturbations();
       let labels: string[] = [];
       perts.forEach((pert: perturbedTestType) => {
-          let label = pert.type[0].toUpperCase() + pert.type.slice(1).toLowerCase();
-          if (!labels.includes(label)) {
+        let label = pert.type[0].toUpperCase() + pert.type.slice(1).toLowerCase();
+        if (!labels.includes(label)) {
           labels.push(label);
-          }
+        }
       });
       setCriteriaLabels(labels);
     }
@@ -104,11 +104,11 @@ export default function Home() {
         if (data && data.length > 0) {
           data = data.reverse();
           data.forEach((test: testType) => { test.isChecked = false });
-          data = data.filter((test: testType) => test.validity != 'Invalid');
+          data = data.filter((test: testType) => test.validity != 'invalid');
           data.sort((a, b) => {
-            if (a.validity == "Unapproved" && b.validity != "Unapproved") {
+            if (a.validity == "unapproved" && b.validity != "unapproved") {
               return -1; // Move a to the back
-            } else if (a.validity != "Unapproved" && b.validity == "Unapproved") {
+            } else if (a.validity != "unapproved" && b.validity == "unapproved") {
               return 1; // Move b to the back
             } else {
               return 0; // Preserve the order
@@ -125,7 +125,7 @@ export default function Home() {
       let perturbedTests: perturbedTestType[] = await getPerturbations();
       console.log(perturbedTests)
       // Filter out invalid perturbations
-      perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.validity != 'Invalid');
+      perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.validity != 'invalid');
       // Assign perturbed tests to their parent tests
       for (let type of topics) {
         testArrays[type] = await fetchAndProcessTests(type);
@@ -186,10 +186,10 @@ export default function Home() {
 
       for (const topic of topics) {
         for (const test of testArrays[topic]) {
-          if (test.validity == 'Unapproved') continue;
+          if (test.validity == 'unapproved') continue;
           newTestDecisions[topic][test.validity.toLowerCase()].push(test);
           for (const perturbedTest of test.perturbedTests) {
-            if (perturbedTest.validity == 'Unapproved') continue;
+            if (perturbedTest.validity == 'unapproved') continue;
             newPertDecisions[perturbedTest.validity.toLowerCase()].push(perturbedTest);
           }
         }
@@ -239,7 +239,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph isPerturbed={isPerturbed} criteriaLabels={criteriaLabels}/>
+        <TaskGraph isPerturbed={isPerturbed} criteriaLabels={criteriaLabels} />
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
