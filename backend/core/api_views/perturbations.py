@@ -22,10 +22,9 @@ def generate_perturbations(request, topic):
         testData = Test.objects.get(id=test["id"])
         pertList = Perturbation.objects.filter(test_parent=testData)
 
-        # TODO: Clean this up
-
-        for perturb_str, pipeline in pipeline_map.items():
-            if pertList.filter(type=perturb_str).exists():
+        # Generate default perts for the test
+        for perturb_type, pipeline in pipeline_map.items():
+            if pertList.filter(type=perturb_type).exists():
                 continue
 
             if pipeline is not None:
@@ -36,75 +35,50 @@ def generate_perturbations(request, topic):
 
             perturbed_label = check_lab(topic, perturbed_test)
 
-            if perturb_str == "negation" or perturb_str == "antonyms":
-                if testData.ground_truth == "acceptable":
-                    perturbed_gt = "unacceptable"
-                else:
-                    perturbed_gt = "acceptable"
+            if (perturb_type in ["negation", "antonyms"]) ^ (testData.ground_truth == "acceptable"):
+                perturbed_gt = "acceptable"
             else:
-                if testData.ground_truth == "acceptable":
-                    perturbed_gt = "acceptable"
-                else:
-                    perturbed_gt = "unacceptable"
+                perturbed_gt = "unacceptable"
 
-            if testData.ground_truth == perturbed_label:
-                if perturb_str == "negation" or perturb_str == "antonyms":
-                    perturbed_validity = "denied"
-                else:
-                    perturbed_validity = "approved"
+            if (perturb_type in ["negation", "antonyms"]) ^ (testData.ground_truth == perturbed_label):
+                perturbed_validity = "approved"
             else:
-                if perturb_str == "negation" or perturb_str == "antonyms":
-                    perturbed_validity = "approved"
-                else:
-                    perturbed_validity = "denied"
+                perturbed_validity = "denied"
 
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity,
+                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity,
                                        ground_truth=perturbed_gt)
             perturbData.save()
 
-        for perturb_str, pipeline in custom_pipeline_map.items():
-            if pertList.filter(type=perturb_str).exists():
+        # Generate custom perts for the test (if applicable)
+        for perturb_type, perturb_options in custom_pipeline_map.items():
+            if pertList.filter(type=perturb_type).exists():
                 continue
 
             if custom_pipeline is not None:
-                perturbed_test = custom_pipeline(f'{pipeline["prompt"]}: {testData.title}')
-                print(perturb_str)
-                print(perturbed_test)
+                perturbed_test = custom_pipeline(f'{perturb_options["prompt"]}: {testData.title}')
                 perturbed_test = perturbed_test[0]['generated_text']
             else:
                 perturbed_test = testData.title
 
             perturbed_label = check_lab(topic, perturbed_test)
-
-            if pipeline["flip_label"]:
-                if testData.ground_truth == "acceptable":
-                    perturbed_gt = "unacceptable"
-                else:
-                    perturbed_gt = "acceptable"
+            
+            if (perturb_options["flip_label"]) ^ (testData.ground_truth == "acceptable"):
+                perturbed_gt = "acceptable"
             else:
-                if testData.ground_truth == "acceptable":
-                    perturbed_gt = "acceptable"
-                else:
-                    perturbed_gt = "unacceptable"
+                perturbed_gt = "unacceptable"
 
-            if testData.ground_truth == perturbed_label:
-                if pipeline["flip_label"]:
-                    perturbed_validity = "denied"
-                else:
-                    perturbed_validity = "approved"
+            if (perturb_options["flip_label"]) ^ (testData.ground_truth == perturbed_label):
+                perturbed_validity = "approved"
             else:
-                if pipeline["flip_label"]:
-                    perturbed_validity = "approved"
-                else:
-                    perturbed_validity = "denied"
+                perturbed_validity = "denied"
 
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_str, validity=perturbed_validity,
+                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity,
                                        ground_truth=perturbed_gt)
             perturbData.save()
 
@@ -121,6 +95,7 @@ def get_perturbations(request):
     :return: All perturbations in the database
     """
     data = Perturbation.objects.all()
+    print(data)
     serializer = PerturbationSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
 
@@ -177,10 +152,7 @@ def validate_perturbations(request, validation):
             perturbData.ground_truth = perturbData.label
             perturbData.validity = "approved"
         elif validation == "denied":
-            if perturbData.label == "unacceptable":
-                perturbData.ground_truth = "acceptable"
-            else:
-                perturbData.ground_truth = "unacceptable"
+            perturbData.ground_truth = "acceptable" if perturbData.label == "unacceptable" else "unacceptable"
             perturbData.validity = "denied"
         else:
             perturbData.validity = "invalid"
@@ -206,10 +178,9 @@ def add_new_pert(request, topic):
 
     test_list = new_pert['test_list']
     prompt = new_pert['prompt']
+    prompt = f'{prompt}. Here is the sentence'
     flip_label = new_pert['flip_label']
     pert_name = new_pert['pert_name']
-
-    global custom_pipeline, custom_pipeline_map
 
     if pert_name in custom_pipeline_map.keys() or pert_name in pipeline_map.keys():
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
@@ -222,34 +193,21 @@ def add_new_pert(request, topic):
 
         if custom_pipeline is not None:
             perturbed_test = custom_pipeline(f'{prompt}: {testData.title}')
-            print(perturbed_test)
             perturbed_test = perturbed_test[0]['generated_text']
         else:
             perturbed_test = testData.title
 
         perturbed_label = check_lab(topic, perturbed_test)
 
-        if flip_label:
-            if testData.ground_truth == "acceptable":
-                perturbed_gt = "unacceptable"
-            else:
-                perturbed_gt = "acceptable"
+        if flip_label ^ (testData.ground_truth == "acceptable"):
+            perturbed_gt = "acceptable"
         else:
-            if testData.ground_truth == "acceptable":
-                perturbed_gt = "acceptable"
-            else:
-                perturbed_gt = "unacceptable"
+            perturbed_gt = "unacceptable"
 
-        if testData.ground_truth == perturbed_label:
-            if flip_label:
-                perturbed_validity = "denied"
-            else:
-                perturbed_validity = "approved"
+        if flip_label ^ (testData.ground_truth == perturbed_label):
+            perturbed_validity = "approved"
         else:
-            if flip_label:
-                perturbed_validity = "approved"
-            else:
-                perturbed_validity = "denied"
+            perturbed_validity = "denied"
 
         perturbed_id = generate_random_id()
 
@@ -277,9 +235,6 @@ def test_new_pert(request):
 
     test_case = data['test_case']
     prompt = data['prompt']
-    pert_name = data['pert_name']
-
-    global custom_pipeline
 
     if custom_pipeline is not None:
         perturbed_test = custom_pipeline(f'{prompt}: {test_case}')
