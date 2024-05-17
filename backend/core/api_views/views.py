@@ -115,6 +115,7 @@ df_map = {}
 
 for topic, pipeline in grader_pipelines.items():
     obj_map[topic] = create_obj(mistral=mistral_pipeline, essayPipeline=pipeline, type=topic)
+    df_map[topic] = obj_map[topic].df
 
 
 # create default vals in db
@@ -123,7 +124,6 @@ def init_database(request):
     global obj_map, grader_pipelines
     for top, pipe in grader_pipelines.items():
         obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
-        df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
         numTestsInit = 10 if top in ['CU0', 'CU5'] else 0
         data = obj_map[top].df.head(numTestsInit)
