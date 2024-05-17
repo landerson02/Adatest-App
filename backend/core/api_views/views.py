@@ -13,6 +13,9 @@ from rest_framework.views import APIView
 
 from ..ada import *
 from ..models import *
+from ..pipelines.flanT5Grader import *
+from ..pipelines.robertaGrader import *
+from ..pipelines.mistralGenerator import *
 from ..serializer import PerturbationSerializer, ReactSerializer, TestSerializer
 
 load_dotenv()
@@ -24,13 +27,13 @@ MODEL_TYPE = os.getenv('MODEL')
 
 # helper objects
 
-lce_model, lce_tokenizer = load_model('aanandan/FlanT5_AdaTest_LCE_v2')
+lce_model, lce_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_LCE_v2')
 lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
 
-pe_model, pe_tokenizer = load_model('aanandan/FlanT5_AdaTest_PE_v2')
+pe_model, pe_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_PE_v2')
 pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
 
-ke_model, ke_tokenizer = load_model('aanandan/FlanT5_AdaTest_KE_v2')
+ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
 ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 cu0_pipeline = CUPipeline("CU0")
@@ -75,22 +78,8 @@ def index(request):
 
 
 if MODEL_TYPE == "mistral":
-    # Create your views here.
-    model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
-    print("Loading " + model_name_or_path + " from hugging face")
-    nf4_config = BitsAndBytesConfig(  # quantization 4-bit
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16
-    )
-    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                 device_map="auto",
-                                                 trust_remote_code=False,
-                                                 quantization_config=nf4_config,
-                                                 revision="main")
-
-    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
+    # Load mistral model
+    model, tokenizer = load_mistral_model()
 
     # load in LORA fine-tune for student answer examples
     # lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
