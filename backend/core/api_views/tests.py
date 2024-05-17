@@ -1,8 +1,8 @@
-from rest_framework.decorators import api_view
+import json
 
-from .views import *
-from ..ada import *
+from views import *
 from ..models import *
+from ..serializer import TestSerializer
 
 
 @api_view(['GET'])
@@ -168,10 +168,10 @@ def test_clear(request):
     for perturbation in perturbations:
         perturbation.delete()
 
-    global custom_pipeline_map
-    custom_pipeline_map = {}
+    custom_pert_pipeline_map.clear()
 
     return Response("All tests cleared!")
+
 
 @api_view(['DELETE'])
 def test_delete(request, id: str):
@@ -184,5 +184,3 @@ def test_delete(request, id: str):
     test.delete()
 
     return Response('Test Successfully Deleted!')
-
-

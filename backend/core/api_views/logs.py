@@ -1,8 +1,12 @@
-from rest_framework.decorators import api_view
+import json
+import sqlite3
+
+from rest_framework import status
 
 from .views import *
 from ..ada import *
 from ..models import *
+
 
 @api_view(['POST'])
 def log_action(request):
@@ -42,13 +46,9 @@ def save_log(request):
     return Response("Data saved to CSV successfully!")
 
 
-
-
 @api_view(['DELETE'])
 def log_clear(request):
     logs = Log.objects.all()
     for log in logs:
         log.delete()
     return Response("All logs cleared!")
-
-

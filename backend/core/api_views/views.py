@@ -1,22 +1,12 @@
-import json
-import os
-import sqlite3
-import uuid
-
 from django_nextjs.render import render_nextjs_page_sync
-from dotenv import load_dotenv
-from peft import PeftModel  # for fine-tuning
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from ..ada import *
 from ..models import *
 from ..pipelines.flanT5Grader import *
 from ..pipelines.robertaGrader import *
 from ..pipelines.mistralGenerator import *
-from ..serializer import PerturbationSerializer, ReactSerializer, TestSerializer
 
 load_dotenv()
 # Check if MODEL is in .env file
@@ -57,13 +47,17 @@ def generate_random_id():
     return random_id
 
 
-# helper function for output label
 def check_lab(type, inp):
+    """
+    Checks AI Grade for test
+    :param type: type/topic of pipeline
+    :param inp: test input
+    :return: acceptable/unacceptable
+    """
     if type not in grader_pipelines.keys():
         return 'unacceptable'
 
-    pipeline = grader_pipelines[type]
-    lab = pipeline(inp)
+    lab = grader_pipelines[type](inp)
     return lab[0].lower() if lab[0].lower() in ['acceptable', 'unacceptable'] else 'unacceptable'
 
 
@@ -71,44 +65,31 @@ def index(request):
     return render_nextjs_page_sync(request)
 
 
+mistral_pipeline = None
+custom_pipeline = None
+pert_pipeline_map = {
+    "spelling": None,
+    "negation": None,
+    "synonyms": None,
+    "paraphrase": None,
+    "acronyms": None,
+    "antonyms": None,
+    "spanish": None
+}
+custom_pert_pipeline_map = {
+    # will fill up with custom perturbations
+}
+
 if MODEL_TYPE == "mistral":
     # Load mistral model
     model, tokenizer = load_mistral_model()
 
     mistral_pipeline = MistralPipeline(model, tokenizer, task="base")
-    spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
-    negation_pipeline = MistralPipeline(model, tokenizer, task="negation")
-    synonym_pipeline = MistralPipeline(model, tokenizer, task="synonyms")
-    paraphrase_pipeline = MistralPipeline(model, tokenizer, task="paraphrase")
-    acronyms_pipeline = MistralPipeline(model, tokenizer, task="acronyms")
-    antonyms_pipeline = MistralPipeline(model, tokenizer, task="antonyms")
-    spanish_pipeline = MistralPipeline(model, tokenizer, task="spanish")
     custom_pipeline = MistralPipeline(model, tokenizer, task="custom")
 
-else:
-    mistral_pipeline = None
-    spelling_pipeline = None
-    negation_pipeline = None
-    synonym_pipeline = None
-    paraphrase_pipeline = None
-    acronyms_pipeline = None
-    antonyms_pipeline = None
-    spanish_pipeline = None
-    custom_pipeline = None
+    for perturb_type in pert_pipeline_map.keys():
+        pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
 
-pert_pipeline_map = {
-    "spelling": spelling_pipeline,
-    "negation": negation_pipeline,
-    "synonyms": synonym_pipeline,
-    "paraphrase": paraphrase_pipeline,
-    "acronyms": acronyms_pipeline,
-    "antonyms": antonyms_pipeline,
-    "spanish": spanish_pipeline
-}
-
-custom_pert_pipeline_map = {
-    # will fill up with custom perturbations
-}
 
 obj_map = {}
 df_map = {}

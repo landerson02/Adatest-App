@@ -1,8 +1,9 @@
-from rest_framework.decorators import api_view
+from rest_framework import status
+import json
 
 from .views import *
-from ..ada import *
 from ..models import *
+from ..serializer import PerturbationSerializer
 
 
 @api_view(['POST'])
@@ -178,7 +179,7 @@ def add_new_pert(request, topic):
 
     test_list = new_pert['test_list']
     prompt = new_pert['prompt']
-    prompt = f'{prompt}. Here is the sentence'
+    prompt = f'{prompt}. Only reply with the revised text and do not add comments'
     flip_label = new_pert['flip_label']
     pert_name = new_pert['pert_name']
 
