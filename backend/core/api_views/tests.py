@@ -5,6 +5,28 @@ from ..ada import *
 from ..models import *
 
 
+@api_view(['GET'])
+def get_all_tests(request):
+    """
+    Gets all tests from the db
+    """
+    tests = Test.objects.all()
+    serializer = TestSerializer(tests, context={'request': request}, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_by_topic(request, topic):
+    """
+    Gets all tests for the provided topic
+    :param request: empty body
+    :param topic: current topic
+    """
+    tests = Test.objects.filter(topic__icontains=topic)
+    serializer = TestSerializer(tests, many=True)
+    return Response(serializer.data)
+
+
 @api_view(['POST'])
 def test_generate(request, topic: str):
     """

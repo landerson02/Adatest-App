@@ -61,7 +61,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     await logAction(test_ids, decision);
 
     // Update decision in db
-    const data = await processTests(checkedTests, decision, currentTopic);
+    await processTests(checkedTests, decision, currentTopic);
 
     // Handle perturbed test decisions
 
@@ -69,8 +69,6 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
       test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
 
     // Update pert decisions in db
-    // set First char to uppercase
-    decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
 
     setIsCurrent(false);
@@ -152,7 +150,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
         ) : (
           <button
             className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
-            onClick={() => setIsCreatePertModalOpen(true)}
+            onClick={isAnyDecided ? () => setIsCreatePertModalOpen(true) : () => { }}
           >
             Create Perturbation
           </button>
@@ -192,7 +190,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}
               onClick={() => {
                 if (addTestText === "") return;
-                addTestHandler("Acceptable");
+                addTestHandler("acceptable");
               }}
             >
               Add as Acceptable
@@ -201,7 +199,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-red-300 hover:scale-105 hover:bg-red-400 cursor-pointer"}`}
               onClick={() => {
                 if (addTestText === "") return;
-                addTestHandler("Unacceptable");
+                addTestHandler("unacceptable");
               }}
             >
               Add as Unacceptable

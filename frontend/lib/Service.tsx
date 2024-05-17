@@ -264,8 +264,8 @@ export async function addNewPerturbation(tests: testType[], type: string, prompt
  * @param topic Topic of the perturbation
  * @returns A perturbed test object
  */
-export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string, topic: string) {
-  const url = `core/perturbations/test/${topic}`;
+export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string) {
+  const url = 'core/perturbations/test';
   try {
     const res = await fetch(url, {
       method: 'POST',
