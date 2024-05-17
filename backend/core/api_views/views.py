@@ -39,38 +39,32 @@ ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 cu0_pipeline = CUPipeline("CU0")
 cu5_pipeline = CUPipeline("CU5")
 
+grader_pipelines = {
+    "LCE": lce_pipeline,
+    "PE": pe_pipeline,
+    "KE": ke_pipeline,
+    "CU0": cu0_pipeline,
+    "CU5": cu5_pipeline
+}
+
 
 # HELPER FUNCTIONS
-# helpe function to generate ids
 
+# helper function to generate ids
 def generate_random_id():
     random_uuid = uuid.uuid4()
     random_id = random_uuid.hex
     return random_id
 
 
-# helper function to output label
+# helper function for output label
 def check_lab(type, inp):
-    pipeline = None
-    if type == "PE":
-        pipeline = pe_pipeline
-    elif type == "LCE":
-        pipeline = lce_pipeline
-    elif type == "KE":
-        pipeline = ke_pipeline
-    elif type == "CU0":
-        pipeline = cu0_pipeline
-    elif type == "CU5":
-        pipeline = cu5_pipeline
-    else:
-        return "unacceptable"
+    if type not in grader_pipelines.keys():
+        return 'unacceptable'
 
+    pipeline = grader_pipelines[type]
     lab = pipeline(inp)
-
-    if lab[0] == 'unacceptable' or lab[0] == 'unacceptable':
-        return "unacceptable"
-    else:
-        return "acceptable"
+    return lab[0].lower() if lab[0].lower() in ['acceptable', 'unacceptable'] else 'unacceptable'
 
 
 def index(request):
@@ -81,11 +75,6 @@ if MODEL_TYPE == "mistral":
     # Load mistral model
     model, tokenizer = load_mistral_model()
 
-    # load in LORA fine-tune for student answer examples
-    # lora_model_path = "ntseng/mistralai_Mistral-7B-Instruct-v0_2_student_answer_train_examples_mistral_0416"
-    # model = PeftModel.from_pretrained(
-    #     model, lora_model_path, torch_dtype=torch.float16, force_download=True,
-    # )
     mistral_pipeline = MistralPipeline(model, tokenizer, task="base")
     spelling_pipeline = MistralPipeline(model, tokenizer, task="spelling")
     negation_pipeline = MistralPipeline(model, tokenizer, task="negation")
@@ -107,7 +96,7 @@ else:
     spanish_pipeline = None
     custom_pipeline = None
 
-pipeline_map = {
+pert_pipeline_map = {
     "spelling": spelling_pipeline,
     "negation": negation_pipeline,
     "synonyms": synonym_pipeline,
@@ -117,69 +106,32 @@ pipeline_map = {
     "spanish": spanish_pipeline
 }
 
-custom_pipeline_map = {
+custom_pert_pipeline_map = {
     # will fill up with custom perturbations
 }
 
-obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
-obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
-obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
-obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
-obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
+obj_map = {}
+df_map = {}
 
-df_map = {"LCE": obj_lce.df, "PE": obj_pe.df, "KE": obj_ke.df, "CU0": obj_cu0.df, "CU5": obj_cu5.df}
+for topic, pipeline in grader_pipelines.items():
+    obj_map[topic] = create_obj(mistral=mistral_pipeline, essayPipeline=pipeline, type=topic)
 
 
 # create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    global obj_lce, obj_pe, obj_ke, obj_cu0, obj_cu5, pe_pipeline, ke_pipeline, lce_pipeline, cu0_pipeline, cu5_pipeline
-    obj_lce = create_obj(mistral=mistral_pipeline, essayPipeline=lce_pipeline, type="LCE")
-    obj_pe = create_obj(mistral=mistral_pipeline, essayPipeline=pe_pipeline, type="PE")
-    obj_ke = create_obj(mistral=mistral_pipeline, essayPipeline=ke_pipeline, type="KE")
-    obj_cu0 = create_obj(mistral=mistral_pipeline, essayPipeline=cu0_pipeline, type="CU0")
-    obj_cu5 = create_obj(mistral=mistral_pipeline, essayPipeline=cu5_pipeline, type="CU5")
-
-    # PE KE LCE for this user study will have nothing
-    data = obj_lce.df.head(0)
-    for index, row in data.iterrows():
-        if row['input'] == '':
-            continue
-        obj = Test(id=index, title=row['input'], topic="LCE", label=check_lab("LCE", row['input']),
-                   ground_truth=row['output'])
-        obj.save()
-
-    data = obj_pe.df.head(0)
-    for index, row in data.iterrows():
-        if row['input'] == '':
-            continue
-        obj = Test(id=index, title=row['input'], topic="PE", label=check_lab("PE", row['input']),
-                   ground_truth=row['output'])
-        obj.save()
-
-    data = obj_ke.df.head(0)
-    for index, row in data.iterrows():
-        if row['input'] == '':
-            continue
-        obj = Test(id=index, title=row['input'], topic="KE", label=check_lab("KE", row['input']),
-                   ground_truth=row['output'])
-        obj.save()
-
-    data = obj_cu0.df.head(11)
-    for index, row in data.iterrows():
-        if row['input'] == '':
-            continue
-        obj = Test(id=index, title=row['input'], topic="CU0", label=check_lab("CU0", row['input']),
-                   ground_truth=row['output'])
-        obj.save()
-
-    data = obj_cu5.df.head(11)
-    for index, row in data.iterrows():
-        if row['input'] == '':
-            continue
-        obj = Test(id=index, title=row['input'], topic="CU5", label=check_lab("CU5", row['input']),
-                   ground_truth=row['output'])
-        obj.save()
+    global obj_map, grader_pipelines
+    for top, pipe in grader_pipelines.items():
+        obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
+        df_map[top] = obj_map[top].df
+        # PE KE LCE for this user study will have no tests
+        numTestsInit = 10 if top in ['CU0', 'CU5'] else 0
+        data = obj_map[top].df.head(numTestsInit)
+        for i, row in data.iterrows():
+            if row['input'] == '':
+                continue
+            obj = Test(id=i, title=row['input'], topic=top, label=check_lab(top, row['input']),
+                       ground_truth=row['output'])
+            obj.save()
 
     return Response("All initial tests loaded!")
-

@@ -23,7 +23,7 @@ def generate_perturbations(request, topic):
         pertList = Perturbation.objects.filter(test_parent=testData)
 
         # Generate default perts for the test
-        for perturb_type, pipeline in pipeline_map.items():
+        for perturb_type, pipeline in pert_pipeline_map.items():
             if pertList.filter(type=perturb_type).exists():
                 continue
 
@@ -53,7 +53,7 @@ def generate_perturbations(request, topic):
             perturbData.save()
 
         # Generate custom perts for the test (if applicable)
-        for perturb_type, perturb_options in custom_pipeline_map.items():
+        for perturb_type, perturb_options in custom_pert_pipeline_map.items():
             if pertList.filter(type=perturb_type).exists():
                 continue
 
@@ -182,10 +182,10 @@ def add_new_pert(request, topic):
     flip_label = new_pert['flip_label']
     pert_name = new_pert['pert_name']
 
-    if pert_name in custom_pipeline_map.keys() or pert_name in pipeline_map.keys():
+    if pert_name in custom_pert_pipeline_map.keys() or pert_name in pert_pipeline_map.keys():
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
 
-    custom_pipeline_map[pert_name] = {"prompt": prompt, "flip_label": flip_label}
+    custom_pert_pipeline_map[pert_name] = {"prompt": prompt, "flip_label": flip_label}
 
     for test in test_list:
         id = test["id"]
