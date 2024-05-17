@@ -35,41 +35,13 @@ def test_generate(request, topic: str):
     :param topic: current statement topic
     :return: All test cases for the provided topic
     """
-    if topic == "KE":
-        obj_ke.generate()
-        data = obj_ke.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_KE", label=row['output'])
-                test.save()
-    elif topic == "PE":
-        obj_pe.generate()
-        data = obj_pe.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_PE", label=row['output'])
-                test.save()
-    elif topic == "LCE":
-        obj_lce.generate()
-        data = obj_lce.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_LCE", label=row['output'])
-                test.save()
-    elif topic == "CU0":
-        obj_cu0.generate()
-        data = obj_cu0.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU0", label=check_lab("CU0", row['input']))
-                test.save()
-    elif topic == "CU5":
-        obj_cu5.generate()
-        data = obj_cu5.df
-        for index, row in data.iterrows():
-            if row['topic'].__contains__("suggestions"):
-                test = Test(id=index, title=row['input'], topic="suggested_CU5", label=check_lab("CU5", row['input']))
-                test.save()
+    obj = obj_map[topic]
+    obj.generate()
+    data = obj.df
+    for i, row in data.iterrows():
+        if row['topic'].__contains__("suggestions"):
+            test = Test(id=i, title=row['input'], topic=f'suggested_{topic}', label=row['output'])
+            test.save()
 
     testData = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(testData, context={'request': request}, many=True)
