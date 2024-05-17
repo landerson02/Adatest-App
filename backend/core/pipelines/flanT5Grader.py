@@ -14,7 +14,7 @@ class CustomEssayPipeline(Pipeline):
 
     def preprocess(self, essay):
         prompt = f"According to the following essay, classify the student's definition of LCE as {{option_1: acceptable}}, {{option_2: unacceptable}}\n{essay}"
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=300)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding="max_length", truncation=True, max_length=200)
         return inputs
 
     def _forward(self, inputs, **kwargs):
