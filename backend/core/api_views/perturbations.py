@@ -96,7 +96,6 @@ def get_perturbations(request):
     :return: All perturbations in the database
     """
     data = Perturbation.objects.all()
-    print(data)
     serializer = PerturbationSerializer(data, context={'request': request}, many=True)
     return Response(serializer.data)
 
