@@ -1,6 +1,6 @@
 import json
 
-from views import *
+from .views import *
 from ..models import *
 from ..serializer import TestSerializer
 

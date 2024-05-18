@@ -12,7 +12,8 @@ if "MODEL" not in os.environ:
 
 MODEL_TYPE = os.getenv('MODEL')
 
-class AdaClass():
+
+class AdaClass:
     def __init__(self, browser):
         self.browser = browser
         self.df = browser.test_tree._tests
