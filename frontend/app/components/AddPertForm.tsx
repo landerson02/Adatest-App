@@ -9,7 +9,7 @@ type AddPertFormProps = {
   setIsCurrent: (isCurrent: boolean) => void,
 }
 
-const AddPertForm = ({closeModal, setIsCurrent} : AddPertFormProps) => {
+const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
 
   const { currentTopic, testData, setTestData } = useContext(TestDataContext);
 
@@ -41,7 +41,7 @@ const AddPertForm = ({closeModal, setIsCurrent} : AddPertFormProps) => {
     setIsTestingPert(true);
 
     // Test the perturbation
-    testNewPerturbation(type, aiPrompt, testStatement, testDirection, currentTopic).then((testedPert) => {
+    testNewPerturbation(type, aiPrompt, testStatement, testDirection).then((testedPert) => {
       if (testedPert) {
         setTestResult(testedPert.toString());
         setIsTestingPert(false);
@@ -66,7 +66,8 @@ const AddPertForm = ({closeModal, setIsCurrent} : AddPertFormProps) => {
     // Generate and load new perts
     async function submitPert() {
       // Get new perts
-      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "Approved" || test.validity == "Denied"), type, aiPrompt, testDirection, currentTopic);
+      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection, currentTopic);
+      console.log(newPerts);
 
       // Check if valid response
       if (!newPerts) {
@@ -165,7 +166,7 @@ const AddPertForm = ({closeModal, setIsCurrent} : AddPertFormProps) => {
             <div
               className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
               id="testResult">
-                {testResult}
+              {testResult}
             </div>
           </div>
 

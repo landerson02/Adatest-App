@@ -71,7 +71,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
 
   return (
     <>
-      <div className={`border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}>
+      <div className={`border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}>
         <div className={'w-full items-center flex'}>
           {/* CheckBox */}
           <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
@@ -84,7 +84,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
 
           {/* Test Essay */}
           <div className={isPerturbed ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
-            <textarea className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'Unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
+            <textarea className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
               onChange={(e) => onEssayChange(e.target.value)} />
             <button className={`h-6 w-[15%] rounded-xl border 
             ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transition ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
@@ -100,7 +100,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
           {/* AI Grade */}
           <div className={'w-[17%] items-center'}>
             {
-              test.label == "acceptable" || test.label == "Acceptable" ?
+              test.label == "acceptable" ?
                 <div className={'w-full flex justify-center'}>
                   <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
                     'flex justify-left font-light border border-green-500 pr-1'}>
@@ -119,13 +119,13 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
           {/* Your Grade */}
           <div className={'w-[13%] items-center'}>
             {
-              test.validity == "Approved" || test.validity == "approved" ?
+              test.validity == "approved" ?
                 <div className={'w-full flex justify-center'}>
                   <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
                     'flex justify-left font-light border border-green-500 pr-1'}>
                     <CiCircleCheck className={'h-6 w-6 text-green-500'} />Agreed
                   </div>
-                </div> : test.validity == "Denied" || test.validity == "denied" ?
+                </div> : test.validity == "denied" ?
                   <div className={'w-full flex justify-center'}>
                     <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
                       'flex justify-left font-light border border-red-500 pr-1'}>

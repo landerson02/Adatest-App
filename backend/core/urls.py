@@ -1,34 +1,35 @@
-from django.urls import path, re_path
-
 from django.urls import path, include
-from . import views
-from .views import index
+from .api_views import views, tests, logs, perturbations
+from .api_views.views import index
+
 
 urlpatterns = [
-    path('core/tests/get/<str:my_topic>', views.test_get),
-    # path('', TestView.as_view()),
     path('', index, name='index'),
     path('', include("django_nextjs.urls")),
-    path('api/react/', views.ReactView.as_view(), name='react'),
-    path('core/tests/post/<str:topic>', views.test_generate),
-    path('core/tests/clear', views.test_clear),
-    path('core/tests/delete/<str:pk>', views.test_delete), 
+
+    # Test endpoints (api_views/tests.py)
+    path('core/tests/get/<str:topic>', tests.get_by_topic),
+    path('core/tests/post/<str:topic>', tests.test_generate),
+    path('core/tests/clear', tests.test_clear),
+    path('core/tests/delete/<str:pk>', tests.test_delete), 
     path('core/tests/init', views.init_database), 
-    path('core/tests/all', views.get_all), 
-    path('core/tests/approve/<str:topic>', views.approve_list), 
-    path('core/tests/deny/<str:topic>', views.deny_list), 
-    path('core/tests/invalidate/<str:topic>', views.invalidate_list),
-    path('core/logs/add', views.log_action),
-    path('core/logs/clear', views.log_clear),
-    path('core/logs/save', views.save_log),
-    path('core/tests/add/<str:topic>/<str:ground_truth>', views.add_test),
-    path('core/tests/edit/<str:topic>', views.edit_test),
-    path('core/perturbations/generate/<str:topic>', views.generate_perturbations),
-    path('core/perturbations/get', views.get_perturbations),
-    path('core/perturbations/validate/<str:validation>', views.validate_perturbations),
-    path('core/perturbations/edit/<str:topic>', views.edit_perturbation),
-    path('core/perturbations/add/<str:topic>', views.add_new_pert),
-    path('core/perturbations/test/<str:topic>', views.test_new_pert),
+    path('core/tests/all', tests.get_all_tests), 
+    path('core/tests/add/<str:topic>/<str:ground_truth>', tests.add_test),
+    path('core/tests/edit/<str:topic>', tests.edit_test),
+    path('core/tests/process/<str:decision>/<str:topic>', tests.process_list),
+
+    # Log endpoints (api_views/logs.py)
+    path('core/logs/add', logs.log_action),
+    path('core/logs/clear', logs.log_clear),
+    path('core/logs/save', logs.save_log),
+
+    # Perturbation endpoints (api_views/perturbations.py)
+    path('core/perturbations/generate/<str:topic>', perturbations.generate_perturbations),
+    path('core/perturbations/get', perturbations.get_perturbations),
+    path('core/perturbations/validate/<str:validation>', perturbations.validate_perturbations),
+    path('core/perturbations/edit/<str:topic>', perturbations.edit_perturbation),
+    path('core/perturbations/add/<str:topic>', perturbations.add_new_pert),
+    path('core/perturbations/test', perturbations.test_new_pert),
 ]
 
 

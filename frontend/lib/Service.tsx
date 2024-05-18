@@ -41,21 +41,18 @@ export async function generateTests(topic: string) {
   }
 }
 
-/** 
-  * Approves a list of tests
-  * @param tests List of tests to be approved
-  * @param topic PE, KE, LCE
-  */
-export async function approveTests(tests: testType[], topic: string) {
+/**
+ * Decides on a list of tests based on the decision and topic
+ * @param tests List of tests to be decided
+ * @param decision Approved, Denied, Invalid
+ * @param topic Current topic being worked on
+ */
+export async function processTests(tests: testType[], decision: string, topic: string) {
   if (tests.length === 0) return;
-  const url = `core/tests/approve/${topic}`;
+  const url = `core/tests/process/${decision}/${topic}`;
   try {
     await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      cache: 'no-store',
       body: JSON.stringify(tests),
     });
   } catch (e) {
@@ -63,49 +60,6 @@ export async function approveTests(tests: testType[], topic: string) {
   }
 }
 
-/** 
-  * Denies a list of tests
-  * @param tests List of tests to be denied
-  * @param topic PE, KE, LCE
-  */
-export async function denyTests(tests: testType[], topic: string) {
-  if (tests.length === 0) return;
-  const url = `core/tests/deny/${topic}`
-  try {
-    await fetch(url, {
-      method: 'POST',
-      cache: "no-store",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(tests),
-    });
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-/** 
-  * Trashes a list of tests
-  * @param tests List of tests to be trashed
-  * @param topic PE, KE, LCE
-  */
-export async function trashTests(tests: testType[], topic: string) {
-  if (tests.length === 0) return;
-  const url = `core/tests/invalidate/${topic}`
-  try {
-    await fetch(url, {
-      method: 'POST',
-      cache: "no-store",
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(tests),
-    });
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 export async function logAction(test_ids: string[], action: string) {
   const url = `core/logs/add`;
@@ -310,8 +264,8 @@ export async function addNewPerturbation(tests: testType[], type: string, prompt
  * @param topic Topic of the perturbation
  * @returns A perturbed test object
  */
-export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string, topic: string) {
-  const url = `core/perturbations/test/${topic}`;
+export async function testNewPerturbation(type: string, prompt: string, statement: string, direction: string) {
+  const url = 'core/perturbations/test';
   try {
     const res = await fetch(url, {
       method: 'POST',

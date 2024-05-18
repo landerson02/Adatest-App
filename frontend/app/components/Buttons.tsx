@@ -2,7 +2,7 @@
 import { TestDataContext } from "@/lib/TestContext";
 import { perturbedTestType, testType } from "@/lib/Types";
 import { useContext, useState, useEffect } from "react";
-import { approveTests, denyTests, createPerturbations, logAction, trashTests, addTest, validatePerturbations } from "@/lib/Service";
+import { createPerturbations, logAction, addTest, validatePerturbations, processTests } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
 import AddPertForm from "@/app/components/AddPertForm";
 import Popup from "@/app/components/Popup";
@@ -46,7 +46,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
   const [isAnyDecided, setIsAnyDecided] = useState(false);
 
   useEffect(() => {
-    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "Approved" || test.validity === "Denied"));
+    setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "approved" || test.validity === "denied"));
   }, [testData.currentTests]);
 
   /**
@@ -60,11 +60,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     let test_ids = checkedTests.map((test: testType) => test.id);
     await logAction(test_ids, decision);
 
-    // Update decisions in db
-    if (decision === "approved") await approveTests(checkedTests, currentTopic);
-    else if (decision === "denied") await denyTests(checkedTests, currentTopic);
-    else if (decision === "invalid") await trashTests(checkedTests, currentTopic);
-    else console.error("Invalid decision");
+    // Update decision in db
+    await processTests(checkedTests, decision, currentTopic);
 
     // Handle perturbed test decisions
 
@@ -72,8 +69,6 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
       test.perturbedTests.filter((pertTest: perturbedTestType) => pertTest.isChecked)).flat();
 
     // Update pert decisions in db
-    // set First char to uppercase
-    decision = decision.charAt(0).toUpperCase() + decision.slice(1);
     await validatePerturbations(checkedPerts, decision);
 
     setIsCurrent(false);
@@ -90,7 +85,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
     if (isPerturbing) return;
     setIsPerturbing(true);
     await logAction(["null"], "Perturb Essays");
-    await createPerturbations(testData.currentTests.filter((test) => test.validity == "Approved" || test.validity == "Denied"), currentTopic);
+    await createPerturbations(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), currentTopic);
     setIsPerturbing(false);
   }
 
@@ -155,7 +150,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
         ) : (
           <button
             className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
-            onClick={() => setIsCreatePertModalOpen(true)}
+            onClick={isAnyDecided ? () => setIsCreatePertModalOpen(true) : () => { }}
           >
             Create Perturbation
           </button>
@@ -163,7 +158,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
         {isCreatePertModalOpen &&
           <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
-            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent}/>
+            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent} />
           </Popup>
         }
 
@@ -195,7 +190,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-green-300 hover:scale-105 hover:bg-green-400 cursor-pointer"}`}
               onClick={() => {
                 if (addTestText === "") return;
-                addTestHandler("Acceptable");
+                addTestHandler("acceptable");
               }}
             >
               Add as Acceptable
@@ -204,7 +199,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
               className={`flex h-8 w-48 items-center justify-center rounded-md font-light shadow-2xl transition ease-in-out ${addTestText === "" ? "bg-gray-500 cursor-default" : "bg-red-300 hover:scale-105 hover:bg-red-400 cursor-pointer"}`}
               onClick={() => {
                 if (addTestText === "") return;
-                addTestHandler("Unacceptable");
+                addTestHandler("unacceptable");
               }}
             >
               Add as Unacceptable
