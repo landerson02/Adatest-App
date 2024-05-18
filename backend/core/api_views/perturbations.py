@@ -243,3 +243,30 @@ def test_new_pert(request):
         perturbed_test = test_case
 
     return Response(perturbed_test)
+
+
+@api_view(['DELETE'])
+def delete_perturbation(request):
+    """
+    Deletes a perturbation from the database
+    :param request: needs json object with pert_name in body
+    :return: All perturbations in the database
+    """
+
+    pert = json.loads(request.body.decode("utf-8"))
+    pert_name = pert['pert_name']
+
+    # Get perturbation and delete it
+    if pert_name in pert_pipeline_map:
+        del pert_pipeline_map[pert_name]
+        Perturbation.objects.filter(type=pert_name).delete()
+
+    if pert_name in custom_pert_pipeline_map:
+        del custom_pert_pipeline_map[pert_name]
+        Perturbation.objects.filter(type=pert_name).delete()
+
+
+    # Return all perts
+    allPerts = Perturbation.objects.all()
+    serializer = PerturbationSerializer(allPerts, context={'request': request}, many=True)
+    return Response(serializer.data)
