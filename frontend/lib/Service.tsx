@@ -158,6 +158,14 @@ export async function resetDB() {
       method: 'POST',
       cache: 'no-store'
     });
+    await fetch('core/logs/save', {
+      method: 'POST',
+      cache: 'no-store'
+    });
+    await fetch('core/logs/clear', {
+      method: 'POST',
+      cache: 'no-store'
+    });
   } catch (error) {
     console.error(error);
   }
