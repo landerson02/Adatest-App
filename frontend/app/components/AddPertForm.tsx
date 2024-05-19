@@ -136,6 +136,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
       getAllPerturbationTypes().then((res) => {
         setPerturbations(res);
       })
+      setSelectedPerturbation("+");
       setIsDeleting(false);
       setIsCurrent(false);
     });
