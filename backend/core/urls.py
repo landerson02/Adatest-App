@@ -31,6 +31,7 @@ urlpatterns = [
     path('core/perturbations/add/<str:topic>', perturbations.add_new_pert),
     path('core/perturbations/test', perturbations.test_new_pert),
     path('core/perturbations/delete', perturbations.delete_perturbation),
+    path('core/perturbations/getType/<str:pert_type>', perturbations.get_perturbation_type),
 ]
 
 

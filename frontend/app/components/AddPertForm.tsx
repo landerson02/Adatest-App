@@ -67,7 +67,6 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
     async function submitPert() {
       // Get new perts
       const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection, currentTopic);
-      console.log(newPerts);
 
       // Check if valid response
       if (!newPerts) {
@@ -82,7 +81,11 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
       closeModal();
     }
 
-    submitPert();
+    submitPert().then(() => {
+      fetch('/core/perturbations/getType/french').then((res) => {
+        console.log(res.json().then((data) => console.log(data)));
+      });
+    });
   }
 
   return (
