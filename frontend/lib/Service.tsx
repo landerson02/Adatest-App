@@ -284,3 +284,36 @@ export async function testNewPerturbation(type: string, prompt: string, statemen
     console.error(error);
   }
 }
+
+/**
+ * Gets a pert type
+ * @param type Type of perturbation (e.g. synonyms, spelling, etc.)
+ * @returns A perturbation type object
+ */
+export async function getPertType(type: string) {
+  const url = `core/perturbations/getType/${type}`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+    });
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/**
+ * Gets all pert types
+ * @returns An array of perturbation types
+ */
+export async function getAllPertTypes() {
+  const url = 'core/perturbations/getAllTypes';
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+    });
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+}
