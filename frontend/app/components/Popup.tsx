@@ -1,5 +1,6 @@
 import { IoIosClose } from 'react-icons/io';
 import Modal from 'react-modal';
+import React from 'react';
 
 type PopupProps = {
   isOpen: boolean,
@@ -11,9 +12,9 @@ const Popup: React.FC<PopupProps> = ({ isOpen, closeModal, children }: PopupProp
 
   const customStyles = {
     content: {
-      width: '60%',
-      height: '70%',
-      maxHeight: '70%',
+      width: '70%',
+      height: '80%',
+      maxHeight: '80%',
       margin: 'auto',
       padding: 0,
       backgroundColor: 'white',

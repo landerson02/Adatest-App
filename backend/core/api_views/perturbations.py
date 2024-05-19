@@ -185,7 +185,7 @@ def add_new_pert(request, topic):
     if pert_name in custom_pert_pipeline_map.keys() or pert_name in pert_pipeline_map.keys():
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
 
-    custom_pert_pipeline_map[pert_name] = {"prompt": prompt, "flip_label": flip_label}
+    custom_pert_pipeline_map[pert_name] = {"name": pert_name, "prompt": prompt, "flip_label": flip_label}
 
     for test in test_list:
         id = test["id"]
@@ -282,5 +282,19 @@ def get_perturbation_type(request, pert_type):
     if pert_type in custom_pert_pipeline_map:
         custom_pert_pipeline_map[pert_type]["prompt"] = custom_pert_pipeline_map[pert_type]["prompt"].replace(". Only reply with the revised text and do not add comments", "")
         return Response(custom_pert_pipeline_map[pert_type])
+    elif pert_type in pert_pipeline_map:
+        return Response({"name": pert_type, "prompt": "Default", "flip_label": pert_type == "negation" or pert_type == "antonyms"})
     else:
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_all_perturbation_types(request):
+    """
+    Getter for perturbation types
+    :param request: None
+    :param pert_type: type of perturbation to get
+    :return: The info of the perturbation type
+    """
+    pert_types = list(pert_pipeline_map.keys()) + list(custom_pert_pipeline_map.keys())
+    return Response(pert_types)

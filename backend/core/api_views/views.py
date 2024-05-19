@@ -90,7 +90,6 @@ if MODEL_TYPE == "mistral":
     for perturb_type in pert_pipeline_map.keys():
         pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
 
-
 obj_map = {}
 df_map = {}
 

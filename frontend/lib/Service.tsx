@@ -286,19 +286,43 @@ export async function testNewPerturbation(type: string, prompt: string, statemen
 }
 
 /**
+ * Deletes a perturbation type
+ * @param type perturbation type to delete
+ * @returns all perturbations
+ */
+export async function deletePerturbation(type: string) {
+  const url = `core/perturbations/delete`;
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pert_name: type,
+      }),
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
  * Gets a pert type
  * @param type Type of perturbation (e.g. synonyms, spelling, etc.)
  * @returns A perturbation type object
  */
-export async function getPertType(type: string) {
+export async function getPerturbationInfo(type: string) {
   const url = `core/perturbations/getType/${type}`;
   try {
     const res = await fetch(url, {
       method: 'GET',
+      cache: "no-store",
     });
     return await res.json();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
   }
 }
 
@@ -306,14 +330,29 @@ export async function getPertType(type: string) {
  * Gets all pert types
  * @returns An array of perturbation types
  */
-export async function getAllPertTypes() {
-  const url = 'core/perturbations/getAllTypes';
+export async function getAllPerturbationTypes() {
+  const url = `core/perturbations/getAll`;
   try {
     const res = await fetch(url, {
       method: 'GET',
+      cache: "no-store",
     });
     return await res.json();
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
   }
+}
+
+/**
+ * Edits a perturbation type
+ * @param tests List of tests to be perturbed
+ * @param type Type of perturbation (e.g. synonyms, spelling, etc.)
+ * @param prompt AI Prompt
+ * @param testDirection Direction of the test(INV, DIR)
+ * @param topic Topic of the perturbation
+ * @returns List of perturbed tests
+ */
+export async function editPerturbation(tests: testType[], type: string, prompt: string, testDirection: string, topic: string) {
+  await deletePerturbation(type);
+  return await addNewPerturbation(tests, type, prompt, testDirection, topic);
 }
