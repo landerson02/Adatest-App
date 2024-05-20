@@ -58,7 +58,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
     // Get ids and log them
     let test_ids = checkedTests.map((test: testType) => test.id);
-    await logAction(test_ids, decision);
+    await logAction(test_ids, "Tests are marked " + decision);
 
     // Update decisions in db
     if (decision === "approved") await approveTests(checkedTests, currentTopic);

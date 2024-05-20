@@ -113,6 +113,7 @@ export async function logAction(test_ids: string[], action: string) {
   test_ids.forEach((test_id) => {
     tests += test_id + ","
   });
+  console.log("frontend: " + test_ids);
   const data = {
     test_ids: tests,
     action: action
@@ -163,7 +164,7 @@ export async function resetDB() {
       cache: 'no-store'
     });
     await fetch('core/logs/clear', {
-      method: 'POST',
+      method: 'DELETE',
       cache: 'no-store'
     });
   } catch (error) {

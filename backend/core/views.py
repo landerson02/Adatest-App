@@ -398,6 +398,7 @@ def log_action(request):
     body_dict = json.loads(body)
     test_ids = body_dict['data']['test_ids']
     action = body_dict['data']['action']
+    print("backend: " + test_ids)
 
     log = Log(test_ids=test_ids, action=action)
     try:

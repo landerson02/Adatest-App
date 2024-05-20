@@ -100,7 +100,6 @@ const TaskGraph = ({isPerturbed, criteriaLabels}: taskGraphProps) => {
             let temp: graphDataType = {};
             validityLabels.forEach(validity => { // in this array, array[0] = approved, array[1] = denied
                 temp[validity] = {};
-                console.log("At Fetch Criteria: " + criteriaLabels);
                 criteriaLabels.forEach(criteria => { // in this array, array[0][0] = approved and Base, and so on for that list
                     if(criteria === criteriaLabels[0]) {
                        temp[validity][criteria] = tests.filter((test: testType) => test.validity.toLowerCase() === validity.toLowerCase());
@@ -148,8 +147,6 @@ const TaskGraph = ({isPerturbed, criteriaLabels}: taskGraphProps) => {
         if (criteria) {
             let matchList = [];
             let unmatchList = [];
-            console.log("At setting data: " + criteriaLabels);
-            console.log(criteria);
             for(let i = 0; i < criteriaLabels.length; i++) {
                 matchList.push(criteria[validityLabels[0]][criteriaLabels[i]].length);
                 unmatchList.push(criteria[validityLabels[1]][criteriaLabels[i]].length);
