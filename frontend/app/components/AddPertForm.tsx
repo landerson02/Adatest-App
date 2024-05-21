@@ -151,7 +151,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
 
       <div className={'flex p-2 gap-1 flex-wrap'}>
         <div className={"p-1"}>
-          Perturbations:
+          Criteria Type:
         </div>
         {perturbations.map((pert) => {
           return (
@@ -253,7 +253,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
                 <button
                   className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   type="submit">
-                  Submit New Perturbation
+                  Submit New Criteria
                 </button>
               )}
             </div>}
@@ -267,7 +267,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
                 <button
                   className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   onClick={(e) => editPert(e)}>
-                  Edit Perturbation
+                  Edit Criteria
                 </button>
               )}
             </div>}
@@ -281,7 +281,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
                 <button
                   className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   onClick={(e) => removePert(e)}>
-                  Remove Perturbation
+                  Remove Criteria
                 </button>
               )}
             </div>}
