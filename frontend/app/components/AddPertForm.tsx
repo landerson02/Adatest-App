@@ -13,12 +13,11 @@ import {perturbedTestType} from '@/lib/Types';
 
 type AddPertFormProps = {
   closeModal: () => void,
-  setIsCurrent: (isCurrent: boolean) => void,
 }
 
-const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
+const AddPertForm = ({ closeModal }: AddPertFormProps) => {
 
-  const { currentTopic, testData, setTestData } = useContext(TestDataContext);
+  const { testData, setIsCurrent } = useContext(TestDataContext);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);

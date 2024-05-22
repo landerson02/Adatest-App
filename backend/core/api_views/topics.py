@@ -3,6 +3,7 @@ import csv
 
 from .views import *
 from ..models import *
+from ..serializer import TestSerializer
 
 
 @api_view(['POST'])
@@ -46,3 +47,12 @@ def add_topic(request):
         obj.save()
 
     return Response("Topic added successfully!")
+
+
+@api_view(['GET'])
+def get_topics(request):
+    """
+    Gets all topics from the db
+    """
+    tests = Test.objects.values_list('topic', flat=True).distinct()
+    return Response(list(tests))

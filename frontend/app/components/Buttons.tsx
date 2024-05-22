@@ -12,15 +12,14 @@ type ButtonsProps = {
   currentTopic: string,
   isGenerating: boolean,
   genTests: () => void,
-  setIsCurrent: (isCurrent: boolean) => void,
   isPerturbing: boolean,
   setIsPerturbing: (isPerturbing: boolean) => void,
 }
 
-export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPerturbing, isPerturbing }: ButtonsProps) => {
+export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPerturbing }: ButtonsProps) => {
 
   // Get the test data
-  const { testData } = useContext(TestDataContext);
+  const { testData, setIsCurrent } = useContext(TestDataContext);
 
   // If currently adding a test
   const [isAddingTest, setIsAddingTest] = useState(false);
@@ -158,7 +157,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
 
         {isCreatePertModalOpen &&
           <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
-            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} setIsCurrent={setIsCurrent} />
+            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} />
           </Popup>
         }
 

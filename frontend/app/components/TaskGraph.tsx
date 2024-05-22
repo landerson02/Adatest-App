@@ -56,7 +56,7 @@ const TaskGraph = ({ isPerturbed, criteriaLabels }: taskGraphProps) => {
 
     // Use effect that updates topic data when testData.tests are updated -> sets data for topic
     useEffect(() => {
-        const tests = testData.tests.PE.concat(testData.tests.KE, testData.tests.LCE, testData.tests.CU0, testData.tests.CU5);
+        const tests = Object.values(testData.tests).flat();
         const total = tests.filter((test: testType) => test.validity.toLowerCase() === 'approved' || test.validity.toLowerCase() === 'denied').length;
         setTotalTests(total);
         // Filters through tests -> outputs them to categorize by label and topic
@@ -219,6 +219,7 @@ const TaskGraph = ({ isPerturbed, criteriaLabels }: taskGraphProps) => {
     });
 
     // @ts-ignore
+    // @ts-ignore
     return (
         <div className={'float-end overflow-auto w-full h-full justify-start items-center flex flex-col'}>
             <div className={'w-full h-[15]%'}>
@@ -232,13 +233,16 @@ const TaskGraph = ({ isPerturbed, criteriaLabels }: taskGraphProps) => {
                 {isPerturbed && <Options onPerturbationChange={setSelectedPerturbation} criteriaLabels={criteriaLabels} />}
             </div>
             <div className={'w-full h-44'}>
+                {/*@ts-ignore*/}
                 {topicData && <Bar data={topicData} options={createOptions('Tests by Topic')}> </Bar>}
             </div>
             <div className={'w-full h-44'}>
+                {/*@ts-ignore*/}
                 {gradeData && <Bar data={gradeData} options={createOptions('Tests by Grade')}> </Bar>}
             </div>
             <div className={'w-full h-96'}>
                 {isPerturbed && criteriaData &&
+                    //@ts-ignore
                     <Bar data={criteriaData} options={createOptions("Tests by Criteria")}> </Bar>}
             </div>
         </div>

@@ -10,13 +10,12 @@ import { editTest } from '@/lib/Service';
 
 type PerturbRowProps = {
   pertTest: perturbedTestType
-  setIsCurrent: (isCurrent: boolean) => void
 }
 
-const PerturbRow = ({ pertTest, setIsCurrent }: PerturbRowProps) => {
+const PerturbRow = ({ pertTest }: PerturbRowProps) => {
 
   // Get test data
-  const { testData, setTestData, currentTopic } = useContext(TestDataContext);
+  const { testData, setTestData, currentTopic, setIsCurrent } = useContext(TestDataContext);
 
   // If test is being edited
   const [newTest, setNewTest] = useState<string>("");

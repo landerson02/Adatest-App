@@ -12,15 +12,14 @@ import { TestDataContext } from "@/lib/TestContext";
 type rowProps = {
   test: testType,
   toggleCheck: (test: testType) => void,
-  setIsCurrent: (isCurrent: boolean) => void,
   isPertsFiltered: boolean,
   isPerturbed: boolean,
 }
 
-const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: rowProps) => {
+const Row = ({ test, toggleCheck, isPertsFiltered, isPerturbed }: rowProps) => {
 
   // Get test data
-  const { currentTopic } = useContext(TestDataContext);
+  const { currentTopic, setIsCurrent } = useContext(TestDataContext);
 
   // if the perturbation dropdown is showing
   const [isShowingPerts, setIsShowingPerts] = useState<boolean>(false);
@@ -169,7 +168,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
       {(isPertsFiltered || isShowingPerts)
         && pertList && pertList.length !== 0
         && pertList.map((pert: perturbedTestType, index: number) =>
-          <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
+          <PerturbRow key={index} pertTest={pert} />
         )}
     </>
   )

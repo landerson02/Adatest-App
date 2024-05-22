@@ -3,7 +3,7 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import { generateTests, getPerturbations, getTests } from "@/lib/Service";
+import {generateTests, getPerturbations, getTests, getTopics} from "@/lib/Service";
 import { testType, testDataType, perturbedTestType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
@@ -11,8 +11,6 @@ import Buttons from "@/app/components/Buttons";
 
 export default function Home() {
 
-  // Whether tests are most recent
-  const [isCurrent, setIsCurrent] = useState<boolean>(false);
   const [criteriaLabels, setCriteriaLabels] = useState<string[]>(['Base', 'Spelling',
     'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish']);
   // Boolean for if the tests are being generated
@@ -41,6 +39,9 @@ export default function Home() {
     testData,
     setTestData,
     currentTopic,
+    // Whether tests are most recent
+    isCurrent,
+    setIsCurrent
   } = useContext(TestDataContext);
 
   useEffect(() => {
@@ -118,7 +119,7 @@ export default function Home() {
         return data;
       }
 
-      const topics = ['PE', 'KE', 'LCE', 'CU0', 'CU5'];
+      const topics = await getTopics();
       let testArrays: { [key: string]: testType[] } = {};
 
       // Get all perturbed tests
@@ -186,6 +187,12 @@ export default function Home() {
       for (const topic of topics) {
         for (const test of testArrays[topic]) {
           if (test.validity == 'unapproved') continue;
+          if (!newTestDecisions[topic]) {
+            newTestDecisions[topic] = {};
+          }
+          if (!newTestDecisions[topic][test.validity.toLowerCase()]) {
+            newTestDecisions[topic][test.validity.toLowerCase()] = [];
+          }
           newTestDecisions[topic][test.validity.toLowerCase()].push(test);
           for (const perturbedTest of test.perturbedTests) {
             if (perturbedTest.validity == 'unapproved') continue;
@@ -195,16 +202,13 @@ export default function Home() {
       }
 
       let newTestData: testDataType = {
-        tests: {
-          PE: testArrays['PE'],
-          KE: testArrays['KE'],
-          LCE: testArrays['LCE'],
-          CU0: testArrays['CU0'],
-          CU5: testArrays['CU5'],
-        },
+        tests: {},
         currentTests: curTests,
         test_decisions: newTestDecisions,
         pert_decisions: newPertDecisions,
+      }
+      for (const topic of topics) {
+        newTestData.tests[topic] = testArrays[topic];
       }
       setTestData(newTestData);
       setIsCurrent(true);
@@ -247,12 +251,10 @@ export default function Home() {
           <RadioButtons
             isAutoCheck={isAutoCheck}
             setIsAutoCheck={setIsAutoSelect}
-            setIsCurrent={setIsCurrent}
           />
         </div>
         <TestList
           toggleCheck={toggleCheck}
-          setIsCurrent={setIsCurrent}
           filterMap={filterMap}
           setFilterMap={setFilterMap}
           isPerturbed={isPerturbed}
@@ -261,7 +263,6 @@ export default function Home() {
           currentTopic={currentTopic}
           isGenerating={isGenerating}
           genTests={onGenerateTests}
-          setIsCurrent={setIsCurrent}
           isPerturbing={isPerturbing}
           setIsPerturbing={setIsPerturbing}
         />

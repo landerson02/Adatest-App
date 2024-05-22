@@ -9,13 +9,12 @@ import { logAction } from "@/lib/Service";
 
 type testListProps = {
   toggleCheck: (test: testType) => void,
-  setIsCurrent: (isCurrent: boolean) => void,
   filterMap: { [key: string]: string },
   setFilterMap: (filterMap: { [key: string]: string }) => void,
   isPerturbed: boolean,
 }
 
-const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPerturbed }: testListProps) => {
+const TestList = ({ toggleCheck, filterMap, setFilterMap, isPerturbed }: testListProps) => {
 
   // Filtering states
   const [isSelectingGradeFilter, setIsSelectingGradeFilter] = useState<boolean>(false);
@@ -178,7 +177,7 @@ const TestList = ({ toggleCheck, setIsCurrent, filterMap, setFilterMap, isPertur
 
       {(testData && testData.currentTests.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
-          return <Row key={index} test={test} toggleCheck={toggleCheck} setIsCurrent={setIsCurrent}
+          return <Row key={index} test={test} toggleCheck={toggleCheck}
             isPertsFiltered={filterMap['pert'] !== ''} isPerturbed={isPerturbed} />
         })
       ) : (filterMap['label'] !== '') ? (

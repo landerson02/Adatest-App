@@ -356,3 +356,16 @@ export async function editPerturbation(tests: testType[], type: string, prompt: 
   await deletePerturbation(type);
   return await addNewPerturbation(tests, type, prompt, testDirection);
 }
+
+export async function getTopics() {
+  const url = `core/topics/get`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      cache: "no-store",
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
