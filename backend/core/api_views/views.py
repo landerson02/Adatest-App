@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from ..ada import *
 from ..models import *
-from ..pipelines.flanT5Grader import *
+# from ..pipelines.flanT5Grader import *
 from ..pipelines.robertaGrader import *
 from ..pipelines.mistralGenerator import *
 
@@ -17,22 +17,22 @@ MODEL_TYPE = os.getenv('MODEL')
 
 # helper objects
 
-lce_model, lce_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_LCE_v2')
-lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
-
-pe_model, pe_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_PE_v2')
-pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
-
-ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
-ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
+# lce_model, lce_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_LCE_v2')
+# lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
+#
+# pe_model, pe_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_PE_v2')
+# pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
+#
+# ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
+# ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 cu0_pipeline = CUPipeline("CU0")
 cu5_pipeline = CUPipeline("CU5")
 
 grader_pipelines = {
-    "LCE": lce_pipeline,
-    "PE": pe_pipeline,
-    "KE": ke_pipeline,
+    # "LCE": lce_pipeline,
+    # "PE": pe_pipeline,
+    # "KE": ke_pipeline,
     "CU0": cu0_pipeline,
     "CU5": cu5_pipeline
 }
@@ -105,8 +105,7 @@ def init_database(request):
     for top, pipe in grader_pipelines.items():
         obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
         # PE KE LCE for this user study will have no tests
-        numTestsInit = 10 if top in ['CU0', 'CU5'] else 0
-        data = obj_map[top].df.head(numTestsInit)
+        data = obj_map[top].df.head(10)
         for i, row in data.iterrows():
             if row['input'] == '':
                 continue
