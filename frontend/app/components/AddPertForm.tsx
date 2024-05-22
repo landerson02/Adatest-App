@@ -121,7 +121,8 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
   const editPert = (event: React.MouseEvent<HTMLButtonElement>) => {
     setIsEditing(true);
     event.preventDefault()
-    editPerturbation(testData.currentTests.filter((test) => test.perturbedTests.some((ptest) => ptest.type.toLowerCase() == selectedPerturbation.toLowerCase())),
+    const tests = Object.values(testData.tests).flat();
+    editPerturbation(tests.filter((test) => test.perturbedTests.some((ptest) => ptest.type.toLowerCase() == selectedPerturbation.toLowerCase())),
       selectedPerturbation, aiPrompt, testDirection).then(() => {
         setIsCurrent(false);
         setIsEditing(false);
