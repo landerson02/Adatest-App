@@ -234,8 +234,8 @@ export async function validatePerturbations(tests: perturbedTestType[], validati
  * @param topic Topic of the perturbation
  * @returns List of perturbed tests
  */
-export async function addNewPerturbation(tests: testType[], type: string, prompt: string, testDirection: string, topic: string) {
-  const url = `core/perturbations/add/${topic}`;
+export async function addNewPerturbation(tests: testType[], type: string, prompt: string, testDirection: string) {
+  const url = `core/perturbations/add`;
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -352,7 +352,7 @@ export async function getAllPerturbationTypes() {
  * @param topic Topic of the perturbation
  * @returns List of perturbed tests
  */
-export async function editPerturbation(tests: testType[], type: string, prompt: string, testDirection: string, topic: string) {
+export async function editPerturbation(tests: testType[], type: string, prompt: string, testDirection: string) {
   await deletePerturbation(type);
-  return await addNewPerturbation(tests, type, prompt, testDirection, topic);
+  return await addNewPerturbation(tests, type, prompt, testDirection);
 }

@@ -100,7 +100,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
     // Generate and load new perts
     async function submitPert() {
       // Get new perts
-      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection, currentTopic);
+      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection);
 
       // Check if valid response
       if (!newPerts) {
@@ -122,7 +122,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
     setIsEditing(true);
     event.preventDefault()
     editPerturbation(testData.currentTests.filter((test) => test.perturbedTests.some((ptest) => ptest.type.toLowerCase() == selectedPerturbation.toLowerCase())),
-      selectedPerturbation, aiPrompt, testDirection, currentTopic).then(() => {
+      selectedPerturbation, aiPrompt, testDirection).then(() => {
         setIsCurrent(false);
         setIsEditing(false);
         closeModal();

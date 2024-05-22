@@ -166,7 +166,7 @@ def validate_perturbations(request, validation):
 
 
 @api_view(['POST'])
-def add_new_pert(request, topic):
+def add_new_pert(request):
     """
     Adds a new pert type to the db and generates perturbations for the given tests
     :param request: new pert type to add (tests, prompt, flip_label, name)
@@ -197,7 +197,7 @@ def add_new_pert(request, topic):
         else:
             perturbed_test = testData.title
 
-        perturbed_label = check_lab(topic, perturbed_test)
+        perturbed_label = check_lab(testData.topic, perturbed_test)
 
         if flip_label ^ (testData.ground_truth == "acceptable"):
             perturbed_gt = "acceptable"
