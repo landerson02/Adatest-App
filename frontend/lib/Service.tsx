@@ -357,6 +357,10 @@ export async function editPerturbation(tests: testType[], type: string, prompt: 
   return await addNewPerturbation(tests, type, prompt, testDirection);
 }
 
+/**
+ * Gets all topics
+ * @returns A string array of topics
+ */
 export async function getTopics() {
   const url = `core/topics/get`;
   try {
@@ -365,6 +369,26 @@ export async function getTopics() {
       cache: "no-store",
     });
     return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Adds a topic
+ * @param topic Topic to add
+ * @param tests List of tests to add in the format {test: string, ground_truth: string}
+ */
+export async function addTopic(topic: string, tests: {test: string, ground_truth: string}[]) {
+  const url = `core/topics/add`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ topic, tests }),
+    });
   } catch (error) {
     console.error(error);
   }

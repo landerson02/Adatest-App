@@ -1,9 +1,10 @@
 'use client';
-import { logAction, resetDB, saveLogs } from "@/lib/Service";
+import {addTopic, logAction, resetDB, saveLogs} from "@/lib/Service";
 import {useContext, useEffect, useState} from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
 import { ThreeDots } from "react-loading-icons";
+import Popup from "@/app/components/Popup";
 
 
 type RadioButtonProps = {
@@ -56,6 +57,8 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
   // If db is being reset
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
+  const [addTopicOpen, setAddTopicOpen] = useState<boolean>(false);
+
   useEffect(() => {
     setTopics(Object.keys(testData.tests));
   }, [isCurrent]);
@@ -86,7 +89,16 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
               );
             })
           }
-
+          <div
+            className={'w-8 h-8 border border-black rounded-md flex justify-center items-center bg-green-100 hover:bg-green-400 shadow-2xl cursor-pointer transition hover:scale-105'}
+            onClick={() => setAddTopicOpen(true)}>
+            +
+          </div>
+          <Popup closeModal={() => setAddTopicOpen(false)} isOpen={addTopicOpen}>
+            <div className={"flex justify-center"}>
+              Add topic form
+            </div>
+          </Popup>
         </div>
 
         <div className={'flex items-center justify-end'}>
