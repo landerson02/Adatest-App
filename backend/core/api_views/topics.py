@@ -38,7 +38,7 @@ def add_topic(request):
     obj_map[new_topic] = create_obj(mistral=mistral_pipeline, essayPipeline=grader_pipelines[new_topic], type=new_topic)
     df_map[new_topic] = obj_map[new_topic].df
 
-    for i, row in df_map[new_topic].head(10).iterrows():
+    for i, row in df_map[new_topic].head(11).iterrows():
         if row['input'] == '':
             continue
         obj = Test(id=i, title=row['input'], topic=new_topic, label=check_lab(new_topic, row['input']),
