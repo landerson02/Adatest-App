@@ -65,7 +65,7 @@ def generate_perturbations(request, topic):
                 perturbed_test = testData.title
 
             perturbed_label = check_lab(topic, perturbed_test)
-            
+
             if (perturb_options["flip_label"]) ^ (testData.ground_truth == "acceptable"):
                 perturbed_gt = "acceptable"
             else:
@@ -185,7 +185,7 @@ def add_new_pert(request, topic):
     if pert_name in custom_pert_pipeline_map.keys() or pert_name in pert_pipeline_map.keys():
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
 
-    custom_pert_pipeline_map[pert_name] = {"prompt": prompt, "flip_label": flip_label}
+    custom_pert_pipeline_map[pert_name] = {"name": pert_name, "prompt": prompt, "flip_label": flip_label}
 
     for test in test_list:
         id = test["id"]
@@ -243,3 +243,58 @@ def test_new_pert(request):
         perturbed_test = test_case
 
     return Response(perturbed_test)
+
+
+@api_view(['DELETE'])
+def delete_perturbation(request):
+    """
+    Deletes a perturbation from the database
+    :param request: needs json object with pert_name in body
+    :return: All perturbations in the database
+    """
+
+    pert = json.loads(request.body.decode("utf-8"))
+    pert_name = pert['pert_name']
+
+    # Get perturbation and delete it
+    if pert_name in pert_pipeline_map:
+        del pert_pipeline_map[pert_name]
+        Perturbation.objects.filter(type=pert_name).delete()
+
+    if pert_name in custom_pert_pipeline_map:
+        del custom_pert_pipeline_map[pert_name]
+        Perturbation.objects.filter(type=pert_name).delete()
+
+    # Return all perts
+    allPerts = Perturbation.objects.all()
+    serializer = PerturbationSerializer(allPerts, context={'request': request}, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_perturbation_type(request, pert_type):
+    """
+    Getter for perturbation types
+    :param request: None
+    :param pert_type: type of perturbation to get
+    :return: The info of the perturbation type
+    """
+    if pert_type in custom_pert_pipeline_map:
+        custom_pert_pipeline_map[pert_type]["prompt"] = custom_pert_pipeline_map[pert_type]["prompt"].replace(". Only reply with the revised text and do not add comments", "")
+        return Response(custom_pert_pipeline_map[pert_type])
+    elif pert_type in pert_pipeline_map:
+        return Response({"name": pert_type, "prompt": "Default", "flip_label": pert_type == "negation" or pert_type == "antonyms"})
+    else:
+        return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_all_perturbation_types(request):
+    """
+    Getter for perturbation types
+    :param request: None
+    :param pert_type: type of perturbation to get
+    :return: The info of the perturbation type
+    """
+    pert_types = list(pert_pipeline_map.keys()) + list(custom_pert_pipeline_map.keys())
+    return Response(pert_types)

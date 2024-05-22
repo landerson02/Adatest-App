@@ -168,6 +168,12 @@ def test_clear(request):
     for perturbation in perturbations:
         perturbation.delete()
 
+    for pert in ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']:
+        if MODEL_TYPE == "mistral":
+            pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
+        else:
+            pert_pipeline_map[pert] = None
+
     custom_pert_pipeline_map.clear()
 
     return Response("All tests cleared!")

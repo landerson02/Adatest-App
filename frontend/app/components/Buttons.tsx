@@ -152,7 +152,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsCurrent, setIsPertu
             className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
             onClick={isAnyDecided ? () => setIsCreatePertModalOpen(true) : () => { }}
           >
-            Create Perturbation
+            Criteria Editor
           </button>
         )}
 

@@ -16,7 +16,7 @@ pip install notebook==6.1.5
 pip install Django
 pip install django_cors_headers
 pip install django_rest_framework
-pip install django_nextjs
+pip install django-nextjs==2.4.0
 pip install python-dotenv
 pip install peft
 pip install git+https://github.com/nytseng/adatest_mod@split-fix

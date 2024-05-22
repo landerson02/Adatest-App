@@ -1,8 +1,15 @@
-import React, { useState, useContext } from 'react';
-import { ThreeDots } from "react-loading-icons";
-import { addNewPerturbation, testNewPerturbation } from '@/lib/Service';
-import { TestDataContext } from '@/lib/TestContext';
-import { perturbedTestType } from '@/lib/Types';
+import React, {useContext, useEffect, useState} from 'react';
+import {ThreeDots} from "react-loading-icons";
+import {
+  addNewPerturbation,
+  getAllPerturbationTypes,
+  testNewPerturbation,
+  deletePerturbation,
+  getPerturbationInfo,
+  editPerturbation
+} from '@/lib/Service';
+import {TestDataContext} from '@/lib/TestContext';
+import {perturbedTestType} from '@/lib/Types';
 
 type AddPertFormProps = {
   closeModal: () => void,
@@ -17,17 +24,44 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
   const [isFailedTest, setIsFailedTest] = useState(false);
 
+  // States for perturbation types
+  const [perturbations, setPerturbations] = useState([]);
+  const [selectedPerturbation, setSelectedPerturbation] = useState("+");
+
   // Test pert states
   const [testResult, setTestResult] = useState('');
   const [isTestingPert, setIsTestingPert] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Form value states
   const [type, setType] = useState('');
   const [aiPrompt, setAIPrompt] = useState('');
   const [testStatement, setTestStatement] = useState('For both the initial drop and hill, the greater the height, the more energy');
   const [testDirection, setTestDirection] = useState('');
+
+  useEffect(() => {
+    getAllPerturbationTypes().then((res) => {
+      setPerturbations(res);
+    })
+  }, []);
+
+  const handleSelectPert = (pertType: string) => {
+    setSelectedPerturbation(pertType);
+    if (pertType == "+") {
+      setType('');
+      setAIPrompt('');
+      setTestDirection('');
+      return;
+    }
+    getPerturbationInfo(pertType).then((res) => {
+      setType(res.name);
+      setAIPrompt(res.prompt);
+      setTestDirection(res.flip_label ? 'DIR' : 'INV');
+    });
+  }
 
   // Calls the API to test the prompt on the statement
   const handleTestPerturbation = () => {
@@ -67,7 +101,6 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
     async function submitPert() {
       // Get new perts
       const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection, currentTopic);
-      console.log(newPerts);
 
       // Check if valid response
       if (!newPerts) {
@@ -82,7 +115,31 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
       closeModal();
     }
 
-    submitPert();
+    submitPert()
+  }
+
+  const editPert = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsEditing(true);
+    event.preventDefault()
+    editPerturbation(testData.currentTests.filter((test) => test.perturbedTests.some((ptest) => ptest.type.toLowerCase() == selectedPerturbation.toLowerCase())),
+      selectedPerturbation, aiPrompt, testDirection, currentTopic).then(() => {
+        setIsCurrent(false);
+        setIsEditing(false);
+        closeModal();
+    });
+  }
+
+  const removePert = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setIsDeleting(true);
+    event.preventDefault()
+    deletePerturbation(selectedPerturbation).then(() => {
+      getAllPerturbationTypes().then((res) => {
+        setPerturbations(res);
+      })
+      setSelectedPerturbation("+");
+      setIsDeleting(false);
+      setIsCurrent(false);
+    });
   }
 
   return (
@@ -90,11 +147,25 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
     <div className={'w-full h-full flex flex-col justify-between'}>
 
       {/* Header */}
-      <div className={"text-3xl pt-2 font-light w-full text-center"}>Create A New Perturbation</div>
+      <div className={"text-2xl p-2 font-light w-full text-center"}>Criteria Editor</div>
 
-      <div className={"flex flex-col items-center justify-center p-2 h-full"}>
+      <div className={'flex p-2 gap-1 flex-wrap'}>
+        <div className={"p-1"}>
+          Criteria Type:
+        </div>
+        {perturbations.map((pert) => {
+          return (
+            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-gray-200'}`} key={pert}
+                    onClick={() => handleSelectPert(pert)}>{pert}</button>
+          )
+        })}
+        <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-gray-200'}`}
+                onClick={() => handleSelectPert("+")}>Add New</button>
+      </div>
 
-        <form className={"bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full"} onSubmit={handleSubmit}>
+      <div className={"flex flex-col items-center justify-center h-full"}>
+
+        <form className={"px-8 py-2 mb-4 w-full"} onSubmit={handleSubmit}>
 
           {/* Type input */}
           <div className={"mb-4"}>
@@ -104,6 +175,7 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
             <input
               className={"shadow appearance-none border rounded w-2/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               id="type" type="text" placeholder="synonyms, spelling, etc."
+              disabled={selectedPerturbation != "+"}
               value={type} onChange={(e) => setType(e.target.value)}
             />
           </div>
@@ -170,21 +242,51 @@ const AddPertForm = ({ closeModal, setIsCurrent }: AddPertFormProps) => {
             </div>
           </div>
 
-
-          {/* Submit button */}
-          <div className="flex items-center justify-between">
-            {isSubmitting ? (
-              <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                <ThreeDots className="w-8 h-3" />
-              </div>
-            ) : (
-              <button
-                className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit">
-                Submit New Perturbation
-              </button>
-            )}
+          <div className={"flex gap-1"}>
+            {/* Submit button */}
+            {selectedPerturbation == "+" && <div className="flex items-center justify-between">
+              {isSubmitting ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3"/>
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  type="submit">
+                  Submit New Criteria
+                </button>
+              )}
+            </div>}
+            {/* Edit button */}
+            {selectedPerturbation != "+" && <div className="flex items-center justify-between">
+              {isEditing ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3"/>
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={(e) => editPert(e)}>
+                  Edit Criteria
+                </button>
+              )}
+            </div>}
+            {/* Delete button */}
+            {selectedPerturbation != "+" && <div className="flex items-center justify-between">
+              {isDeleting ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3"/>
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={(e) => removePert(e)}>
+                  Remove Criteria
+                </button>
+              )}
+            </div>}
           </div>
+
           {isFailedSubmit && <div className="text-red-500 text-xs italic">Please fill out all fields</div>}
         </form>
       </div>

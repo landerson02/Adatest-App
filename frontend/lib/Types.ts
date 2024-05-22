@@ -13,6 +13,12 @@ export type PertDecisionsType = {
   [key: string]: perturbedTestType[];
 };
 
+export type PertType = {
+  name: string;
+  prompt: string;
+  direction: string;
+};
+
 export type testType = {
   id: string;
   label: string; // Acceptable or Unacceptable
@@ -45,5 +51,4 @@ export type graphDataType = {
   [key: string]: {
     [key: string]: testType[] | perturbedTestType[];
   };
-}
-
+};
