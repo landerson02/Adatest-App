@@ -58,5 +58,5 @@ def get_topics(request):
     """
     Gets all topics from the db
     """
-    tests = Test.objects.values_list('topic', flat=True).distinct()
-    return Response(list(tests))
+    topics = Test.objects.values_list('topic', flat=True).distinct()
+    return Response([x for x in list(topics) if not x.startswith('suggested_')])
