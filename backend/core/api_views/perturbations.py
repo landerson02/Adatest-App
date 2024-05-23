@@ -37,9 +37,9 @@ def generate_perturbations(request, topic):
             perturbed_label = check_lab(topic, perturbed_test)
 
             if (perturb_type in ["negation", "antonyms"]) ^ (testData.ground_truth == "acceptable"):
-                perturbed_gt = "acceptable"
-            else:
                 perturbed_gt = "unacceptable"
+            else:
+                perturbed_gt = "acceptable"
 
             if (perturb_type in ["negation", "antonyms"]) ^ (testData.ground_truth == perturbed_label):
                 perturbed_validity = "approved"
