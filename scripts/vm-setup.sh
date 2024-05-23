@@ -24,6 +24,7 @@ pip install openai
 pip install checklist
 pip install SentencePiece
 pip install bitsandbytes
+pip install torch -U
 
 # Huggingface login token to use model
 pip install --upgrade huggingface_hub

@@ -76,8 +76,3 @@ class GeneralGraderPipeline(Pipeline):
         kwargs['task'] = self.task
 
         return kwargs
-
-
-model, tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
-pipeline = GeneralGraderPipeline(model=model, tokenizer=tokenizer, task="Potential Energy")
-print(pipeline('Potential energy is the energy an object gains as it rises in height.'))
