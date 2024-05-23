@@ -6,6 +6,7 @@ from ..ada import *
 from ..models import *
 # from ..pipelines.flanT5Grader import *
 from ..pipelines.robertaGrader import *
+from ..pipelines.llama3Grader import *
 from ..pipelines.mistralGenerator import *
 
 load_dotenv()
@@ -86,6 +87,9 @@ if MODEL_TYPE == "mistral":
 
     mistral_pipeline = MistralPipeline(model, tokenizer, task="base")
     custom_pipeline = MistralPipeline(model, tokenizer, task="custom")
+
+    # load llama model
+    llama_model, llama_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
 
     for perturb_type in pert_pipeline_map.keys():
         pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)

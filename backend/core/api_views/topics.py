@@ -35,7 +35,11 @@ def add_topic(request):
         writer = csv.writer(file)
         writer.writerows(new_data)  # Writing all rows including the header
 
-    grader_pipelines[new_topic] = cu0_pipeline  # TODO: change this to the llama general grader pipeline
+    if MODEL_TYPE == "mistral":
+        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_topic)
+    else:
+        grader_pipelines[new_topic] = cu0_pipeline
+
     obj_map[new_topic] = create_obj(mistral=mistral_pipeline, essayPipeline=grader_pipelines[new_topic], type=new_topic)
     df_map[new_topic] = obj_map[new_topic].df
 
