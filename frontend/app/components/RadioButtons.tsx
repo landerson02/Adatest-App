@@ -1,10 +1,11 @@
 'use client';
-import {addTopic, logAction, resetDB, saveLogs} from "@/lib/Service";
-import {useContext, useEffect, useState} from "react";
+import {getTopics, logAction, resetDB, saveLogs} from "@/lib/Service";
+import { useContext, useEffect, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
 import { ThreeDots } from "react-loading-icons";
 import Popup from "@/app/components/Popup";
+import AddTopicForm from "@/app/components/AddTopicForm";
 
 
 type RadioButtonProps = {
@@ -60,25 +61,30 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
   const [addTopicOpen, setAddTopicOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setTopics(Object.keys(testData.tests));
+    getTopics().then((topics) => {
+      setTopics(topics);
+    });
   }, [isCurrent]);
 
   async function resetTests() {
     await logAction(["null"], 'Resetting Tests');
     if (confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
       setIsResetting(true);
-      setCurrentTopic('CU0');
       await saveLogs();
       await resetDB();
       setIsResetting(false);
-      setIsCurrent(false);
+      if (currentTopic == 'CU0' || currentTopic == 'CU5') {
+        setIsCurrent(false);
+      } else {
+        setCurrentTopic('CU0');
+      }
     }
   }
 
   return (
     <div className={'flex justify-between items-center w-full pl-2'}>
       <div className={"flex justify-between w-[70%]"}>
-        <div className={'flex gap-4'}>
+        <div className={'flex flex-wrap gap-x-4 w-[80%]'}>
           {
             topics.map((topic: string) => {
               return (
@@ -95,13 +101,11 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
             +
           </div>
           <Popup closeModal={() => setAddTopicOpen(false)} isOpen={addTopicOpen}>
-            <div className={"flex justify-center"}>
-              Add topic form
-            </div>
+            <AddTopicForm closeModal={() => setAddTopicOpen(false)}/>
           </Popup>
         </div>
 
-        <div className={'flex items-center justify-end'}>
+        <div className={'flex items-center justify-end w-[20%]'}>
           {isResetting ? (
             <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-gray-900 font-light text-white'}>
               <ThreeDots className="h-3 w-8" />

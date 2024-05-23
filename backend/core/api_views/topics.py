@@ -3,7 +3,6 @@ import csv
 
 from .views import *
 from ..models import *
-from ..serializer import TestSerializer
 
 
 @api_view(['POST'])
@@ -46,7 +45,10 @@ def add_topic(request):
     for i, row in df_map[new_topic].head(11).iterrows():
         if row['input'] == '':
             continue
-        obj = Test(id=i, title=row['input'], topic=new_topic, label=check_lab(new_topic, row['input']),
+
+        label = check_lab(new_topic, row['input'])
+        validity = 'approved' if label == row['output'] else 'denied'
+        obj = Test(id=i, title=row['input'], validity=validity, topic=new_topic, label=label,
                    ground_truth=row['output'])
         obj.save()
 

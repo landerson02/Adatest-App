@@ -1,5 +1,7 @@
 import json
 
+from django.db.models import Q
+
 from .views import *
 from ..models import *
 from ..serializer import TestSerializer
@@ -22,7 +24,8 @@ def get_by_topic(request, topic):
     :param request: empty body
     :param topic: current topic
     """
-    tests = Test.objects.filter(topic__icontains=topic)
+    suggested = f"suggested_{topic}"
+    tests = Test.objects.filter(Q(topic=topic) | Q(topic=suggested))
     serializer = TestSerializer(tests, many=True)
     return Response(serializer.data)
 
@@ -157,25 +160,21 @@ def test_clear(request):
     Removes all tests from the database
     """
 
-    # Get all tests and perts
-    tests = Test.objects.all()
-    perturbations = Perturbation.objects.all()
+    # delete all tests and perts
+    Test.objects.all().delete()
+    Perturbation.objects.all().delete()
 
-    # Delete them
-    for test in tests:
-        test.delete()
-
-    for perturbation in perturbations:
-        perturbation.delete()
-
+    # reset perturbation pipelines
     for pert in ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']:
         if MODEL_TYPE == "mistral":
             pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
         else:
             pert_pipeline_map[pert] = None
 
+    # clear custom perturbations
     custom_pert_pipeline_map.clear()
 
+    # clear all custom topics
     for top in grader_pipelines.keys():
         if top not in ['PE', 'KE', 'LCE', 'CU0', 'CU5']:
             del grader_pipelines[top]
