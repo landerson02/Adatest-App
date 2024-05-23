@@ -68,7 +68,7 @@ class GeneralGraderPipeline(Pipeline):
         input_ids = self.preprocess(self.task, essay)
         outputs = self._forward(input_ids)
         generated_text = self.postprocess(outputs, input_ids)
-        return generated_text
+        return [generated_text]
 
     def _sanitize_parameters(self, **kwargs):
         kwargs['model'] = self.model
