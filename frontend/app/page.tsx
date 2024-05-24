@@ -3,23 +3,20 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import {generateTests, getPerturbations, getTests, getTopics} from "@/lib/Service";
-import { testType, testDataType, perturbedTestType } from "@/lib/Types";
+import { generateTests, getPerturbations } from "@/lib/Service";
+import { testDataType, perturbedTestType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
 import Buttons from "@/app/components/Buttons";
+import { hasPerturbed, fetchTests } from "@/lib/utils";
 
 export default function Home() {
 
-  const [criteriaLabels, setCriteriaLabels] = useState<string[]>(['Base', 'Spelling',
-    'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish']);
+  const [criteriaLabels, setCriteriaLabels] = useState<string[]>(['Base', 'Spelling', 'Negation', 'Synonyms', 'Paraphrase', 'Acronyms', 'Antonyms', 'Spanish']);
   // Boolean for if the tests are being generated
   const [isGenerating, setIsGenerating] = useState(false);
   // Boolean for if perturbations are being generated
   const [isPerturbing, setIsPerturbing] = useState(false);
-  // Boolean for if tests have been perturbed
-  const [isPerturbed, setIsPerturbed] = useState<boolean>(false);
-
 
   // Map that contains all current filters ('' is no filter)
   // 'label' -> (un)acceptable
@@ -39,7 +36,6 @@ export default function Home() {
     testData,
     setTestData,
     currentTopic,
-    // Whether tests are most recent
     isCurrent,
     setIsCurrent
   } = useContext(TestDataContext);
@@ -57,163 +53,13 @@ export default function Home() {
       setCriteriaLabels(labels);
     }
     fetchCriteriaLabels();
-  }, [isCurrent, isPerturbed]);
-  /**
-   * Use effect to toggle whether there have been any perturbations
-   */
-  useEffect(() => {
-    if (testData.pert_decisions.approved.length > 0 || testData.pert_decisions.denied.length > 0) {
-      setIsPerturbed(true);
-    } else {
-      setIsPerturbed(false);
-    }
-  }, [testData]);
-
-  /**
-   * Toggle if a test is checked
-   * @param t test to toggle
-   */
-  function toggleCheck(t: testType) {
-    const updatedTests = testData.currentTests.map((test: testType) => {
-      if (test.id === t.id) {
-        return { ...test, isChecked: !test.isChecked };
-      }
-      return test;
-    });
-
-    // Create the new test data object
-    let newData: testDataType = {
-      tests: testData.tests,
-      currentTests: updatedTests,
-      test_decisions: testData.test_decisions,
-      pert_decisions: testData.pert_decisions,
-    }
-
-    setTestData(newData);
-  }
+  }, [isCurrent]);
 
   /**
    * Load in new tests when they are changed
    */
   useEffect(() => {
-    async function fetchTests() {
-
-      // Fetch and process tests for the given topic
-      async function fetchAndProcessTests(topic: string): Promise<testType[]> {
-        let data: testType[] = await getTests(topic);
-
-        if (data && data.length > 0) {
-          data = data.reverse();
-          data.forEach((test: testType) => { test.isChecked = false });
-          data = data.filter((test: testType) => test.validity != 'invalid');
-          data.sort((a, b) => {
-            if (a.validity == "unapproved" && b.validity != "unapproved") {
-              return -1; // Move a to the back
-            } else if (a.validity != "unapproved" && b.validity == "unapproved") {
-              return 1; // Move b to the back
-            } else {
-              return 0; // Preserve the order
-            }
-          });
-        }
-        return data;
-      }
-
-      const topics = await getTopics();
-      let testArrays: { [key: string]: testType[] } = {};
-
-      // Get all perturbed tests
-      let perturbedTests: perturbedTestType[] = await getPerturbations();
-      // Filter out invalid perturbations
-      perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.validity != 'invalid');
-      // Assign perturbed tests to their parent tests
-      for (let type of topics) {
-        testArrays[type] = await fetchAndProcessTests(type);
-        testArrays[type].forEach((test: testType) => {
-          test.perturbedTests = perturbedTests.filter((perturbedTest: perturbedTestType) => perturbedTest.test_parent === test.id);
-
-          // Filter perts
-          if (filterMap.pert !== '') {
-            test.perturbedTests = test.perturbedTests.filter((pt: perturbedTestType) => pt.type.toLowerCase() === filterMap['pert'].toLowerCase());
-          }
-
-          // Filter by label
-          if (filterMap.label !== '') {
-            test.perturbedTests = test.perturbedTests.filter((pt: perturbedTestType) => pt.label.toLowerCase() === filterMap['label'].toLowerCase());
-          }
-        });
-      }
-
-      // curTests are the ones that are currently being displayed
-      let curTests: testType[] = [...testArrays[currentTopic]];
-
-      // Filter tests
-
-      // By label
-      if (filterMap['label'] !== '') {
-        curTests = curTests.filter((test: testType) => test.perturbedTests.length != 0 || test.label.toLowerCase() === filterMap['label']);
-      }
-
-      // By user decision
-      if (filterMap['grade'] !== '') {
-        let filtering: string = '';
-        if (filterMap['grade'] === 'Agreed') {
-          filtering = 'approved';
-        } else if (filterMap['grade'] === 'Disagreed') {
-          filtering = 'denied';
-        } else if (filterMap['grade'] === 'Ungraded') {
-          filtering = 'unapproved';
-        } else {
-          console.error('Invalid grade filter');
-          filtering = '';
-        }
-        curTests = curTests.filter((test: testType) => test.validity.toLowerCase() === filtering);
-      }
-
-      if (curTests.length > 0 && isAutoCheck) curTests[0].isChecked = true;
-
-      const newTestDecisions = testData.test_decisions;
-      const newPertDecisions = testData.pert_decisions;
-
-      for (const key1 in newTestDecisions) {
-        for (const key2 in newTestDecisions[key1]) {
-          newTestDecisions[key1][key2] = []; // Set the array to an empty array
-        }
-      }
-      for (const key1 in newPertDecisions) {
-        newPertDecisions[key1] = []; // Set the array to an empty array
-      }
-
-      for (const topic of topics) {
-        for (const test of testArrays[topic]) {
-          if (test.validity == 'unapproved') continue;
-          if (!newTestDecisions[topic]) {
-            newTestDecisions[topic] = {};
-          }
-          if (!newTestDecisions[topic][test.validity.toLowerCase()]) {
-            newTestDecisions[topic][test.validity.toLowerCase()] = [];
-          }
-          newTestDecisions[topic][test.validity.toLowerCase()].push(test);
-          for (const perturbedTest of test.perturbedTests) {
-            if (perturbedTest.validity == 'unapproved') continue;
-            newPertDecisions[perturbedTest.validity.toLowerCase()].push(perturbedTest);
-          }
-        }
-      }
-
-      let newTestData: testDataType = {
-        tests: {},
-        currentTests: curTests,
-        test_decisions: newTestDecisions,
-        pert_decisions: newPertDecisions,
-      }
-      for (const topic of topics) {
-        newTestData.tests[topic] = testArrays[topic];
-      }
-      setTestData(newTestData);
-      setIsCurrent(true);
-    }
-    fetchTests().catch();
+    fetchTests(filterMap, currentTopic, isAutoCheck, testData, setTestData, setIsCurrent).catch();
   }, [isCurrent, currentTopic, filterMap, isAutoCheck, isPerturbing]);
 
   /**
@@ -242,7 +88,7 @@ export default function Home() {
   return (
     <div className={'grid grid-cols-4'}>
       <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph isPerturbed={isPerturbed} criteriaLabels={criteriaLabels} />
+        <TaskGraph isPerturbed={hasPerturbed(testData)} criteriaLabels={criteriaLabels} />
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
@@ -254,10 +100,8 @@ export default function Home() {
           />
         </div>
         <TestList
-          toggleCheck={toggleCheck}
           filterMap={filterMap}
           setFilterMap={setFilterMap}
-          isPerturbed={isPerturbed}
         />
         <Buttons
           currentTopic={currentTopic}
