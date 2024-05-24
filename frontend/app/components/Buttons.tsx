@@ -6,6 +6,7 @@ import { createPerturbations, logAction, addTest, validatePerturbations, process
 import { ThreeDots } from "react-loading-icons";
 import AddPertForm from "@/app/components/AddPertForm";
 import Popup from "@/app/components/Popup";
+import { hasPerturbed } from "@/lib/utils";
 
 
 type ButtonsProps = {
@@ -24,9 +25,8 @@ export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPertu
   // If currently adding a test
   const [isAddingTest, setIsAddingTest] = useState(false);
 
-  // Creating perturbations
-  const [isCreatingPert, setIsCreatingPert] = useState(false);
-  const [isCreatePertModalOpen, setIsCreatePertModalOpen] = useState(false);
+  // Adjusting perts
+  const [isPertEditorOpen, setIsPertEditorOpen] = useState(false);
 
   // Text of the test to be added
   const [addTestText, setAddTestText] = useState("");
@@ -139,28 +139,20 @@ export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPertu
           </button>
         )}
 
-        {/* Create New Perturbation */}
-        {isCreatingPert ? (
-          <div
-            className="flex h-8 w-52 items-center justify-center rounded-md bg-[#ecb127] font-light text-white"
-          >
-            <ThreeDots className="h-3 w-8" />
-          </div>
-        ) : (
-          <button
-            className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${isAnyDecided ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
-            onClick={isAnyDecided ? () => setIsCreatePertModalOpen(true) : () => { }}
-          >
-            Criteria Editor
-          </button>
-        )}
+        {/* Pert Editor */}
+        <button
+          className={`flex h-8 w-52 items-center justify-center rounded-md bg-blue-700 font-light text-white shadow-2xl transition  ${hasPerturbed(testData) ? "hover:scale-105 hover:bg-blue-900" : "opacity-50 cursor-default "}`}
+          onClick={hasPerturbed(testData) ? () => setIsPertEditorOpen(true) : () => { }}
 
-        {isCreatePertModalOpen &&
-          <Popup isOpen={isCreatePertModalOpen} closeModal={() => setIsCreatePertModalOpen(false)}>
-            <AddPertForm closeModal={() => setIsCreatePertModalOpen(false)} />
+        >
+          Criteria Editor
+        </button>
+
+        {isPertEditorOpen &&
+          <Popup isOpen={isPertEditorOpen} closeModal={() => setIsPertEditorOpen(false)}>
+            <AddPertForm closeModal={() => setIsPertEditorOpen(false)} />
           </Popup>
         }
-
 
       </div>
 
