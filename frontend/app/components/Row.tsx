@@ -83,8 +83,13 @@ const Row = ({ test, toggleCheck, isPertsFiltered, isPerturbed }: rowProps) => {
 
           {/* Test Essay */}
           <div className={isPerturbed ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
-            <textarea className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
-              onChange={(e) => onEssayChange(e.target.value)} />
+            <textarea
+              className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}
+              value={newTest}
+              ref={textareaRef}
+              onChange={(e) => onEssayChange(e.target.value)}
+              disabled={test.perturbedTests.length > 0}
+            />
             <button className={`h-6 w-[15%] rounded-xl border 
             ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transition ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
               onClick={() => {
