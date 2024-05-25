@@ -4,7 +4,7 @@ import { perturbedTestType, testType } from "@/lib/Types";
 import { useContext, useState, useEffect } from "react";
 import { createPerturbations, logAction, addTest, validatePerturbations, processTests } from "@/lib/Service";
 import { ThreeDots } from "react-loading-icons";
-import AddPertForm from "@/app/components/AddPertForm";
+import PertEditor from "@/app/components/PertEditor";
 import Popup from "@/app/components/Popup";
 import { hasPerturbed } from "@/lib/utils";
 
@@ -150,7 +150,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPertu
 
         {isPertEditorOpen &&
           <Popup isOpen={isPertEditorOpen} closeModal={() => setIsPertEditorOpen(false)}>
-            <AddPertForm closeModal={() => setIsPertEditorOpen(false)} />
+            <PertEditor closeModal={() => setIsPertEditorOpen(false)} />
           </Popup>
         }
 
