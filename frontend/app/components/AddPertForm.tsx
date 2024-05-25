@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {ThreeDots} from "react-loading-icons";
+import React, { useContext, useEffect, useState } from 'react';
+import { ThreeDots } from "react-loading-icons";
 import {
   addNewPerturbation,
   getAllPerturbationTypes,
@@ -8,14 +8,14 @@ import {
   getPerturbationInfo,
   editPerturbation
 } from '@/lib/Service';
-import {TestDataContext} from '@/lib/TestContext';
-import {perturbedTestType} from '@/lib/Types';
+import { TestDataContext } from '@/lib/TestContext';
+import { perturbedTestType } from '@/lib/Types';
 
 type AddPertFormProps = {
   closeModal: () => void,
 }
 
-const AddPertForm = ({ closeModal }: AddPertFormProps) => {
+const PertEditor = ({ closeModal }: AddPertFormProps) => {
 
   const { testData, setIsCurrent } = useContext(TestDataContext);
 
@@ -126,7 +126,7 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
         setIsCurrent(false);
         setIsEditing(false);
         closeModal();
-    });
+      });
   }
 
   const removePert = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -142,6 +142,9 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
     });
   }
 
+  // Check if the perturbation a default
+  const isDefault = (pertType: string) => ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish'].includes(pertType);
+
   return (
 
     <div className={'w-full h-full flex flex-col justify-between'}>
@@ -156,11 +159,11 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
         {perturbations.map((pert) => {
           return (
             <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-gray-200'}`} key={pert}
-                    onClick={() => handleSelectPert(pert)}>{pert}</button>
+              onClick={() => handleSelectPert(pert)}>{pert}</button>
           )
         })}
         <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-gray-200'}`}
-                onClick={() => handleSelectPert("+")}>Add New</button>
+          onClick={() => handleSelectPert("+")}>Add New</button>
       </div>
 
       <div className={"flex flex-col items-center justify-center h-full"}>
@@ -189,6 +192,7 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
               className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               id="prompt" type="text" placeholder="Ex: Add spelling errors to the statement"
               value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)}
+              disabled={isDefault(selectedPerturbation)}
             />
           </div>
 
@@ -199,12 +203,14 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
               <label className="inline-flex items-center">
                 <input type="radio" className="form-radio" name="testDirection" value="INV"
                   checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                  disabled={isDefault(selectedPerturbation)}
                 />
                 <span className="ml-2">INV</span>
               </label>
               <label className="inline-flex items-center ml-6">
                 <input type="radio" className="form-radio" name="testDirection" value="DIR"
                   checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
+                  disabled={isDefault(selectedPerturbation)}
                 />
                 <span className="ml-2">DIR</span>
               </label>
@@ -247,7 +253,7 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
             {selectedPerturbation == "+" && <div className="flex items-center justify-between">
               {isSubmitting ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                  <ThreeDots className="w-8 h-3"/>
+                  <ThreeDots className="w-8 h-3" />
                 </div>
               ) : (
                 <button
@@ -258,10 +264,10 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
               )}
             </div>}
             {/* Edit button */}
-            {selectedPerturbation != "+" && <div className="flex items-center justify-between">
+            {selectedPerturbation != "+" && !isDefault(selectedPerturbation) && <div className="flex items-center justify-between">
               {isEditing ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                  <ThreeDots className="w-8 h-3"/>
+                  <ThreeDots className="w-8 h-3" />
                 </div>
               ) : (
                 <button
@@ -275,7 +281,7 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
             {selectedPerturbation != "+" && <div className="flex items-center justify-between">
               {isDeleting ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                  <ThreeDots className="w-8 h-3"/>
+                  <ThreeDots className="w-8 h-3" />
                 </div>
               ) : (
                 <button
@@ -294,4 +300,4 @@ const AddPertForm = ({ closeModal }: AddPertFormProps) => {
   );
 };
 
-export default AddPertForm;
+export default PertEditor;
