@@ -61,9 +61,11 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
   const [addTopicOpen, setAddTopicOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    getTopics().then((topics) => {
-      setTopics(topics);
-    });
+    if (isCurrent) {
+      getTopics().then((topics) => {
+        setTopics(topics);
+      });
+    }
   }, [isCurrent]);
 
   async function resetTests() {

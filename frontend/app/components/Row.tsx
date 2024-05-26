@@ -73,7 +73,7 @@ const Row = ({ test, isPertsFiltered }: rowProps) => {
       <div className={`border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}>
         <div className={'w-full items-center flex'}>
           {/* CheckBox */}
-          <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
+          <div className={`w-[5%] flex justify-center items-center ${test.perturbedTests.length > 0 && 'invisible'}`} onClick={toggle}>
             {test.isChecked ? (
               <MdOutlineCheckBox className={'w-8 h-8 cursor-pointer'} />
             ) : (

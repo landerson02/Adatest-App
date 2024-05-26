@@ -99,8 +99,9 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
     // Generate and load new perts
     async function submitPert() {
-      // Get new perts
-      const newPerts: perturbedTestType[] = await addNewPerturbation(testData.currentTests.filter((test) => test.validity == "approved" || test.validity == "denied"), type, aiPrompt, testDirection);
+      // Create new perts
+      const tests = Object.values(testData.tests).flat();
+      const newPerts: perturbedTestType[] = await addNewPerturbation(tests.filter((test) => test.perturbedTests.length != 0), type, aiPrompt, testDirection);
 
       // Check if valid response
       if (!newPerts) {

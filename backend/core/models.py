@@ -27,6 +27,7 @@ class Perturbation(models.Model):
     id = models.UUIDField(max_length=50, default=uuid.uuid4, editable=False, primary_key=True)
     title = models.TextField()
     type = models.CharField(max_length=20, default="spelling")
+    topic = models.CharField(max_length=50)
     validity = models.CharField(max_length=50, default="unapproved")
     ground_truth = models.CharField(max_length=20, default="unknown")
 

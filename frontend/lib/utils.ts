@@ -179,14 +179,13 @@ export async function fetchTests(
   }
 
   for (const topic of topics) {
+    if (!newTestDecisions[topic]) {
+        newTestDecisions[topic] = {};
+    }
+    newTestDecisions[topic]['approved'] = [];
+    newTestDecisions[topic]['denied'] = [];
     for (const test of testArrays[topic]) {
       if (test.validity == "unapproved") continue;
-      if (!newTestDecisions[topic]) {
-        newTestDecisions[topic] = {};
-      }
-      if (!newTestDecisions[topic][test.validity.toLowerCase()]) {
-        newTestDecisions[topic][test.validity.toLowerCase()] = [];
-      }
       newTestDecisions[topic][test.validity.toLowerCase()].push(test);
       for (const perturbedTest of test.perturbedTests) {
         if (perturbedTest.validity == "unapproved") continue;
