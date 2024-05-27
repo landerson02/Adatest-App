@@ -5,7 +5,7 @@ import { useContext, useRef, useEffect, useState } from 'react';
 import { TestDataContext } from '@/lib/TestContext';
 import { testDataType, testType } from '@/lib/Types';
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import { editTest } from '@/lib/Service';
+import {editTest, logAction} from '@/lib/Service';
 
 
 type PerturbRowProps = {
@@ -31,6 +31,7 @@ const PerturbRow = ({ pertTest, setIsCurrent }: PerturbRowProps) => {
   }
 
   async function onEditTest() {
+    await logAction([pertTest.id], "Edit Perturbed Test");
     pertTest.title = newTest;
     await editTest(pertTest, currentTopic, true);
     setIsCurrent(false);
@@ -53,7 +54,6 @@ const PerturbRow = ({ pertTest, setIsCurrent }: PerturbRowProps) => {
    * @param test test to toggle
    */
   function togglePertCheck() {
-
     // Find parent test
     const parent = testData.currentTests.find((test: testType) => test.id === pertTest.test_parent);
 
@@ -66,7 +66,7 @@ const PerturbRow = ({ pertTest, setIsCurrent }: PerturbRowProps) => {
 
     // Toggle checkbox
     pert.isChecked = !pert.isChecked;
-
+    pert.isChecked ? logAction([pertTest.id], "Checkmark Checked") : logAction([pertTest.id], "Checkmark Unchecked");
     const updatedTests = testData.currentTests.map((test: testType) => {
       if (test.id === parent.id) {
         return { ...test, perturbedTests: parent.perturbedTests };

@@ -22,7 +22,6 @@ export default function Home() {
   // Boolean for if tests have been perturbed
   const [isPerturbed, setIsPerturbed] = useState<boolean>(false);
 
-
   // Map that contains all current filters ('' is no filter)
   // 'label' -> (un)acceptable
   // 'grade' -> (dis)agreed, ungraded
@@ -46,7 +45,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchCriteriaLabels() {
       let perts = await getPerturbations();
-      let labels: string[] = [];
+      let labels: string[] = ["Base"];
       perts.forEach((pert: perturbedTestType) => {
           let label = pert.type[0].toUpperCase() + pert.type.slice(1).toLowerCase();
           if (!labels.includes(label)) {

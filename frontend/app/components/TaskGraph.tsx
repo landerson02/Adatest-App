@@ -148,6 +148,7 @@ const TaskGraph = ({isPerturbed, criteriaLabels}: taskGraphProps) => {
             let matchList = [];
             let unmatchList = [];
             for(let i = 0; i < criteriaLabels.length; i++) {
+                console.log(criteriaLabels[i]);
                 matchList.push(criteria[validityLabels[0]][criteriaLabels[i]].length);
                 unmatchList.push(criteria[validityLabels[1]][criteriaLabels[i]].length);
             }

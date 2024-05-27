@@ -13,7 +13,7 @@ sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
 cd ../backend || return
 pip install --upgrade pip
 pip install notebook==6.1.5
-pip install Django
+pip install Django==4.2.11
 pip install django_cors_headers
 pip install django_rest_framework
 pip install django_nextjs
