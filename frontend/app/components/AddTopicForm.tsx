@@ -34,11 +34,12 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
 
   const handleAddTopic = () => {
     setIsAddingTopic(true);
-    if (topic === '' || tests.every((test) => test === '')) {
+    const top = topic.trim();
+    if (top === '' || tests.every((test) => test === '')) {
       // Create error message
       let errorMsg = 'Please enter ';
-      if (topic === '') errorMsg += 'a topic name ';
-      if (tests.every((test) => test === '')) errorMsg += `${topic === '' ? 'and' : ''} at least one test`;
+      if (top === '') errorMsg += 'a topic name ';
+      if (tests.every((test) => test === '')) errorMsg += `${top === '' ? 'and' : ''} at least one test`;
       setSubmitErrorMsg(errorMsg);
       setIsFailed(true);
       setIsAddingTopic(false);
@@ -48,19 +49,20 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
     const data = []
 
     for (let i = 0; i < tests.length; i++) {
-      if (tests[i] != '') {
+      const test = tests[i].trim();
+      if (test != '') {
         if (ground_truths[i] == '') {
           setIsFailed(true);
           setIsAddingTopic(false);
           return;
         }
         data.push({
-          test: tests[i],
+          test: test,
           ground_truth: ground_truths[i]
         });
       }
     }
-    addTopic(topic, data).then(() => {
+    addTopic(top, data).then(() => {
       setIsAddingTopic(false);
       setIsFailed(false);
       setIsCurrent(false);
