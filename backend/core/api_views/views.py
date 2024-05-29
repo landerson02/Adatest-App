@@ -108,6 +108,7 @@ def init_database(request):
     global obj_map, grader_pipelines
     for top, pipe in grader_pipelines.items():
         obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
+        df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
         data = obj_map[top].df.head(11)
         for i, row in data.iterrows():

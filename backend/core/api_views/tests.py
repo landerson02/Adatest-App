@@ -120,6 +120,11 @@ def add_test(request, topic, ground_truth):
                     ground_truth=ground_truth)
     testData.save()
 
+    # Add to adatest dataframe
+    df = df_map[topic]
+    df.loc[len(df)] = {'': testData.id, 'topic': '', 'input': testData.title, 'output': ground_truth, 'label': 'pass',
+                       'labeler': 'adatest_default', 'description': '', 'author': '', 'model score': ''}
+
     # Get all tests for the topic and return them in response
     allTests = Test.objects.filter(topic__icontains=topic)
     serializer = TestSerializer(allTests, context={'request': request}, many=True)
