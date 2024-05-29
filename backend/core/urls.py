@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .api_views import views, tests, logs, perturbations
+from .api_views import views, tests, logs, perturbations, topics
 from .api_views.views import index
 
 
@@ -33,6 +33,10 @@ urlpatterns = [
     path('core/perturbations/delete', perturbations.delete_perturbation),
     path('core/perturbations/getType/<str:pert_type>', perturbations.get_perturbation_type),
     path('core/perturbations/getAll', perturbations.get_all_perturbation_types),
+
+    # Topic endpoints (api_views/topics.py)
+    path('core/topics/add', topics.add_topic),
+    path('core/topics/get', topics.get_topics),
 ]
 
 

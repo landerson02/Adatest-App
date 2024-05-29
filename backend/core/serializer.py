@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from . models import *
+from .models import *
 
-class TestSerializer(serializers.ModelSerializer): 
-    class Meta: 
-        model = Test 
+
+class TestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Test
         fields = ('id', 'title', 'topic', 'validity', 'label', 'ground_truth')
 
 
@@ -22,5 +23,4 @@ class ReactSerializer(serializers.ModelSerializer):
 class PerturbationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perturbation
-        fields = ('test_parent', 'label', 'id', 'title', 'type', 'validity', 'ground_truth')
-
+        fields = ('test_parent', 'label', 'id', 'title', 'type', 'topic', 'validity', 'ground_truth')

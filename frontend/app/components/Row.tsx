@@ -7,20 +7,19 @@ import { editTest, logAction } from "@/lib/Service";
 import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle } from "react-icons/io";
 import PerturbRow from "@/app/components/PerturbRow";
 import { TestDataContext } from "@/lib/TestContext";
+import { hasPerturbed } from "@/lib/utils";
+import { toggleCheck } from "@/lib/utils";
 
 
 type rowProps = {
   test: testType,
-  toggleCheck: (test: testType) => void,
-  setIsCurrent: (isCurrent: boolean) => void,
   isPertsFiltered: boolean,
-  isPerturbed: boolean,
 }
 
-const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: rowProps) => {
+const Row = ({ test, isPertsFiltered }: rowProps) => {
 
   // Get test data
-  const { currentTopic } = useContext(TestDataContext);
+  const { currentTopic, setIsCurrent, testData, setTestData } = useContext(TestDataContext);
 
   // if the perturbation dropdown is showing
   const [isShowingPerts, setIsShowingPerts] = useState<boolean>(false);
@@ -54,7 +53,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
 
   // Toggle the checkbox
   function toggle() {
-    toggleCheck(test);
+    toggleCheck(test, testData, setTestData);
     test.isChecked ? logAction([test.id], `Checkmark unchecked`) : logAction([test.id], `Checkmark checked`);
   }
 
@@ -74,7 +73,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
       <div className={`border-gray-400 border-b w-full items-center flex flex-col justify-center py-2 ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}>
         <div className={'w-full items-center flex'}>
           {/* CheckBox */}
-          <div className="w-[5%] flex justify-center items-center" onClick={toggle}>
+          <div className={`w-[5%] flex justify-center items-center ${test.perturbedTests.length > 0 && 'invisible'}`} onClick={toggle}>
             {test.isChecked ? (
               <MdOutlineCheckBox className={'w-8 h-8 cursor-pointer'} />
             ) : (
@@ -83,10 +82,15 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
           </div>
 
           {/* Test Essay */}
-          <div className={isPerturbed ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
-            <textarea className={`text-lg font-light w-[80%] px-2 resize-none ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`} value={newTest} ref={textareaRef}
-              onChange={(e) => onEssayChange(e.target.value)} />
-            <button className={`h-6 w-[15%] rounded-xl border 
+          <div className={hasPerturbed(testData) ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
+            <textarea
+              className={`text-lg font-light px-2 resize-none ${test.perturbedTests.length === 0 ? 'w-[85%]' : 'w-full'} ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}
+              value={newTest}
+              ref={textareaRef}
+              onChange={(e) => onEssayChange(e.target.value)}
+              disabled={test.perturbedTests.length > 0}
+            />
+            {test.perturbedTests.length === 0 && <button className={`h-6 w-[15%] rounded-xl border 
             ${test.title != newTest ? 'bg-blue-300 cursor-pointer border-blue-500 transition ease-in-out hover:scale-105 hover:bg-blue-400' : 'bg-gray-200 border-gray-500 cursor-default'}`}
               onClick={() => {
                 if (test.title != newTest) {
@@ -94,7 +98,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
                 }
               }}>
               Save
-            </button>
+            </button>}
           </div>
 
           {/* AI Grade */}
@@ -142,7 +146,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
           </div>
 
           {/* Perturbation drop down button */
-            isPerturbed &&
+            hasPerturbed(testData) &&
             <div className={' w-[10%] text-center font-light flex justify-center items-center'}>
               {isShowingPerts ? (
                 <IoIosArrowDropupCircle
@@ -169,7 +173,7 @@ const Row = ({ test, toggleCheck, setIsCurrent, isPertsFiltered, isPerturbed }: 
       {(isPertsFiltered || isShowingPerts)
         && pertList && pertList.length !== 0
         && pertList.map((pert: perturbedTestType, index: number) =>
-          <PerturbRow key={index} pertTest={pert} setIsCurrent={setIsCurrent} />
+          <PerturbRow key={index} pertTest={pert} />
         )}
     </>
   )

@@ -49,7 +49,7 @@ def generate_perturbations(request, topic):
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity,
+                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity, topic=topic,
                                        ground_truth=perturbed_gt)
             perturbData.save()
 
@@ -79,7 +79,7 @@ def generate_perturbations(request, topic):
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity,
+                                       title=perturbed_test, type=perturb_type, validity=perturbed_validity, topic=topic,
                                        ground_truth=perturbed_gt)
             perturbData.save()
 
@@ -212,7 +212,7 @@ def add_new_pert(request):
         perturbed_id = generate_random_id()
 
         perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
-                                   title=perturbed_test, type=pert_name, validity=perturbed_validity,
+                                   title=perturbed_test, type=pert_name, validity=perturbed_validity, topic=testData.topic,
                                    ground_truth=perturbed_gt)
         perturbData.save()
 

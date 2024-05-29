@@ -4,6 +4,7 @@ export type perturbedTestType = {
   label: string; // Acceptable or Unacceptable
   title: string; // The essay
   type: string; // Type of perturbation
+  topic: string; // Concept
   validity: string; // Approved, Denied, Invalid, Unapproved (default)
   ground_truth: string; // Ground truth of the perturbed test
   isChecked: boolean; // Checkbox state
@@ -48,7 +49,6 @@ export type testDataType = {
 };
 
 export type graphDataType = {
-  [key: string]: {
-    [key: string]: testType[] | perturbedTestType[];
-  };
+  approved: number[];
+  denied: number[];
 };

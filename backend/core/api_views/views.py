@@ -4,8 +4,9 @@ from rest_framework.response import Response
 
 from ..ada import *
 from ..models import *
-from ..pipelines.flanT5Grader import *
+# from ..pipelines.flanT5Grader import *
 from ..pipelines.robertaGrader import *
+from ..pipelines.llama3Grader import *
 from ..pipelines.mistralGenerator import *
 
 load_dotenv()
@@ -17,22 +18,22 @@ MODEL_TYPE = os.getenv('MODEL')
 
 # helper objects
 
-lce_model, lce_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_LCE_v2')
-lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
-
-pe_model, pe_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_PE_v2')
-pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
-
-ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
-ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
+# lce_model, lce_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_LCE_v2')
+# lce_pipeline = CustomEssayPipeline(model=lce_model, tokenizer=lce_tokenizer)
+#
+# pe_model, pe_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_PE_v2')
+# pe_pipeline = CustomEssayPipeline(model=pe_model, tokenizer=pe_tokenizer)
+#
+# ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
+# ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
 cu0_pipeline = CUPipeline("CU0")
 cu5_pipeline = CUPipeline("CU5")
 
 grader_pipelines = {
-    "LCE": lce_pipeline,
-    "PE": pe_pipeline,
-    "KE": ke_pipeline,
+    # "LCE": lce_pipeline,
+    # "PE": pe_pipeline,
+    # "KE": ke_pipeline,
     "CU0": cu0_pipeline,
     "CU5": cu5_pipeline
 }
@@ -87,6 +88,9 @@ if MODEL_TYPE == "mistral":
     mistral_pipeline = MistralPipeline(model, tokenizer, task="base")
     custom_pipeline = MistralPipeline(model, tokenizer, task="custom")
 
+    # load llama model
+    llama_model, llama_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
+
     for perturb_type in pert_pipeline_map.keys():
         pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
 
@@ -104,9 +108,9 @@ def init_database(request):
     global obj_map, grader_pipelines
     for top, pipe in grader_pipelines.items():
         obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
+        df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
-        numTestsInit = 10 if top in ['CU0', 'CU5'] else 0
-        data = obj_map[top].df.head(numTestsInit)
+        data = obj_map[top].df.head(11)
         for i, row in data.iterrows():
             if row['input'] == '':
                 continue

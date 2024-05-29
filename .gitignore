@@ -9,3 +9,9 @@ __pycache__
 backend/db.sqlite3
 backend/core/migrations/000[2-9]_*.py
 backend/*.csv
+backend/core/Tests/*.csv
+!backend/core/Tests/NTX_CU0.csv
+!backend/core/Tests/NTX_CU5.csv
+!backend/core/Tests/NTX_PE.csv
+!backend/core/Tests/NTX_KE.csv
+!backend/core/Tests/NTX_LCE.csv
