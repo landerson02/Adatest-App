@@ -394,3 +394,22 @@ export async function addTopic(topic: string, prompt_topic: string, tests: {test
     console.error(error);
   }
 }
+
+/**
+ * Deletes a topic
+ * @param topic Topic to delete
+ */
+export async function deleteTopic(topic: string) {
+  const url = `core/topics/delete`;
+  try {
+    await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ topic }),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}

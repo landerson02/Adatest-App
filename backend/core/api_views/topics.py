@@ -56,6 +56,26 @@ def add_topic(request):
     return Response("Topic added successfully!")
 
 
+@api_view(['DELETE'])
+def delete_topic(request):
+    """
+    Deletes a topic from the database
+    :param request: topic: str
+    :return: All topics in the database
+    """
+    data = json.loads(request.body.decode("utf-8"))
+    top = data['topic']
+
+    # delete all tests for the topic
+    Perturbation.objects.filter(topic=top).delete()
+    Test.objects.filter(topic=top).delete()
+    del grader_pipelines[top]
+    del obj_map[top]
+    del df_map[top]
+
+    return Response("Topic deleted successfully!")
+
+
 @api_view(['GET'])
 def get_topics(request):
     """

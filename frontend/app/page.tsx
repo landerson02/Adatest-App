@@ -75,7 +75,7 @@ export default function Home() {
       </div >
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
-        <div className={'px-4 w-full h-16 flex gap-2 items-center py-3'}>
+        <div className={'px-4 w-full h-20 flex gap-2 items-center py-3'}>
           <span className={'text-3xl font-light'}>Topic:</span>
           <RadioButtons
             isAutoCheck={isAutoCheck}

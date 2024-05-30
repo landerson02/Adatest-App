@@ -1,5 +1,5 @@
 'use client';
-import {getTopics, logAction, resetDB, saveLogs} from "@/lib/Service";
+import {getTopics, logAction, resetDB, saveLogs, deleteTopic} from "@/lib/Service";
 import { useContext, useEffect, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
@@ -58,6 +58,9 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
   // If db is being reset
   const [isResetting, setIsResetting] = useState<boolean>(false);
 
+  // If topic is being deleted
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
   const [addTopicOpen, setAddTopicOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -83,10 +86,22 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
     }
   }
 
+  async function removeTopic() {
+    const topicText = currentTopic == 'CU0' ? 'Height/PE' : currentTopic == 'CU5' ? 'Mass/Energy' : currentTopic;
+    if (confirm(`Are you sure you want to delete the topic ${topicText}? \nThis will delete all the tests for this topic.`)) {
+      setIsDeleting(true);
+      await deleteTopic(currentTopic);
+      setIsDeleting(false);
+      const topics = await getTopics()
+      setCurrentTopic(topics[0]);
+      setIsCurrent(false);
+    }
+  }
+
   return (
     <div className={'flex justify-between items-center w-full pl-2'}>
       <div className={"flex justify-between w-[70%]"}>
-        <div className={'flex flex-wrap gap-x-4 w-[80%]'}>
+        <div className={'flex flex-wrap items-center gap-x-4 gap-y-1 w-[80%]'}>
           {
             topics.map((topic: string) => {
               return (
@@ -108,15 +123,28 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
         </div>
 
         <div className={'flex items-center justify-end w-[20%]'}>
-          {isResetting ? (
-            <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-gray-900 font-light text-white'}>
-              <ThreeDots className="h-3 w-8" />
-            </div>
-          ) : (
-            <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
-              End Session
-            </button>
-          )}
+          <div className={'flex flex-col gap-1'}>
+            {isResetting ? (
+                <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-gray-900 font-light text-white'}>
+                  <ThreeDots className="h-3 w-8" />
+                </div>
+              ) : (
+                <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
+                  End Session
+                </button>
+              )
+            }
+            {isDeleting ? (
+                <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-red-200 font-light text-white'}>
+                  <ThreeDots className="h-3 w-8" />
+                </div>
+              ) : (
+                <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-red-500 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-red-700'} onClick={removeTopic}>
+                  Delete Topic
+                </button>
+              )
+            }
+          </div>
         </div>
       </div>
       <div className={'flex items-center justify-end w-[30%]'}>

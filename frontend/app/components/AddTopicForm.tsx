@@ -40,7 +40,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
     if (top === '' || promptTop === '' || tests.every((test) => test === '')) {
       // Create error message
       let errorMsg = 'Please enter ';
-      if (top === '') errorMsg += 'a topic name ';
+      if (top === '' || promptTop === '') errorMsg += 'a topic name and shorthand ';
       if (tests.every((test) => test === '')) errorMsg += `${top === '' ? 'and' : ''} at least one test`;
       setSubmitErrorMsg(errorMsg);
       setIsFailed(true);
