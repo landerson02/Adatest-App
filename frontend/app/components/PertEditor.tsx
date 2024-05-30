@@ -120,6 +120,10 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   }
 
   const editPert = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!aiPrompt) {
+      setIsFailedTest(true);
+      return;
+    }
     setIsEditing(true);
     event.preventDefault()
     const tests = Object.values(testData.tests).flat();
@@ -220,35 +224,37 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           </div>
 
           {/* Testing prompt */}
-          <div className={"mb-4"}>
-            <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
-              Test Statement:
-            </label>
-            <input
-              className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
-              id="testPrompt" type="text" placeholder="Test Statement"
-              value={testStatement} onChange={(e) => setTestStatement(e.target.value)}
-            />
-            <div className={'flex items-center'}>
-              {isTestingPert ? (
-                <div className={'bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center'}>
-                  <ThreeDots className={'w-8 h-3'} />
-                </div>
-              ) : (
-                <button
-                  className={"bg-blue-700 hover:bg-blue-900 h-10 w-32 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"}
-                  type="button" onClick={handleTestPerturbation}>
-                  Test Prompt
-                </button>
-              )}
-              {isFailedTest && <div className={'text-sm text-red-600 font-light ps-4'}>Please input a valid AI prompt and test statement</div>}
+          {!isDefault(selectedPerturbation) && (
+            <div className={"mb-4"}>
+              <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
+                Test Statement:
+              </label>
+              <input
+                className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+                id="testPrompt" type="text" placeholder="Test Statement"
+                value={testStatement} onChange={(e) => setTestStatement(e.target.value)}
+              />
+              <div className={'flex items-center'}>
+                {isTestingPert ? (
+                  <div className={'bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center'}>
+                    <ThreeDots className={'w-8 h-3'} />
+                  </div>
+                ) : (
+                  <button
+                    className={"bg-blue-700 hover:bg-blue-900 h-10 w-32 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"}
+                    type="submit" onClick={handleTestPerturbation}>
+                    Test Prompt
+                  </button>
+                )}
+                {/*{isFailedTest && <div className={'text-sm text-red-600 font-light ps-4'}>Please input a valid AI prompt and test statement</div>}*/}
+              </div>
+              <div
+                className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
+                id="testResult">
+                {testResult}
+              </div>
             </div>
-            <div
-              className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
-              id="testResult">
-              {testResult}
-            </div>
-          </div>
+          )}
 
           <div className={"flex gap-1"}>
             {/* Submit button */}
@@ -274,7 +280,8 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
               ) : (
                 <button
                   className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  onClick={(e) => editPert(e)}>
+                  onClick={(e) => editPert(e)}
+                  type="submit">
                   Edit Criteria
                 </button>
               )}

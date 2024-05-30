@@ -87,6 +87,7 @@ export async function fetchAndProcessTests(topic: string): Promise<testType[]> {
  * @param testData the test data
  * @param setTestData the state function to set the test data
  * @param setIsCurrent the state function to set the current status
+ * @param setCurrentTopic sets current topic
  */
 export async function fetchTests(
   filterMap: { [key: string]: string },
@@ -95,8 +96,13 @@ export async function fetchTests(
   testData: testDataType,
   setTestData: (testData: testDataType) => void,
   setIsCurrent: (isCurrent: boolean) => void,
+  setCurrentTopic: (topic: string) => void,
 ) {
   const topics = await getTopics();
+  if (!topics.includes(currentTopic)) {
+    setCurrentTopic(topics[0]);
+    return;
+  }
   let testArrays: { [key: string]: testType[] } = {};
 
   // Get all perturbed tests

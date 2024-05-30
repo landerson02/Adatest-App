@@ -176,19 +176,16 @@ def test_clear(request):
         else:
             pert_pipeline_map[pert] = None
 
+    grader_pipelines.clear()
+    obj_map.clear()
+    df_map.clear()
+
     # reset grader pipelines
     grader_pipelines['CU0'] = cu0_pipeline
     grader_pipelines['CU5'] = cu5_pipeline
 
     # clear custom perturbations
     custom_pert_pipeline_map.clear()
-
-    # clear all custom topics
-    for top in grader_pipelines.keys():
-        if top not in ['PE', 'KE', 'LCE', 'CU0', 'CU5']:
-            del grader_pipelines[top]
-            del obj_map[top]
-            del df_map[top]
 
     return Response("All tests cleared!")
 

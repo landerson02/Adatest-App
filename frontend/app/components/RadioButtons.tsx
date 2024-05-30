@@ -44,6 +44,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
     currentTopic,
     setCurrentTopic,
     testData,
+    setTestData,
     isCurrent,
     setIsCurrent
   } = useContext(TestDataContext);
@@ -77,12 +78,12 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
       setIsResetting(true);
       await saveLogs();
       await resetDB();
+      const newTestData = {...testData};
+      newTestData.tests = {};
+      newTestData.test_decisions = {};
+      setTestData(newTestData);
       setIsResetting(false);
-      if (currentTopic == 'CU0' || currentTopic == 'CU5') {
-        setIsCurrent(false);
-      } else {
-        setCurrentTopic('CU0');
-      }
+      setIsCurrent(false);
     }
   }
 
@@ -91,6 +92,10 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
     if (confirm(`Are you sure you want to delete the topic ${topicText}? \nThis will delete all the tests for this topic.`)) {
       setIsDeleting(true);
       await deleteTopic(currentTopic);
+      const newTestData = {...testData};
+      delete newTestData.tests[currentTopic];
+      delete newTestData.test_decisions[currentTopic];
+      setTestData(newTestData);
       setIsDeleting(false);
       const topics = await getTopics()
       setCurrentTopic(topics[0]);

@@ -7,8 +7,8 @@ const initTestData: testDataType = {
     // PE: [],
     // KE: [],
     // LCE: [],
-    CU0: [],
-    CU5: []
+    // CU0: [],
+    // CU5: []
   },
   currentTests: [],
 
@@ -28,16 +28,16 @@ const initTestData: testDataType = {
     //   denied: [],
     //   invalid: [],
     // },
-    CU0: {
-      approved: [],
-      denied: [],
-      invalid: [],
-    },
-    CU5: {
-      approved: [],
-      denied: [],
-      invalid: [],
-    }
+    // CU0: {
+    //   approved: [],
+    //   denied: [],
+    //   invalid: [],
+    // },
+    // CU5: {
+    //   approved: [],
+    //   denied: [],
+    //   invalid: [],
+    // }
   },
   pert_decisions: {
     approved: [],

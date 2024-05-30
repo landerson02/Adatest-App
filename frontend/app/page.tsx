@@ -3,8 +3,8 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import { generateTests, getPerturbations } from "@/lib/Service";
-import { testDataType, perturbedTestType } from "@/lib/Types";
+import { generateTests } from "@/lib/Service";
+import { testDataType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
 import Buttons from "@/app/components/Buttons";
@@ -34,6 +34,7 @@ export default function Home() {
     testData,
     setTestData,
     currentTopic,
+    setCurrentTopic,
     isCurrent,
     setIsCurrent
   } = useContext(TestDataContext);
@@ -42,7 +43,7 @@ export default function Home() {
    * Load in new tests when they are changed
    */
   useEffect(() => {
-    fetchTests(filterMap, currentTopic, isAutoCheck, testData, setTestData, setIsCurrent).catch();
+    fetchTests(filterMap, currentTopic, isAutoCheck, testData, setTestData, setIsCurrent, setCurrentTopic).catch();
   }, [isCurrent, currentTopic, filterMap, isAutoCheck, isPerturbing]);
 
   /**

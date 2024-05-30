@@ -5,7 +5,7 @@ import { RiFilterLine, RiFilterFill } from "react-icons/ri";
 import { useEffect, useState, useContext } from "react";
 import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { TestDataContext } from "@/lib/TestContext";
-import { getAllPerturbationTypes, getPerturbations, logAction } from "@/lib/Service";
+import { getAllPerturbationTypes, logAction } from "@/lib/Service";
 import { hasPerturbed } from "@/lib/utils";
 
 type testListProps = {
@@ -190,7 +190,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
         </div>
       ) : (
         <div className={'text-2xl text-center text-gray-500 pt-8'}>
-          Please Select 'Generate More Statements' to Continue
+          Please add a few sample tests using the textbox below to get started.
         </div>
       )}
     </div>

@@ -254,8 +254,8 @@ const TaskGraph = () => {
     });
 
     return (
-        <div className={'float-end overflow-auto w-full h-full justify-start items-center flex flex-col'}>
-            <div className={'w-full h-[15]%'}>
+        <div className={'overflow-y-scroll h-full w-full justify-start items-center flex flex-col'}>
+            <div className={'w-full h-22'}>
                 <div className={'bg-gray-100 w-full h-[25%] justify-center items-center flex border-b border-gray-200'}>
                     <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
                 </div>
@@ -265,7 +265,7 @@ const TaskGraph = () => {
                 </div>
                 {isPerturbed && isLoaded && <Options onPerturbationChange={setSelectedCriteria} criteriaLabels={criteriaLabelsDropdown} />}
             </div>
-            {isLoaded && <div className={'w-full h-44'}>
+            {isLoaded && <div className={'w-full h-72'}>
                 {/*@ts-ignore*/}
                 {topicChartOptions && <Bar data={topicChartOptions} options={createOptions('Tests by Topic')}> </Bar>}
             </div>}
