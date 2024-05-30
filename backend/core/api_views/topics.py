@@ -16,6 +16,7 @@ def add_topic(request):
     data = json.loads(request.body.decode("utf-8"))
 
     new_topic = data['topic']
+    new_prompt_topic = data['prompt_topic']
     tests = data['tests']
 
     # set header for csv file
@@ -35,7 +36,7 @@ def add_topic(request):
         writer.writerows(new_data)  # Writing all rows including the header
 
     if MODEL_TYPE == "mistral":
-        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_topic)
+        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_prompt_topic)
     else:
         grader_pipelines[new_topic] = cu0_pipeline
 
