@@ -36,6 +36,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPertu
   const [isPertChecked, setIsPertChecked] = useState(false);
 
   useEffect(() => {
+    if (!testData.currentTests) return;
     setIsNormalChecked(testData.currentTests.some((test: testType) => test.isChecked));
     setIsPertChecked(testData.currentTests.some((test: testType) => test.perturbedTests.some((pt: perturbedTestType) => pt.isChecked)));
   }, [testData.currentTests]);
@@ -45,6 +46,7 @@ export default ({ currentTopic, isGenerating, genTests, setIsPerturbing, isPertu
   const [isAnyDecided, setIsAnyDecided] = useState(false);
 
   useEffect(() => {
+    if (!testData.currentTests) return;
     setIsAnyDecided(testData.currentTests.some((test: testType) => test.validity === "approved" || test.validity === "denied"));
   }, [testData.currentTests]);
 

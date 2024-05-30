@@ -19,7 +19,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   const [isFailed, setIsFailed] = useState(false);
   const [submitErrorMsg, setSubmitErrorMsg] = useState('');
 
-  const { setIsCurrent } = useContext(TestDataContext);
+  const { setIsCurrent, setCurrentTopic } = useContext(TestDataContext);
 
   const onTestChange = (index: number, value: string) => {
     const newTests = [...tests];
@@ -69,10 +69,12 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
       setIsAddingTopic(false);
       setIsFailed(false);
       setIsCurrent(false);
+      setCurrentTopic(top);
       closeModal();
     }).catch((e) => {
       console.error(e);
       setIsAddingTopic(false);
+      setSubmitErrorMsg('Failed to add topic');
       setIsFailed(true);
     });
   }
