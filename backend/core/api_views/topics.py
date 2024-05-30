@@ -16,6 +16,7 @@ def add_topic(request):
     data = json.loads(request.body.decode("utf-8"))
 
     new_topic = data['topic']
+    new_prompt_topic = data['prompt_topic']
     tests = data['tests']
 
     # set header for csv file
@@ -35,7 +36,7 @@ def add_topic(request):
         writer.writerows(new_data)  # Writing all rows including the header
 
     if MODEL_TYPE == "mistral":
-        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_topic)
+        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_prompt_topic)
     else:
         grader_pipelines[new_topic] = cu0_pipeline
 
@@ -53,6 +54,26 @@ def add_topic(request):
         obj.save()
 
     return Response("Topic added successfully!")
+
+
+@api_view(['DELETE'])
+def delete_topic(request):
+    """
+    Deletes a topic from the database
+    :param request: topic: str
+    :return: All topics in the database
+    """
+    data = json.loads(request.body.decode("utf-8"))
+    top = data['topic']
+
+    # delete all tests for the topic
+    Perturbation.objects.filter(topic=top).delete()
+    Test.objects.filter(topic=top).delete()
+    del grader_pipelines[top]
+    del obj_map[top]
+    del df_map[top]
+
+    return Response("Topic deleted successfully!")
 
 
 @api_view(['GET'])

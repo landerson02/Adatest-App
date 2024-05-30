@@ -166,8 +166,8 @@ def test_clear(request):
     """
 
     # delete all tests and perts
-    Test.objects.all().delete()
     Perturbation.objects.all().delete()
+    Test.objects.all().delete()
 
     # reset perturbation pipelines
     for pert in ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']:
@@ -175,6 +175,10 @@ def test_clear(request):
             pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
         else:
             pert_pipeline_map[pert] = None
+
+    # reset grader pipelines
+    grader_pipelines['CU0'] = cu0_pipeline
+    grader_pipelines['CU5'] = cu5_pipeline
 
     # clear custom perturbations
     custom_pert_pipeline_map.clear()

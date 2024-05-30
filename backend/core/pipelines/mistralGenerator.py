@@ -80,16 +80,16 @@ class MistralPipeline(Pipeline):
             for i in range(len(essay) // 20):
                 essay = Perturb.add_typos(essay)
             return [{'generated_text': essay}]
-        if self.task == "acronyms":
-            essay = essay.replace("Potential energy", "PE")
-            essay = essay.replace("potential energy", "PE")
-            essay = essay.replace("Kinetic energy", "KE")
-            essay = essay.replace("kinetic energy", "KE")
-            essay = essay.replace("Law of conservation of energy", "LCE")
-            essay = essay.replace("law of conservation of energy", "LCE")
-            essay = essay.replace("total energy", "TE")
-            essay = essay.replace("Total energy", "TE")
-            return [{'generated_text': essay}]
+        # if self.task == "acronyms":
+        #     essay = essay.replace("Potential energy", "PE")
+        #     essay = essay.replace("potential energy", "PE")
+        #     essay = essay.replace("Kinetic energy", "KE")
+        #     essay = essay.replace("kinetic energy", "KE")
+        #     essay = essay.replace("Law of conservation of energy", "LCE")
+        #     essay = essay.replace("law of conservation of energy", "LCE")
+        #     essay = essay.replace("total energy", "TE")
+        #     essay = essay.replace("Total energy", "TE")
+        #     return [{'generated_text': essay}]
 
         if self.task == "base":
             prompt = f"Use simple vocabulary. For each sentence, write a sentence about the same concept: {essay}"
@@ -104,6 +104,8 @@ class MistralPipeline(Pipeline):
             prompt = f"Replace only one word with an antonym to make this sentence wrong. Do not add comments: {essay}"
         elif self.task == "negation":
             prompt = f"Add a 'not' to make this sentence wrong. Do not add comments: {essay}"
+        elif self.task == "acronyms":
+            prompt = f"Replace a common phrase in the following sentence with an acronym. Do not add comments: {essay}"
         elif self.task == "spanish":  # prompt+parse is trickier, I added an addit. postprocess
             prompt = (f"Translate some words to Spanish in this sentence. Only reply with the revised text and do not "
                       f"add comments: {essay}")

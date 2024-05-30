@@ -37,6 +37,7 @@ urlpatterns = [
     # Topic endpoints (api_views/topics.py)
     path('core/topics/add', topics.add_topic),
     path('core/topics/get', topics.get_topics),
+    path('core/topics/delete', topics.delete_topic),
 ]
 
 

@@ -105,7 +105,6 @@ for topic, pipeline in grader_pipelines.items():
 # create default vals in db
 @api_view(['POST'])
 def init_database(request):
-    global obj_map, grader_pipelines
     for top, pipe in grader_pipelines.items():
         obj_map[top] = create_obj(mistral=mistral_pipeline, essayPipeline=pipe, type=top)
         df_map[top] = obj_map[top].df

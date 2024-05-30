@@ -41,7 +41,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
   const { testData, setTestData } = useContext(TestDataContext);
 
   useEffect(() => {
-    setIsAllSelected(testData.currentTests.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
+    setIsAllSelected(testData.currentTests?.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
   });
 
   const [pertList, setPertList] = useState<string[]>([]);
@@ -180,7 +180,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
         }
       </div>
 
-      {(testData && testData.currentTests.length > 0) ? (
+      {(testData && testData.currentTests?.length > 0) ? (
         testData.currentTests.map((test: testType, index: number) => {
           return <Row key={index} test={test} isPertsFiltered={filterMap['pert'] !== ''} />
         })

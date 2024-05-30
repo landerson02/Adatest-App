@@ -376,10 +376,11 @@ export async function getTopics() {
 
 /**
  * Adds a topic
- * @param topic Topic to add
+ * @param topic Topic to add (shorthand)
+ * @param prompt_topic Topic to add (full name that will go in the prompt)
  * @param tests List of tests to add in the format {test: string, ground_truth: string}
  */
-export async function addTopic(topic: string, tests: {test: string, ground_truth: string}[]) {
+export async function addTopic(topic: string, prompt_topic: string, tests: {test: string, ground_truth: string}[]) {
   const url = `core/topics/add`;
   try {
     await fetch(url, {
@@ -387,7 +388,26 @@ export async function addTopic(topic: string, tests: {test: string, ground_truth
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ topic, tests }),
+      body: JSON.stringify({ topic, prompt_topic, tests }),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Deletes a topic
+ * @param topic Topic to delete
+ */
+export async function deleteTopic(topic: string) {
+  const url = `core/topics/delete`;
+  try {
+    await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ topic }),
     });
   } catch (error) {
     console.error(error);
