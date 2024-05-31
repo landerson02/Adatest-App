@@ -380,7 +380,7 @@ export async function getTopics() {
  * @param prompt_topic Topic to add (full name that will go in the prompt)
  * @param tests List of tests to add in the format {test: string, ground_truth: string}
  */
-export async function addTopic(topic: string, prompt_topic: string, tests: {test: string, ground_truth: string}[]) {
+export async function addTopic(topic: string, prompt_topic: string, tests: { test: string, ground_truth: string }[]) {
   const url = `core/topics/add`;
   try {
     await fetch(url, {

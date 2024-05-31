@@ -1,5 +1,5 @@
 'use client';
-import {getTopics, logAction, resetDB, saveLogs, deleteTopic} from "@/lib/Service";
+import { getTopics, logAction, resetDB, saveLogs, deleteTopic } from "@/lib/Service";
 import { useContext, useEffect, useState } from "react";
 import { TestDataContext } from "@/lib/TestContext";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
@@ -78,7 +78,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
       setIsResetting(true);
       await saveLogs();
       await resetDB();
-      const newTestData = {...testData};
+      const newTestData = { ...testData };
       newTestData.tests = {};
       newTestData.test_decisions = {};
       setTestData(newTestData);
@@ -88,11 +88,12 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
   }
 
   async function removeTopic() {
+    logAction(["null"], `Delete Topic ${currentTopic}`);
     const topicText = currentTopic == 'CU0' ? 'Height/PE' : currentTopic == 'CU5' ? 'Mass/Energy' : currentTopic;
     if (confirm(`Are you sure you want to delete the topic ${topicText}? \nThis will delete all the tests for this topic.`)) {
       setIsDeleting(true);
       await deleteTopic(currentTopic);
-      const newTestData = {...testData};
+      const newTestData = { ...testData };
       delete newTestData.tests[currentTopic];
       delete newTestData.test_decisions[currentTopic];
       setTestData(newTestData);
@@ -112,7 +113,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
               return (
                 <div key={topic} onClick={handleTopicChange(topic)}>
                   <RadioButton text={topic == 'CU0' ? 'Height/PE' : topic == 'CU5' ? 'Mass/Energy' : topic}
-                               isSelected={currentTopic === topic}/>
+                    isSelected={currentTopic === topic} />
                 </div>
               );
             })
@@ -123,31 +124,31 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
             +
           </div>
           <Popup closeModal={() => setAddTopicOpen(false)} isOpen={addTopicOpen}>
-            <AddTopicForm closeModal={() => setAddTopicOpen(false)}/>
+            <AddTopicForm closeModal={() => setAddTopicOpen(false)} />
           </Popup>
         </div>
 
         <div className={'flex items-center justify-end w-[20%]'}>
           <div className={'flex flex-col gap-1'}>
             {isResetting ? (
-                <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-gray-900 font-light text-white'}>
-                  <ThreeDots className="h-3 w-8" />
-                </div>
-              ) : (
-                <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
-                  End Session
-                </button>
-              )
+              <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-gray-900 font-light text-white'}>
+                <ThreeDots className="h-3 w-8" />
+              </div>
+            ) : (
+              <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
+                End Session
+              </button>
+            )
             }
             {isDeleting ? (
-                <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-red-200 font-light text-white'}>
-                  <ThreeDots className="h-3 w-8" />
-                </div>
-              ) : (
-                <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-red-500 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-red-700'} onClick={removeTopic}>
-                  Delete Topic
-                </button>
-              )
+              <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-red-200 font-light text-white'}>
+                <ThreeDots className="h-3 w-8" />
+              </div>
+            ) : (
+              <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-red-500 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-red-700'} onClick={removeTopic}>
+                Delete Topic
+              </button>
+            )
             }
           </div>
         </div>

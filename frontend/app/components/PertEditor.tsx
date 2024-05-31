@@ -6,7 +6,8 @@ import {
   testNewPerturbation,
   deletePerturbation,
   getPerturbationInfo,
-  editPerturbation
+  editPerturbation,
+  logAction
 } from '@/lib/Service';
 import { TestDataContext } from '@/lib/TestContext';
 import { perturbedTestType } from '@/lib/Types';
@@ -21,7 +22,6 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
-  const [isFailedTest, setIsFailedTest] = useState(false);
 
   // States for perturbation types
   const [perturbations, setPerturbations] = useState([]);
@@ -66,10 +66,8 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleTestPerturbation = () => {
     // Check if all inputs are valid
     if (isTestingPert || !testStatement || !aiPrompt || !testDirection) {
-      setIsFailedTest(true);
       return;
     }
-    setIsFailedTest(false);
 
     setIsTestingPert(true);
 
@@ -99,6 +97,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
     // Generate and load new perts
     async function submitPert() {
+      logAction(["null"], `Add new criteria '${type}'. prompt: ${aiPrompt}, direction: ${testDirection}`);
       // Create new perts
       const tests = Object.values(testData.tests).flat();
       const newPerts: perturbedTestType[] = await addNewPerturbation(tests.filter((test) => test.perturbedTests.length != 0), type, aiPrompt, testDirection);
@@ -121,11 +120,11 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
   const editPert = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!aiPrompt) {
-      setIsFailedTest(true);
       return;
     }
     setIsEditing(true);
     event.preventDefault()
+    logAction(["null"], `Edit Criteria '${type}' to prompt: ${aiPrompt}, direction: ${testDirection}`);
     const tests = Object.values(testData.tests).flat();
     editPerturbation(tests.filter((test) => test.perturbedTests.some((ptest) => ptest.type.toLowerCase() == selectedPerturbation.toLowerCase())),
       selectedPerturbation, aiPrompt, testDirection).then(() => {
@@ -138,6 +137,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const removePert = (event: React.MouseEvent<HTMLButtonElement>) => {
     setIsDeleting(true);
     event.preventDefault()
+    logAction(["null"], `Delete Criteria ${type}`);
     deletePerturbation(selectedPerturbation).then(() => {
       getAllPerturbationTypes().then((res) => {
         setPerturbations(res);

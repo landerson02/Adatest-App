@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { ThreeDots } from "react-loading-icons";
-import { addTopic } from "@/lib/Service";
+import { addTopic, logAction } from "@/lib/Service";
 import { TestDataContext } from "@/lib/TestContext";
 
 type AddTopicFormProps = {
@@ -65,6 +65,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
         });
       }
     }
+    logAction(['NULL'], `Add new topic: ${topic} with prompt: ${promptTopic}`);
     addTopic(top, promptTop, data).then(() => {
       setIsAddingTopic(false);
       setIsFailed(false);
@@ -115,7 +116,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
               Tests:
             </label>
-            {Array.from({length: 10}, (_, i) => {
+            {Array.from({ length: 10 }, (_, i) => {
               return (
                 <div key={i} className={"flex gap-2 mb-1"}>
                   <input
@@ -125,15 +126,15 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
                   />
                   <label className="inline-flex items-center">
                     <input type="radio" className="form-radio" value="acceptable"
-                           checked={ground_truths[i] === 'acceptable'}
-                           onChange={(e) => onCorrectnessChange(i, e.target.value)}
+                      checked={ground_truths[i] === 'acceptable'}
+                      onChange={(e) => onCorrectnessChange(i, e.target.value)}
                     />
                     <span className="ml-2">Acceptable</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input type="radio" className="form-radio" value="unacceptable"
-                           checked={ground_truths[i] === 'unacceptable'}
-                           onChange={(e) => onCorrectnessChange(i, e.target.value)}
+                      checked={ground_truths[i] === 'unacceptable'}
+                      onChange={(e) => onCorrectnessChange(i, e.target.value)}
                     />
                     <span className="ml-2">Unacceptable</span>
                   </label>
@@ -145,7 +146,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
           <div className={'flex items-center'}>
             {isAddingTopic ? (
               <div className={'bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center'}>
-                <ThreeDots className={'w-8 h-3'}/>
+                <ThreeDots className={'w-8 h-3'} />
               </div>
             ) : (
               <button
@@ -155,7 +156,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
               </button>
             )}
             {isFailed &&
-                <div className={'text-sm text-red-600 font-light ps-4'}>{submitErrorMsg}</div>}
+              <div className={'text-sm text-red-600 font-light ps-4'}>{submitErrorMsg}</div>}
           </div>
         </div>
       </div>
