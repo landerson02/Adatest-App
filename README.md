@@ -90,12 +90,12 @@ To start the application, run the following command:
 The application will be available at http://localhost:8000
 
 ## Retrieving Log Files
-Once you end a session in the VM, it will save log files to the /Adatest/Adatest-App/backend folder.
+Once finished, click "End Session", it will save log files to the /Adatest/Adatest-App/backend folder.
 To retrieve these files, you will need to use the scp command. 
 
 In the same directory as the adatest.pem file, run the following command:
 ```
-scp -i adatest.pem ubuntu@<address>:/home/ubuntu/Adatest/Adatest-App/backend/log.txt <destination in local>
+scp -i adatest.pem ubuntu@<address>:/home/ubuntu/Adatest/Adatest-App/backend/log.csv <destination in local>
 ```
 You will need to replace the "address" with the address of the VM and "destination in local" with the location 
 you want to save the log file to on your local computer. This command saves the file "log.txt" to the location you specify, 
