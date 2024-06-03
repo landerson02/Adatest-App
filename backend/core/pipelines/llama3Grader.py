@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 # returns llama3 pipeline
 def load_llama3_model(model_id):
+    print("Loading " + model_id)
     nf4_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
