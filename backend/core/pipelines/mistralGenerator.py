@@ -6,7 +6,7 @@ import torch
 
 def load_mistral_model():
     model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
-    print("Loading " + model_name_or_path + " from hugging face")
+    print("Loading " + model_name_or_path)
     nf4_config = BitsAndBytesConfig(  # quantization 4-bit
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
