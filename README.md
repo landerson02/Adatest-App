@@ -56,7 +56,7 @@ grab the ssh command (should look like ssh ubuntu@1280.136.135) copy the address
 replace it with the 'address' in the code below. 
 
 Then ssh into the vm with the command:
-``` ssh -i adatest.pem <address> -L localhost:8000:localhost:8000 ```
+``` ssh -i adatest.pem ubuntu@<address> -L localhost:8000:localhost:8000 ```
 
 ## To Run Locally (Without Docker)
 Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script.
