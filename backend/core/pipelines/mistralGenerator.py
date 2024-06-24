@@ -135,11 +135,7 @@ class MistralPipeline(Pipeline):
         kwargs["model"] = self.model
         kwargs["tokenizer"] = self.tokenizer
         kwargs["task"] = self.task
-        valid_tasks = ["base", "spelling", "paraphrase", "acronyms", "synonyms", "antonyms", "negation", "spanish",
-                       "custom"]
         if "task" in kwargs:
-            if kwargs["task"] not in valid_tasks:
-                raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
+            return kwargs
         else:
             raise ValueError(f"Please provide capability")
-        return kwargs
