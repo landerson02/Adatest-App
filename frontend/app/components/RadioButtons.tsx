@@ -6,6 +6,7 @@ import { FaToggleOff, FaToggleOn } from "react-icons/fa6";
 import { ThreeDots } from "react-loading-icons";
 import Popup from "@/app/components/Popup";
 import AddTopicForm from "@/app/components/AddTopicForm";
+import ResetTests from "@/app/components/ResetTests";
 
 
 type RadioButtonProps = {
@@ -58,6 +59,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
 
   // If db is being reset
   const [isResetting, setIsResetting] = useState<boolean>(false);
+  const [isResetOpen, setIsResetOpen] = useState<boolean>(false);
 
   // If topic is being deleted
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -72,19 +74,18 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
     }
   }, [isCurrent]);
 
-  async function resetTests() {
+  async function resetTests(config: "AIBAT" | "Mini-AIBAT" | "M-AIBAT") {
     await logAction(["null"], 'Resetting Tests');
-    if (confirm('Are you sure you want to end this session? \nThis will reset all the tests')) {
-      setIsResetting(true);
-      await saveLogs();
-      await resetDB();
-      const newTestData = { ...testData };
-      newTestData.tests = {};
-      newTestData.test_decisions = {};
-      setTestData(newTestData);
-      setIsResetting(false);
-      setIsCurrent(false);
-    }
+    setIsResetting(true);
+    await saveLogs();
+    await resetDB(config);
+    const newTestData = { ...testData };
+    newTestData.tests = {};
+    newTestData.test_decisions = {};
+    setTestData(newTestData);
+    setIsResetting(false);
+    setIsCurrent(false);
+    setIsResetOpen(false);
   }
 
   async function removeTopic() {
@@ -135,11 +136,15 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
                 <ThreeDots className="h-3 w-8" />
               </div>
             ) : (
-              <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'} onClick={resetTests}>
+              <button className={'flex h-8 w-32 cursor-pointer items-center justify-center rounded-md bg-gray-700 font-light text-white shadow-2xl transition hover:scale-105 hover:bg-gray-900'}
+                      onClick={() => setIsResetOpen(true)}>
                 End Session
               </button>
             )
             }
+            <Popup isOpen={isResetOpen} closeModal={() => setIsResetOpen(false)}>
+              <ResetTests resetTests={resetTests} isResetting={isResetting}/>
+            </Popup>
             {isDeleting ? (
               <div className={'flex h-8 w-32 items-center justify-center rounded-md bg-red-200 font-light text-white'}>
                 <ThreeDots className="h-3 w-8" />

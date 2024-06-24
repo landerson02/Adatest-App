@@ -109,6 +109,21 @@ class MistralPipeline(Pipeline):
         elif self.task == "spanish":  # prompt+parse is trickier, I added an addit. postprocess
             prompt = (f"Translate some words to Spanish in this sentence. Only reply with the revised text and do not "
                       f"add comments: {essay}")
+        elif self.task == "french":
+            prompt = (f"Translate some words to French in this sentence. Only reply with the revised text and do not "
+                      f"add comments: {essay}")
+        elif self.task == "russian":
+            prompt = (f"Translate some words to Russian in this sentence. Only reply with the revised text and do not "
+                      f"add comments: {essay}")
+        elif self.task == "chinese":
+            prompt = (f"Translate some words to Chinese in this sentence. Only reply with the revised text and do not "
+                      f"add comments: {essay}")
+        elif self.task == "japanese":
+            prompt = (f"Translate some words to Japanese in this sentence. Only reply with the revised text and do not "
+                      f"add comments: {essay}")
+        elif self.task == "hindi":
+            prompt = (f"Translate some words to Hindi in this sentence. Only reply with the revised text and do not "
+                      f"add comments: {essay}")
         else:
             prompt = essay
 

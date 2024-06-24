@@ -7,10 +7,12 @@ urlpatterns = [
     path('', index, name='index'),
     path('', include("django_nextjs.urls")),
 
+    path('core/config/get', views.get_app_config),
+
     # Test endpoints (api_views/tests.py)
     path('core/tests/get/<str:topic>', tests.get_by_topic),
     path('core/tests/post/<str:topic>', tests.test_generate),
-    path('core/tests/clear', tests.test_clear),
+    path('core/tests/clear/<str:config>', tests.test_clear),
     path('core/tests/delete/<str:pk>', tests.test_delete), 
     path('core/tests/init', views.init_database), 
     path('core/tests/all', tests.get_all_tests), 
