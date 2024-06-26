@@ -105,7 +105,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Check if all inputs are valid
-    if (isSubmitting || !type || !aiPrompt || !testStatement || !testDirection) {
+    if (isSubmitting || !type || !aiPrompt || !testStatement || (appConfig === "AIBAT" && !testDirection)) {
       setIsFailedSubmit(true);
       return;
     }
@@ -201,6 +201,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
               className={"shadow appearance-none border rounded w-2/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               id="type" type="text" placeholder="synonyms, spelling, etc."
               disabled={selectedPerturbation != "+"} required
+              maxLength={10}
               value={type} onChange={(e) => setType(e.target.value)}
             />
           </div>
@@ -219,26 +220,26 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           </div>
 
           {/* Test direction radio buttons */}
-          { appConfig == "AIBAT" &&
+          {appConfig == "AIBAT" &&
             <div className="mb-4">
-            <span className="text-gray-700">Test Direction:</span>
-            <div className="mt-2">
-              <label className="inline-flex items-center">
-                <input type="radio" className="form-radio" name="testDirection" value="INV"
-                       checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
-                       disabled={isDefault(selectedPerturbation)} required
-                />
-                <span className="ml-2">INV</span>
-              </label>
-              <label className="inline-flex items-center ml-6">
-                <input type="radio" className="form-radio" name="testDirection" value="DIR"
-                       checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
-                       disabled={isDefault(selectedPerturbation)} required
-                />
-                <span className="ml-2">DIR</span>
-              </label>
+              <span className="text-gray-700">Test Direction:</span>
+              <div className="mt-2">
+                <label className="inline-flex items-center">
+                  <input type="radio" className="form-radio" name="testDirection" value="INV"
+                    checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                    disabled={isDefault(selectedPerturbation)} required
+                  />
+                  <span className="ml-2">INV</span>
+                </label>
+                <label className="inline-flex items-center ml-6">
+                  <input type="radio" className="form-radio" name="testDirection" value="DIR"
+                    checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
+                    disabled={isDefault(selectedPerturbation)} required
+                  />
+                  <span className="ml-2">DIR</span>
+                </label>
+              </div>
             </div>
-          </div>
           }
 
           {/* Testing prompt */}
