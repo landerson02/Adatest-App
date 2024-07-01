@@ -46,6 +46,9 @@ def generate_perturbations(request, topic):
             else:
                 perturbed_validity = "denied"
 
+            if perturbed_test == testData.title:
+                perturbed_validity = "unapproved"
+
             perturbed_id = generate_random_id()
 
             perturbData = Perturbation(test_parent=testData, label=perturbed_label, id=perturbed_id,
