@@ -172,7 +172,7 @@ def test_clear(request, config):
     if config == "Mini-AIBAT":
         perts = ['spelling', 'synonyms', 'paraphrase', 'acronyms']
     elif config == "M-AIBAT":
-        perts = ['spanish', 'french', 'russian', 'chinese', 'japanese', 'hindi']
+        perts = ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']
     else:
         perts = ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']
 

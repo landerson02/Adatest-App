@@ -59,7 +59,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
       }
       else if (res == "M-AIBAT") {
         setAppConfig("M-AIBAT");
-        setDefaultPerts(['spanish', 'french', 'russian', 'chinese', 'japanese', 'hindi']);
+        setDefaultPerts(['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']);
         setTestDirection('INV');
       }
     });
