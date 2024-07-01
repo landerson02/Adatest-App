@@ -8,9 +8,7 @@ import { getPerturbations, getTests, getTopics } from "@/lib/Service";
  */
 export function hasPerturbed(testData: testDataType): boolean {
   return (
-    testData.pert_decisions.approved.length +
-      testData.pert_decisions.denied.length >
-    0
+    testData.currentTests?.some((test: testType) => test.perturbedTests.length > 0)
   );
 }
 
