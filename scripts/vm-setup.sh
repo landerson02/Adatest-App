@@ -25,6 +25,7 @@ pip install checklist
 pip install SentencePiece
 pip install bitsandbytes
 pip install torch -U
+pip install jinja2==3.1.0
 
 # Huggingface login token to use model
 pip install --upgrade huggingface_hub
