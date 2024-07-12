@@ -7,7 +7,7 @@ import {
   deletePerturbation,
   getPerturbationInfo,
   editPerturbation,
-  logAction
+  logAction, getAppConfig
 } from '@/lib/Service';
 import { TestDataContext } from '@/lib/TestContext';
 import { perturbedTestType } from '@/lib/Types';
@@ -19,6 +19,8 @@ type PertEditorProps = {
 const PertEditor = ({ closeModal }: PertEditorProps) => {
 
   const { testData, setIsCurrent } = useContext(TestDataContext);
+  const [appConfig, setAppConfig] = useState<string>("AIBAT");
+  const [defaultPerts, setDefaultPerts] = useState([""]);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
@@ -44,7 +46,23 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   useEffect(() => {
     getAllPerturbationTypes().then((res) => {
       setPerturbations(res);
-    })
+    });
+    getAppConfig().then((res) => {
+      if (res == "AIBAT") {
+        setAppConfig("AIBAT");
+        setDefaultPerts(['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']);
+      }
+      else if (res == "Mini-AIBAT") {
+        setAppConfig("Mini-AIBAT");
+        setDefaultPerts(['spelling', 'synonyms', 'paraphrase', 'acronyms']);
+        setTestDirection('INV');
+      }
+      else if (res == "M-AIBAT") {
+        setAppConfig("M-AIBAT");
+        setDefaultPerts(['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']);
+        setTestDirection('INV');
+      }
+    });
   }, []);
 
   const handleSelectPert = (pertType: string) => {
@@ -87,7 +105,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Check if all inputs are valid
-    if (isSubmitting || !type || !aiPrompt || !testStatement || !testDirection) {
+    if (isSubmitting || !type || !aiPrompt || !testStatement || (appConfig === "AIBAT" && !testDirection)) {
       setIsFailedSubmit(true);
       return;
     }
@@ -148,11 +166,9 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
     });
   }
 
-  // Check if the perturbation a default
-  const isDefault = (pertType: string) => ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish'].includes(pertType);
+  const isDefault = (pertType: string) => defaultPerts.includes(pertType);
 
   return (
-
     <div className={'w-full h-full flex flex-col justify-between'}>
 
       {/* Header */}
@@ -185,6 +201,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
               className={"shadow appearance-none border rounded w-2/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               id="type" type="text" placeholder="synonyms, spelling, etc."
               disabled={selectedPerturbation != "+"} required
+              maxLength={10}
               value={type} onChange={(e) => setType(e.target.value)}
             />
           </div>
@@ -203,25 +220,27 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           </div>
 
           {/* Test direction radio buttons */}
-          <div className="mb-4">
-            <span className="text-gray-700">Test Direction:</span>
-            <div className="mt-2">
-              <label className="inline-flex items-center">
-                <input type="radio" className="form-radio" name="testDirection" value="INV"
-                  checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
-                  disabled={isDefault(selectedPerturbation)} required
-                />
-                <span className="ml-2">INV</span>
-              </label>
-              <label className="inline-flex items-center ml-6">
-                <input type="radio" className="form-radio" name="testDirection" value="DIR"
-                  checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
-                  disabled={isDefault(selectedPerturbation)} required
-                />
-                <span className="ml-2">DIR</span>
-              </label>
+          {appConfig == "AIBAT" &&
+            <div className="mb-4">
+              <span className="text-gray-700">Test Direction:</span>
+              <div className="mt-2">
+                <label className="inline-flex items-center">
+                  <input type="radio" className="form-radio" name="testDirection" value="INV"
+                    checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                    disabled={isDefault(selectedPerturbation)} required
+                  />
+                  <span className="ml-2">INV</span>
+                </label>
+                <label className="inline-flex items-center ml-6">
+                  <input type="radio" className="form-radio" name="testDirection" value="DIR"
+                    checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
+                    disabled={isDefault(selectedPerturbation)} required
+                  />
+                  <span className="ml-2">DIR</span>
+                </label>
+              </div>
             </div>
-          </div>
+          }
 
           {/* Testing prompt */}
           {!isDefault(selectedPerturbation) && (

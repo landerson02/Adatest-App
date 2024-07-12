@@ -38,7 +38,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
   const [isAllSelected, setIsAllSelected] = useState<boolean>(false);
 
   // Load in test data
-  const { testData, setTestData } = useContext(TestDataContext);
+  const { testData, setTestData, isCurrent } = useContext(TestDataContext);
 
   useEffect(() => {
     setIsAllSelected(testData.currentTests?.length > 0 && testData.currentTests.every((test: testType) => test.isChecked));
@@ -52,7 +52,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
       setPertList(perts);
     }
     getPerts().catch();
-  }, [])
+  }, [isCurrent]);
 
   function toggleSelectAll() {
     setIsAllSelected(!isAllSelected);
@@ -92,7 +92,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
         </div>
         <div className={`text-xl text-center ${hasPerturbed(testData) ? "w-[55%]" : "w-[65%]"}`}>Statements</div>
         <div className={'flex w-[17%] justify-center items-center pr-2'}>
-          <div className={'text-xl whitespace-nowrap'}>AI Grade</div>
+          <div className={'text-xl whitespace-nowrap'}>AI Assessment</div>
           <div>
             {filterMap['label'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} /> :
@@ -131,7 +131,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
           </div>
         </div>
         <div className={'flex w-[13%] justify-center items-center pr-2'}>
-          <div className={'text-xl whitespace-nowrap'}>Decision</div>
+          <div className={'text-xl whitespace-nowrap'}>My Decision</div>
           <div>
             {filterMap['grade'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} /> :

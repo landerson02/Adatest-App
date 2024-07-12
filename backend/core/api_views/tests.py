@@ -160,7 +160,7 @@ def edit_test(request, topic):
 
 
 @api_view(['DELETE'])
-def test_clear(request):
+def test_clear(request, config):
     """
     Removes all tests from the database
     """
@@ -169,8 +169,19 @@ def test_clear(request):
     Perturbation.objects.all().delete()
     Test.objects.all().delete()
 
+    if config == "Mini-AIBAT":
+        perts = ['spelling', 'synonyms', 'paraphrase', 'acronyms']
+    elif config == "M-AIBAT":
+        perts = ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']
+    else:
+        perts = ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']
+
+    # reset appConfig
+    appConfig[0] = config
+
     # reset perturbation pipelines
-    for pert in ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']:
+    pert_pipeline_map.clear()
+    for pert in perts:
         if MODEL_TYPE == "mistral":
             pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
         else:

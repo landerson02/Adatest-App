@@ -1,5 +1,18 @@
 import { perturbedTestType, testType } from "@/lib/Types";
 
+export async function getAppConfig() {
+  const url = 'core/config/get';
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      cache: "no-store",
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 /**
   * Gets an array of tests based off of the topic
   * @param topic PE, KE, or LCE
@@ -102,9 +115,9 @@ export async function saveLogs() {
  * Reset the tests in the database
  * Calls clear then init
  */
-export async function resetDB() {
+export async function resetDB(config: "AIBAT" | "Mini-AIBAT" | "M-AIBAT") {
   try {
-    await fetch('core/tests/clear', {
+    await fetch(`core/tests/clear/${config}`, {
       method: 'DELETE',
       cache: 'no-store',
     });

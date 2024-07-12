@@ -66,6 +66,8 @@ def index(request):
     return render_nextjs_page_sync(request)
 
 
+appConfig = ["AIBAT"]
+
 mistral_pipeline = None
 custom_pipeline = None
 pert_pipeline_map = {
@@ -118,3 +120,8 @@ def init_database(request):
             obj.save()
 
     return Response("All initial tests loaded!")
+
+
+@api_view(['GET'])
+def get_app_config(request):
+    return Response(appConfig[0])

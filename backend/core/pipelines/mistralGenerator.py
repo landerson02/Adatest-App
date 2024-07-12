@@ -106,9 +106,23 @@ class MistralPipeline(Pipeline):
             prompt = f"Add a 'not' to make this sentence wrong. Do not add comments: {essay}"
         elif self.task == "acronyms":
             prompt = f"Replace a common phrase in the following sentence with an acronym. Do not add comments: {essay}"
-        elif self.task == "spanish":  # prompt+parse is trickier, I added an addit. postprocess
-            prompt = (f"Translate some words to Spanish in this sentence. Only reply with the revised text and do not "
-                      f"add comments: {essay}")
+        # MAIBAT Criteria
+        elif self.task == "spanish":
+            prompt = f"Translate this sentence into Spanish: {essay}"
+        elif self.task == "spanglish":
+            prompt = f"Spanglish is a hybrid language of English and Spanish. Translate this sentence Spanglish: {essay}"
+        elif self.task == "spanNouns":
+            prompt = f"Translate nouns in this sentence into Spanish: {essay}"
+        elif self.task == "spangNouns":
+            prompt = f"Translate nouns in this sentence into Spanglish: {essay}"
+        elif self.task == "cognates":
+            prompt = f"Find and replace a word with a Spanish cognate in this sentence: {essay}"
+        elif self.task == "falseCognates":
+            prompt = f"Find and replace a word with a false Spanish cognate in this sentence: {essay}"
+        elif self.task == "wordWalls":
+            prompt = f"Take the most important word and use it in an example sentence: {essay}"
+        elif self.task == "sentenceBuilding":
+            prompt = f"Build on this sentence: {essay}"
         else:
             prompt = essay
 
@@ -120,11 +134,7 @@ class MistralPipeline(Pipeline):
         kwargs["model"] = self.model
         kwargs["tokenizer"] = self.tokenizer
         kwargs["task"] = self.task
-        valid_tasks = ["base", "spelling", "paraphrase", "acronyms", "synonyms", "antonyms", "negation", "spanish",
-                       "custom"]
         if "task" in kwargs:
-            if kwargs["task"] not in valid_tasks:
-                raise ValueError(f"Invalid capability. Supported tasks are: {valid_tasks}")
+            return kwargs
         else:
             raise ValueError(f"Please provide capability")
-        return kwargs
