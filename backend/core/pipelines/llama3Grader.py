@@ -1,6 +1,5 @@
 import torch
-from transformers import Pipeline
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import Pipeline, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 
 # returns llama3 pipeline
