@@ -1,5 +1,6 @@
 import torch
-from transformers import Pipeline, AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          BitsAndBytesConfig, Pipeline)
 
 
 # returns llama3 pipeline
@@ -28,7 +29,8 @@ class GeneralGraderPipeline(Pipeline):
         super().__init__(model=model, tokenizer=tokenizer, task=task)
 
     def preprocess(self, concept, essay): # continue tweaking prompt
-        prompt = f"Is this sentence an acceptable or unacceptable definition of {concept}? Here is the example: {essay}"
+        # prompt = f"Is this sentence an acceptable or unacceptable definition of {concept}? Here is the example: {essay}"
+        prompt = f"{concept}: {essay}"
 
         messages = [
             {"role": "system", "content": "Always only answer with acceptable or unacceptable."},
