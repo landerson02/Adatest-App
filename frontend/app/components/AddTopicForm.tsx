@@ -11,7 +11,7 @@ type AddTopicFormProps = {
 const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   const [topic, setTopic] = useState("");
   const [promptTopic, setPromptTopic] = useState("");
-  const [isDefaultGradingPrompt, setIsDefaultGradingPrompt] = useState(false);
+  const [isDefaultGradingPrompt, setIsDefaultGradingPrompt] = useState(true);
 
   // Array of tests and ground truths
   const [tests, setTests] = useState(Array(10).fill(''));
@@ -44,8 +44,6 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
       let errorMsg = 'Please enter ';
       if (top === '' || promptTop === '') errorMsg += 'a topic name and shorthand ';
       if (tests.every((test) => test === '')) errorMsg += `${top === '' ? 'and' : ''} at least one test`;
-      // TODO: add verification for grading prompt
-
       setSubmitErrorMsg(errorMsg);
       setIsFailed(true);
       setIsAddingTopic(false);
@@ -116,7 +114,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
 
           <div className={"mb-2"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
-              Topic Grading Prompt:
+              Assessment Prompt:
             </label>
             <div className="flex items-center font-extralight -mt-2">
               Default:
