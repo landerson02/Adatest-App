@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ThreeDots } from "react-loading-icons";
 import { addTopic, logAction } from "@/lib/Service";
 import { TestDataContext } from "@/lib/TestContext";
+import { MdOutlineCheckBox, MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 
 type AddTopicFormProps = {
   closeModal: () => void;
@@ -10,6 +11,7 @@ type AddTopicFormProps = {
 const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   const [topic, setTopic] = useState("");
   const [promptTopic, setPromptTopic] = useState("");
+  const [isDefaultGradingPrompt, setIsDefaultGradingPrompt] = useState(false);
 
   // Array of tests and ground truths
   const [tests, setTests] = useState(Array(10).fill(''));
@@ -42,6 +44,8 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
       let errorMsg = 'Please enter ';
       if (top === '' || promptTop === '') errorMsg += 'a topic name and shorthand ';
       if (tests.every((test) => test === '')) errorMsg += `${top === '' ? 'and' : ''} at least one test`;
+      // TODO: add verification for grading prompt
+
       setSubmitErrorMsg(errorMsg);
       setIsFailed(true);
       setIsAddingTopic(false);
@@ -80,6 +84,15 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
     });
   }
 
+  // Reset grading prompt on checkbox change
+  useEffect(() => {
+    if (isDefaultGradingPrompt) {
+      setPromptTopic(`Is this sentence an acceptable or unacceptable definition of ${topic}? Here is the example: {essay}`);
+    } else {
+      setPromptTopic('');
+    }
+  }, [isDefaultGradingPrompt]);
+
   return (
     <div className={'w-full h-full flex flex-col'}>
       {/* Header */}
@@ -87,28 +100,37 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
 
       <div className={"flex flex-col items-center justify-center h-full"}>
         <div className={"px-8 py-2 mb-4 w-full"}>
+
           <div className={"mb-2"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
-              Topic:
+              Topic (10 characters max):
             </label>
             <input
               className={"shadow appearance-none border rounded w-2/5 py-1 px-2 text-sm text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               type="text"
-              placeholder="i.e. The following tests describe the concept of {topic}"
-              value={promptTopic} onChange={(e) => setPromptTopic(e.target.value)}
+              placeholder=""
+              maxLength={10}
+              value={topic} onChange={(e) => setTopic(e.target.value)}
             />
           </div>
 
           <div className={"mb-2"}>
             <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
-              Topic Shorthand:
+              Topic Grading Prompt:
             </label>
+            <div className="flex items-center font-extralight -mt-2">
+              Default:
+              {!isDefaultGradingPrompt ? (
+                <MdOutlineCheckBoxOutlineBlank onClick={() => setIsDefaultGradingPrompt(true)} />
+              ) : (
+                <MdOutlineCheckBox onClick={() => setIsDefaultGradingPrompt(false)} />
+              )}
+            </div>
             <input
-              className={"shadow appearance-none border rounded w-2/5 py-1 px-2 text-sm text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+              className={"shadow appearance-none border rounded w-4/5 py-1 px-2 text-sm text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
               type="text"
-              placeholder="i.e. Potential Energy -> PE (10 characters max)"
-              maxLength={10}
-              value={topic} onChange={(e) => setTopic(e.target.value)}
+              placeholder="i.e. The following tests describe the concept of {topic}"
+              value={promptTopic} onChange={(e) => setPromptTopic(e.target.value)}
             />
           </div>
 
