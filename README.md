@@ -74,7 +74,8 @@ To stop the application, run the following command:
 ```
 bash stop-application.sh
 ```
-## To Run With Docker (currently not working)
+
+<!-- ## To Run With Docker (currently not working)
 To run the application with docker, you will first need to run the shell script to set everything up for it
 ```
 cd Adatest/Adatest-App/scripts
@@ -86,7 +87,7 @@ To stop the application, run the following command:
 
 To start the application, run the following command:
 ``` docker-compose up ```
-
+ -->
 The application will be available at http://localhost:8000
 
 ## Retrieving Log Files
