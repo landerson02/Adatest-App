@@ -2,9 +2,9 @@ import json
 
 from django.db.models import Q
 
-from .views import *
 from ..models import *
 from ..serializer import TestSerializer
+from .views import *
 
 
 @api_view(['GET'])
@@ -172,7 +172,7 @@ def test_clear(request, config):
     if config == "Mini-AIBAT":
         perts = ['spelling', 'synonyms', 'paraphrase', 'acronyms']
     elif config == "M-AIBAT":
-        perts = ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']
+        perts = ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding', 'colloquial']
     else:
         perts = ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']
 
