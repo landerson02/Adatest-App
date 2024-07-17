@@ -120,7 +120,6 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
     if (!isTestable()) return;
     setIsTesting(true);
     logAction(["NULL"], `Test topic ${topic} prompt "${prompt}" on ${tests[0]}`);
-    console.log(tests[0], prompt, topic, shorthandTopic);
     testTopicPrompt(prompt, tests[0])
       .then(output => setTestTopicOutput(output))
       .finally(() => setIsTesting(false));
