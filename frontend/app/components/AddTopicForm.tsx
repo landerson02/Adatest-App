@@ -12,7 +12,8 @@ type AddTopicFormProps = {
 };
 
 const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
-  const [name, setName] = useState("");
+  const [shorthandTopic, setShorthandTopic] = useState("");
+  const [topic, setTopic] = useState("");
   const [prompt, setPrompt] = useState("");
   const [isDefaultGradingPrompt, setIsDefaultGradingPrompt] = useState(true);
 
@@ -40,13 +41,13 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
 
   const handleAddTopic = () => {
     setIsAddingTopic(true);
-    const _name = name.trim();
+    const _name = shorthandTopic.trim();
     const _prompt = prompt.trim();
     if (_name === "" || _prompt === "" || tests.every((test) => test === "")) {
       // Create error message
       let errorMsg = "Please enter ";
       if (_name === "" || _prompt === "")
-        errorMsg += "a topic name and prompt ";
+        errorMsg += "a topic shorthandTopic and prompt ";
       if (tests.every((test) => test === ""))
         errorMsg += `${_name === "" ? "and" : ""} at least one test`;
       setSubmitErrorMsg(errorMsg);
@@ -72,7 +73,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
         });
       }
     }
-    logAction(["NULL"], `Add new topic: ${name} with prompt: ${prompt}`);
+    logAction(["NULL"], `Add new topic: ${shorthandTopic} with prompt: ${prompt}`);
     addTopic(_name, _prompt, data)
       .then(() => {
         setIsAddingTopic(false);
@@ -92,16 +93,20 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   // Reset grading prompt on checkbox change
   useEffect(() => {
     if (isDefaultGradingPrompt) {
-      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${name}? Here is the sentence:`);
+      setPrompt(`Is this sentence an acceptable or unacceptable definition of {topic}? Here is the sentence:`);
     } else {
       setPrompt("");
     }
   }, [isDefaultGradingPrompt]);
 
-  const onNameChange = (newName: string) => {
-    setName(newName);
+  const onShorthandTopicChange = (newShorthandTopic: string) => {
+    setShorthandTopic(newShorthandTopic);
+  }
+
+  const onTopicChange = (newTopic: string) => {
+    setTopic(newTopic);
     if (isDefaultGradingPrompt) {
-      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${newName}? Here is the sentence:`);
+      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${newTopic}? Here is the sentence`);
     }
   }
 
@@ -114,14 +119,15 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   const handleTestPrompt = () => {
     if (!isTestable()) return;
     setIsTesting(true);
-    logAction(["NULL"], `Test topic ${name} prompt "${prompt}" on ${tests[0]}`);
+    logAction(["NULL"], `Test topic ${topic} prompt "${prompt}" on ${tests[0]}`);
+    console.log(tests[0], prompt, topic, shorthandTopic);
     testTopicPrompt(prompt, tests[0])
       .then(output => setTestTopicOutput(output))
       .finally(() => setIsTesting(false));
   }
 
   return (
-    <div className={"w-full h-full flex flex-col"}>
+    <div className={"w-full flex flex-col"}>
       {/* Header */}
       <div className={"text-2xl p-2 font-light w-full text-center"}>
         Add New Topic
@@ -134,7 +140,25 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
               className={"block text-gray-700 text-sm font-bold mb-2"}
               htmlFor="type"
             >
-              Topic (10 characters max):
+              Topic:
+            </label>
+            <input
+              className={
+                "shadow appearance-none border rounded w-2/5 py-1 px-2 text-sm text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              }
+              type="text"
+              placeholder=""
+              value={topic}
+              onChange={(e) => onTopicChange(e.target.value)}
+            />
+          </div>
+
+          <div className={"mb-2"}>
+            <label
+              className={"block text-gray-700 text-sm font-bold mb-2"}
+              htmlFor="type"
+            >
+              Shorthand Topic (10 characters max):
             </label>
             <input
               className={
@@ -143,8 +167,8 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
               type="text"
               placeholder=""
               maxLength={10}
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
+              value={shorthandTopic}
+              onChange={(e) => onShorthandTopicChange(e.target.value)}
             />
           </div>
 
@@ -185,7 +209,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
             >
               Tests:
             </label>
-            {Array.from({ length: 10 }, (_, i) => {
+            {Array.from({length: 10}, (_, i) => {
               return (
                 <div key={i} className={"flex gap-2 mb-1"}>
                   <input
@@ -223,8 +247,9 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
 
           <div className={"flex gap-2"}>
             {isTesting ? (
-              <div className="h-8 w-72">
-                <ThreeDots className={"w-8 h-3"} />
+              <div className={"bg-[#ecb127] h-8 w-72 py-1 px-4 rounded flex justify-center items-center"}
+              >
+                <ThreeDots className={"w-8 h-3"}/>
               </div>
             ) : (
               <button
@@ -254,7 +279,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
                   "bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center"
                 }
               >
-                <ThreeDots className={"w-8 h-3"} />
+                <ThreeDots className={"w-8 h-3"}/>
               </div>
             ) : (
               <button

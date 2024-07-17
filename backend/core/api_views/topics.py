@@ -97,9 +97,7 @@ def test_topic_prompt(request):
     prompt = data['prompt']
     test = data['test']
 
-    test_pipeline = GeneralGraderPipeline(llama_model, llama_tokenizer, task=prompt)
+    test_pipeline = GeneralGraderPipeline(llama_model, llama_tokenizer,task=prompt) if MODEL_TYPE == "mistral" else cu0_pipeline
     response = test_pipeline(test)
 
     return Response(response)
-
-
