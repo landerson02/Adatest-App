@@ -71,16 +71,16 @@ appConfig = ["AIBAT"]
 mistral_pipeline = None
 custom_pipeline = None
 pert_pipeline_map = {
-    "spelling": None,
-    "negation": None,
-    "synonyms": None,
-    "paraphrase": None,
-    "acronyms": None,
-    "antonyms": None,
-    "spanish": None
+    # will fill up with perturbations
 }
 custom_pert_pipeline_map = {
     # will fill up with custom perturbations
+}
+default_pert_pipeline_map = {
+    "AIBAT": ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish'],
+    "Mini-AIBAT": ['spelling', 'synonyms', 'paraphrase', 'acronyms', 'spanish'],
+    "M-AIBAT": ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls',
+                'sentenceBuilding', 'colloquial']
 }
 
 if MODEL_TYPE == "mistral":

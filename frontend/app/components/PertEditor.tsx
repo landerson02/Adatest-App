@@ -7,7 +7,7 @@ import {
   deletePerturbation,
   getPerturbationInfo,
   editPerturbation,
-  logAction, getAppConfig
+  logAction, getAppConfig, getDefaultPerturbations
 } from '@/lib/Service';
 import { TestDataContext } from '@/lib/TestContext';
 import { perturbedTestType } from '@/lib/Types';
@@ -21,6 +21,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const { testData, setIsCurrent } = useContext(TestDataContext);
   const [appConfig, setAppConfig] = useState<string>("AIBAT");
   const [defaultPerts, setDefaultPerts] = useState([""]);
+  const [originalPerts, setOriginalPerts] = useState<string[]>([]);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
@@ -47,20 +48,15 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
     getAllPerturbationTypes().then((res) => {
       setPerturbations(res);
     });
-    getAppConfig().then((res) => {
-      if (res == "AIBAT") {
-        setAppConfig("AIBAT");
-        setDefaultPerts(['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']);
-      }
-      else if (res == "Mini-AIBAT") {
-        setAppConfig("Mini-AIBAT");
-        setDefaultPerts(['spelling', 'synonyms', 'paraphrase', 'acronyms']);
-        setTestDirection('INV');
-      }
-      else if (res == "M-AIBAT") {
-        setAppConfig("M-AIBAT");
-        setDefaultPerts(['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']);
-        setTestDirection('INV');
+    getAppConfig().then((config) => {
+      setAppConfig(config);
+      getDefaultPerturbations(config).then((res) => {
+        setDefaultPerts(res);
+      });
+      if (config == "M-AIBAT") {
+        getDefaultPerturbations("AIBAT").then((res) => {
+          setOriginalPerts(res.filter((p : string) => !defaultPerts.includes(p)));
+        });
       }
     });
   }, []);
@@ -73,6 +69,12 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
       setTestDirection('');
       return;
     }
+    if (isOriginal(pertType)) {
+      setType(pertType);
+      setAIPrompt('Default AI Prompt');
+      setTestDirection('INV');
+      return;
+    }
     getPerturbationInfo(pertType).then((res) => {
       setType(res.name);
       setAIPrompt(res.prompt);
@@ -81,7 +83,8 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   }
 
   // Calls the API to test the prompt on the statement
-  const handleTestPerturbation = () => {
+  const handleTestPerturbation = (e : any) => {
+    e.preventDefault();
     // Check if all inputs are valid
     if (isTestingPert || !testStatement || !aiPrompt || !testDirection) {
       return;
@@ -105,7 +108,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Check if all inputs are valid
-    if (isSubmitting || !type || !aiPrompt || !testStatement || (appConfig === "AIBAT" && !testDirection)) {
+    if (isSubmitting || !type || !aiPrompt || (appConfig === "AIBAT" && !testDirection)) {
       setIsFailedSubmit(true);
       return;
     }
@@ -167,6 +170,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   }
 
   const isDefault = (pertType: string) => defaultPerts.includes(pertType);
+  const isOriginal = (pertType: string) => originalPerts.includes(pertType);
 
   return (
     <div className={'w-full h-full flex flex-col justify-between'}>
@@ -178,13 +182,20 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
         <div className={"p-1"}>
           Criteria Type:
         </div>
+
         {perturbations.map((pert) => {
           return (
-            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-gray-200'}`} key={pert}
+            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-blue-200'}`} key={pert}
               onClick={() => handleSelectPert(pert)}>{pert}</button>
           )
         })}
-        <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-gray-200'}`}
+        {originalPerts.map((pert) => {
+          return (
+            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-yellow-400' : 'bg-yellow-200'}`} key={pert}
+              onClick={() => handleSelectPert(pert)}>{pert}</button>
+          )
+        })}
+        <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-green-200'}`}
           onClick={() => handleSelectPert("+")}>Add New</button>
       </div>
 
@@ -207,34 +218,36 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           </div>
 
           {/* AI Prompt input */}
-          <div className={"mb-4"}>
-            <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="prompt">
-              AI Prompt:
-            </label>
-            <input
-              className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
-              id="prompt" type="text" placeholder="Ex: Add spelling errors to the statement"
-              value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)}
-              disabled={isDefault(selectedPerturbation)} required
-            />
-          </div>
+          {!isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && (
+            <div className={"mb-4"}>
+              <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="prompt">
+                AI Prompt:
+              </label>
+              <input
+                className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+                id="prompt" type="text" placeholder="Ex: Add spelling errors to the statement"
+                value={aiPrompt} onChange={(e) => setAIPrompt(e.target.value)}
+                disabled={isDefault(selectedPerturbation)} required
+              />
+            </div>
+          )}
 
           {/* Test direction radio buttons */}
-          {appConfig == "AIBAT" &&
-            <div className="mb-4">
-              <span className="text-gray-700">Test Direction:</span>
-              <div className="mt-2">
-                <label className="inline-flex items-center">
-                  <input type="radio" className="form-radio" name="testDirection" value="INV"
-                    checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
-                    disabled={isDefault(selectedPerturbation)} required
-                  />
-                  <span className="ml-2">INV</span>
+          {appConfig == "AIBAT" && !isOriginal(selectedPerturbation) &&
+              <div className="mb-4">
+                  <span className="text-gray-700">Test Direction:</span>
+                  <div className="mt-2">
+                      <label className="inline-flex items-center">
+                          <input type="radio" className="form-radio" name="testDirection" value="INV"
+                                 checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                                 disabled={isDefault(selectedPerturbation)} required
+                          />
+                          <span className="ml-2">INV</span>
                 </label>
                 <label className="inline-flex items-center ml-6">
                   <input type="radio" className="form-radio" name="testDirection" value="DIR"
                     checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
-                    disabled={isDefault(selectedPerturbation)} required
+                    disabled={isDefault(selectedPerturbation) || isOriginal(selectedPerturbation)} required
                   />
                   <span className="ml-2">DIR</span>
                 </label>
@@ -243,7 +256,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           }
 
           {/* Testing prompt */}
-          {!isDefault(selectedPerturbation) && (
+          {!isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && (
             <div className={"mb-4"}>
               <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
                 Test Statement:
@@ -261,7 +274,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
                 ) : (
                   <button
                     className={"bg-blue-700 hover:bg-blue-900 h-10 w-32 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"}
-                    type="submit" onClick={handleTestPerturbation}>
+                    type="submit" onClick={(event) => handleTestPerturbation(event)}>
                     Test Prompt
                   </button>
                 )}
@@ -277,7 +290,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
           <div className={"flex gap-1"}>
             {/* Submit button */}
-            {selectedPerturbation == "+" && <div className="flex items-center justify-between">
+            {(selectedPerturbation == "+" || isOriginal(selectedPerturbation)) && <div className="flex items-center justify-between">
               {isSubmitting ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
                   <ThreeDots className="w-8 h-3" />
@@ -286,12 +299,12 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
                 <button
                   className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                   type="submit">
-                  Submit New Criteria
+                  Add New Criteria
                 </button>
               )}
             </div>}
             {/* Edit button */}
-            {selectedPerturbation != "+" && !isDefault(selectedPerturbation) && <div className="flex items-center justify-between">
+            {selectedPerturbation != "+" && !isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && <div className="flex items-center justify-between">
               {isEditing ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
                   <ThreeDots className="w-8 h-3" />
@@ -306,7 +319,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
               )}
             </div>}
             {/* Delete button */}
-            {selectedPerturbation != "+" && <div className="flex items-center justify-between">
+            {selectedPerturbation != "+" && !isOriginal(selectedPerturbation) && <div className="flex items-center justify-between">
               {isDeleting ? (
                 <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
                   <ThreeDots className="w-8 h-3" />

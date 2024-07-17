@@ -35,6 +35,7 @@ urlpatterns = [
     path('core/perturbations/delete', perturbations.delete_perturbation),
     path('core/perturbations/getType/<str:pert_type>', perturbations.get_perturbation_type),
     path('core/perturbations/getAll', perturbations.get_all_perturbation_types),
+    path('core/perturbations/getDefault/<str:config>', perturbations.get_default_perturbations),
 
     # Topic endpoints (api_views/topics.py)
     path('core/topics/add', topics.add_topic),

@@ -1,7 +1,9 @@
-from transformers import (AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Pipeline)
-from checklist.perturb import Perturb
 import re
+
 import torch
+from checklist.perturb import Perturb
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          BitsAndBytesConfig, Pipeline)
 
 
 def load_mistral_model():
@@ -106,6 +108,8 @@ class MistralPipeline(Pipeline):
             prompt = f"Add a 'not' to make this sentence wrong. Do not add comments: {essay}"
         elif self.task == "acronyms":
             prompt = f"Replace a common phrase in the following sentence with an acronym. Do not add comments: {essay}"
+        elif self.task == "colloquial":
+            prompt = f"Add a [English, Spanish, Spanglish] colloquial word to this sentence: {essay}"
         # MAIBAT Criteria
         elif self.task == "spanish":
             prompt = f"Translate this sentence into Spanish: {essay}"

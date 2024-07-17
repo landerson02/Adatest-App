@@ -46,7 +46,7 @@ bash stop-application.sh
 Docker or not, the application will be available at http://localhost:8000
 
 # Running the Application on the VM
-To ssh into the vm, first retrieve the ssh key "adatest.pem." 
+To connect to the vm, first retrieve the ssh key "adatest.pem" 
 Then, on a terminal in a folder that contains adatest.pem on your local computer, give it permissions with the command
 ``` chmod 600 adatest.pem ```
 
@@ -58,7 +58,7 @@ replace it with the 'address' in the code below.
 Then ssh into the vm with the command:
 ``` ssh -i adatest.pem ubuntu@<address> -L localhost:8000:localhost:8000 ```
 
-## To Run Locally (Without Docker)
+<!--## To Run Locally (Without Docker) -->
 Once in the vm, you will be able to navigate into the Adatest folder and run the vm_setup script.
 This installs and give permissions to everything for the app and Docker to run. 
 ```

@@ -176,6 +176,19 @@ export async function getPerturbations() {
   }
 }
 
+export async function getDefaultPerturbations(appConfig: string) {
+  const url = `core/perturbations/getDefault/${appConfig}`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      cache: "no-store",
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 
 /**
  * Adds a test to the database

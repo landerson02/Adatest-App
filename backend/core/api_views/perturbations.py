@@ -1,9 +1,10 @@
-from rest_framework import status
 import json
 
-from .views import *
+from rest_framework import status
+
 from ..models import *
 from ..serializer import PerturbationSerializer
+from .views import *
 
 
 @api_view(['POST'])
@@ -191,14 +192,21 @@ def add_new_pert(request):
     if pert_name in custom_pert_pipeline_map.keys() or pert_name in pert_pipeline_map.keys():
         return Response("Invalid perturbation type", status=status.HTTP_400_BAD_REQUEST)
 
-    custom_pert_pipeline_map[pert_name] = {"name": pert_name, "prompt": prompt, "flip_label": flip_label}
+    if pert_name in default_pert_pipeline_map:
+        pipeline = pert_pipeline_map[pert_name]
+    else:
+        custom_pert_pipeline_map[pert_name] = {"name": pert_name, "prompt": prompt, "flip_label": flip_label}
+        pipeline = custom_pipeline
 
     for test in test_list:
         id = test["id"]
         testData = Test.objects.get(id=id)
 
-        if custom_pipeline is not None:
-            perturbed_test = custom_pipeline(f'{prompt}: {testData.title}')
+        if pipeline is not None:
+            if pert_name in default_pert_pipeline_map:
+                perturbed_test = pipeline(testData.title)
+            else:
+                perturbed_test = custom_pipeline(f'{prompt}: {testData.title}')
             perturbed_test = perturbed_test[0]['generated_text']
         else:
             perturbed_test = testData.title
@@ -304,3 +312,15 @@ def get_all_perturbation_types(request):
     """
     pert_types = list(pert_pipeline_map.keys()) + list(custom_pert_pipeline_map.keys())
     return Response(pert_types)
+
+
+@api_view(['GET'])
+def get_default_perturbations(request, config):
+    """
+    Getter for default perturbations
+    :return: The default perturbation types
+    """
+    if config not in default_pert_pipeline_map:
+        return Response("Invalid app config", status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(default_pert_pipeline_map[config])
