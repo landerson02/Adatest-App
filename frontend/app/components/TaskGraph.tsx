@@ -146,8 +146,8 @@ const TaskGraph = () => {
                 let approveSum = 0;
                 let denySum = 0;
                 topicLabels.forEach(topic => {
-                    approveSum += testData.test_decisions[topic]["approved"].filter((test) => test.ground_truth == "acceptable").length;
-                    denySum += testData.test_decisions[topic]["denied"].filter((test) => test.ground_truth == "acceptable").length;
+                    approveSum += testData.test_decisions[topic]["approved"].filter.length;
+                    denySum += testData.test_decisions[topic]["denied"].length;
                 });
                 criteriaData.approved.push(approveSum);
                 criteriaData.denied.push(denySum);
