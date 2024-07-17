@@ -21,7 +21,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const { testData, setIsCurrent } = useContext(TestDataContext);
   const [appConfig, setAppConfig] = useState<string>("AIBAT");
   const [defaultPerts, setDefaultPerts] = useState([""]);
-  const [originalPerts, setOriginalPerts] = useState([""]);
+  const [originalPerts, setOriginalPerts] = useState<string[]>([]);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
