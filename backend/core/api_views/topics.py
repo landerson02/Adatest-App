@@ -1,8 +1,8 @@
-import json
 import csv
+import json
 
-from .views import *
 from ..models import *
+from .views import *
 
 
 @api_view(['POST'])
@@ -83,3 +83,18 @@ def get_topics(request):
     """
     topics = Test.objects.values_list('topic', flat=True).distinct()
     return Response([x for x in list(topics) if not x.startswith('suggested_')])
+
+
+@api_view(['POST'])
+def test_topic_prompt(request):
+    """
+    Tests a topic prompt
+    :param request: topic: str, prompt: str
+    :return: The model's score for the prompt
+    """
+    data = json.loads(request.body.decode("utf-8"))
+
+    prompt = data['prompt']
+    test = data['test']
+
+
