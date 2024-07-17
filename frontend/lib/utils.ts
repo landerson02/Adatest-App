@@ -1,4 +1,9 @@
-import { perturbedTestType, testDataType, testType } from "@/lib/Types";
+import {
+  PertType,
+  perturbedTestType,
+  testDataType,
+  testType,
+} from "@/lib/Types";
 import { getPerturbations, getTests, getTopics } from "@/lib/Service";
 
 /**
@@ -7,8 +12,8 @@ import { getPerturbations, getTests, getTopics } from "@/lib/Service";
  * @returns true if the user has perturbed any tests
  */
 export function hasPerturbed(testData: testDataType): boolean {
-  return (
-    testData.currentTests?.some((test: testType) => test.perturbedTests.length > 0)
+  return testData.currentTests?.some(
+    (test: testType) => test.perturbedTests.length > 0,
   );
 }
 
@@ -184,10 +189,10 @@ export async function fetchTests(
 
   for (const topic of topics) {
     if (!newTestDecisions[topic]) {
-        newTestDecisions[topic] = {};
+      newTestDecisions[topic] = {};
     }
-    newTestDecisions[topic]['approved'] = [];
-    newTestDecisions[topic]['denied'] = [];
+    newTestDecisions[topic]["approved"] = [];
+    newTestDecisions[topic]["denied"] = [];
     for (const test of testArrays[topic]) {
       if (test.validity == "unapproved") continue;
       newTestDecisions[topic][test.validity.toLowerCase()].push(test);
