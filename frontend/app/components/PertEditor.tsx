@@ -185,7 +185,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
 
         {perturbations.map((pert) => {
           return (
-            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-gray-200'}`} key={pert}
+            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-blue-200'}`} key={pert}
               onClick={() => handleSelectPert(pert)}>{pert}</button>
           )
         })}
@@ -195,7 +195,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
               onClick={() => handleSelectPert(pert)}>{pert}</button>
           )
         })}
-        <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-gray-200'}`}
+        <button className={`p-1 rounded ${selectedPerturbation == '+' ? 'bg-green-400' : 'bg-green-200'}`}
           onClick={() => handleSelectPert("+")}>Add New</button>
       </div>
 
