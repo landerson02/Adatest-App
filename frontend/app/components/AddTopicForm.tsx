@@ -92,7 +92,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   // Reset grading prompt on checkbox change
   useEffect(() => {
     if (isDefaultGradingPrompt) {
-      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${name}? Here is the example: {statement}`);
+      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${name}? Here is the sentence:`);
     } else {
       setPrompt("");
     }
@@ -101,7 +101,7 @@ const AddTopicForm = ({ closeModal }: AddTopicFormProps) => {
   const onNameChange = (newName: string) => {
     setName(newName);
     if (isDefaultGradingPrompt) {
-      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${newName}? Here is the example: {statement}`);
+      setPrompt(`Is this sentence an acceptable or unacceptable definition of ${newName}? Here is the sentence:`);
     }
   }
 
