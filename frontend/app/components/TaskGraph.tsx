@@ -15,7 +15,7 @@ import {
     ChartData,
 } from 'chart.js';
 import Options from "@/app/components/Options";
-import {hasPerturbed} from "@/lib/utils";
+import { hasPerturbed } from "@/lib/utils";
 
 ChartJS.register(BarElement,
     CategoryScale,
@@ -89,8 +89,8 @@ const TaskGraph = () => {
      * @param topicLabels list of topics
      * @returns graph data {approved: number[], denied: number[]}, where each index corresponds to the index in topicLabels
      */
-    const createTopicData = (topicLabels : string[]) => {
-        const topicData: graphDataType = {approved: [], denied: []};
+    const createTopicData = (topicLabels: string[]) => {
+        const topicData: graphDataType = { approved: [], denied: [] };
         if (selectedCriteria === 'base') {
             topicLabels.forEach(topic => {
                 topicData.approved.push(testData.test_decisions[topic]["approved"].length);
@@ -114,7 +114,7 @@ const TaskGraph = () => {
      * @returns graph data {approved: number[], denied: number[]}, where each index corresponds to the index in gradeLabels
      */
     const createGradeData = (gradeLabels: string[]) => {
-        const gradeData: graphDataType = {approved: [], denied: []};
+        const gradeData: graphDataType = { approved: [], denied: [] };
         if (selectedCriteria === 'base') {
             const approvedTests = Object.values(testData.test_decisions).flatMap(decision => decision["approved"]);
             const deniedTests = Object.values(testData.test_decisions).flatMap(decision => decision["denied"]);
@@ -140,7 +140,7 @@ const TaskGraph = () => {
      * @returns graph data {approved: number[], denied: number[]}, where each index corresponds to the index in criteriaLabels
      */
     const createCriteriaData = (criteriaLabels: string[], topicLabels: string[]) => {
-        const criteriaData: graphDataType = {approved: [], denied: []};
+        const criteriaData: graphDataType = { approved: [], denied: [] };
         criteriaLabels.forEach(criteria => {
             if (criteria === 'base') {
                 let approveSum = 0;
@@ -219,7 +219,7 @@ const TaskGraph = () => {
             }]
         };
 
-        return {topicChartOptions, gradeChartOptions, criteriaChartOptions};
+        return { topicChartOptions, gradeChartOptions, criteriaChartOptions };
     }
 
     const createOptions = (title: string) => ({
@@ -257,10 +257,10 @@ const TaskGraph = () => {
         <div className={'overflow-y-scroll h-full w-full justify-start items-center flex flex-col'}>
             <div className={'w-full h-22'}>
                 <div className={'bg-gray-100 w-full h-[25%] justify-center items-center flex border-b border-gray-200'}>
-                    <h1 className={'align-middle text-2xl font-normal text-gray-600'}> Visualization </h1>
+                    <h1 className={'align-middle text-2xl font-normal text-gray-600'}>Where AI Fails</h1>
                 </div>
                 <div className={'justify-center mt-7 float-start w-full'}>
-                    <p> Graded Essays in Total </p>
+                    <p>Statements Evaluated in Total</p>
                     <p className={'text-4xl font-serif'}> {totalTests} </p>
                 </div>
                 {isPerturbed && isLoaded && <Options onPerturbationChange={setSelectedCriteria} criteriaLabels={criteriaLabelsDropdown} />}

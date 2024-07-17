@@ -1,7 +1,7 @@
-from django.urls import path, include
-from .api_views import views, tests, logs, perturbations, topics
-from .api_views.views import index
+from django.urls import include, path
 
+from .api_views import logs, perturbations, tests, topics, views
+from .api_views.views import index
 
 urlpatterns = [
     path('', index, name='index'),
@@ -41,6 +41,7 @@ urlpatterns = [
     path('core/topics/add', topics.add_topic),
     path('core/topics/get', topics.get_topics),
     path('core/topics/delete', topics.delete_topic),
+    path('core/topics/test', topics.test_topic_prompt)
 ]
 
 

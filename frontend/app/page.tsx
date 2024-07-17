@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
@@ -21,9 +21,9 @@ export default function Home() {
   // 'grade' -> (dis)agreed, ungraded
   // 'pert' -> type of perturbation
   const [filterMap, setFilterMap] = useState<{ [key: string]: string }>({
-    'label': '',
-    'grade': '',
-    'pert': '',
+    label: "",
+    grade: "",
+    pert: "",
   });
 
   // Boolean for if first checkbox is auto-selected
@@ -36,14 +36,22 @@ export default function Home() {
     currentTopic,
     setCurrentTopic,
     isCurrent,
-    setIsCurrent
+    setIsCurrent,
   } = useContext(TestDataContext);
 
   /**
    * Load in new tests when they are changed
    */
   useEffect(() => {
-    fetchTests(filterMap, currentTopic, isAutoCheck, testData, setTestData, setIsCurrent, setCurrentTopic).catch();
+    fetchTests(
+      filterMap,
+      currentTopic,
+      isAutoCheck,
+      testData,
+      setTestData,
+      setIsCurrent,
+      setCurrentTopic,
+    ).catch();
   }, [isCurrent, currentTopic, filterMap, isAutoCheck, isPerturbing]);
 
   /**
@@ -55,7 +63,7 @@ export default function Home() {
       currentTests: testData.tests[currentTopic],
       test_decisions: testData.test_decisions,
       pert_decisions: testData.pert_decisions,
-    }
+    };
     setTestData(newTestsData);
   }, [currentTopic, isCurrent]);
 
@@ -70,23 +78,24 @@ export default function Home() {
   }
 
   return (
-    <div className={'grid grid-cols-4'}>
-      <div className={'col-span-1 p-4 h-screen justify-center w-full border-gray-500 border'}>
-        <TaskGraph/>
-      </div >
+    <div className={"grid grid-cols-4"}>
+      <div
+        className={
+          "col-span-1 p-4 h-screen justify-center w-full border-gray-500 border"
+        }
+      >
+        <TaskGraph />
+      </div>
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
-        <div className={'px-4 w-full h-20 flex gap-2 items-center py-3'}>
-          <span className={'text-3xl font-light'}>Topic:</span>
+        <div className={"px-4 w-full h-20 flex gap-2 items-center py-3"}>
+          <span className={"text-3xl font-light"}>Topic:</span>
           <RadioButtons
             isAutoCheck={isAutoCheck}
             setIsAutoCheck={setIsAutoSelect}
           />
         </div>
-        <TestList
-          filterMap={filterMap}
-          setFilterMap={setFilterMap}
-        />
+        <TestList filterMap={filterMap} setFilterMap={setFilterMap} />
         <Buttons
           currentTopic={currentTopic}
           isGenerating={isGenerating}

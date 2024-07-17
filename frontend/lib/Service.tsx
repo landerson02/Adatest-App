@@ -439,3 +439,26 @@ export async function deleteTopic(topic: string) {
     console.error(error);
   }
 }
+
+/**
+ * Tests a prompt on a test
+ * @param prompt Prompt to test
+ * @param test Test to test
+ * @returns A test object
+ */
+export async function testTopicPrompt(prompt: string, test: string) {
+  const url = 'core/topics/test';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt, test }),
+    });
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
