@@ -7,11 +7,10 @@ import {
   deletePerturbation,
   getPerturbationInfo,
   editPerturbation,
-  logAction, getAppConfig
+  logAction, getAppConfig, getDefaultPerturbations
 } from '@/lib/Service';
 import { TestDataContext } from '@/lib/TestContext';
 import { perturbedTestType } from '@/lib/Types';
-import { OGPERTS } from '@/lib/utils';
 
 type PertEditorProps = {
   closeModal: () => void,
@@ -22,6 +21,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const { testData, setIsCurrent } = useContext(TestDataContext);
   const [appConfig, setAppConfig] = useState<string>("AIBAT");
   const [defaultPerts, setDefaultPerts] = useState([""]);
+  const [originalPerts, setOriginalPerts] = useState([""]);
 
   // States for bad data in the form
   const [isFailedSubmit, setIsFailedSubmit] = useState(false);
@@ -48,20 +48,15 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
     getAllPerturbationTypes().then((res) => {
       setPerturbations(res);
     });
-    getAppConfig().then((res) => {
-      if (res == "AIBAT") {
-        setAppConfig("AIBAT");
-        setDefaultPerts(['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']);
-      }
-      else if (res == "Mini-AIBAT") {
-        setAppConfig("Mini-AIBAT");
-        setDefaultPerts(['spelling', 'synonyms', 'paraphrase', 'acronyms']);
-        setTestDirection('INV');
-      }
-      else if (res == "M-AIBAT") {
-        setAppConfig("M-AIBAT");
-        setDefaultPerts(['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding']);
-        setTestDirection('INV');
+    getAppConfig().then((config) => {
+      setAppConfig(config);
+      getDefaultPerturbations(config).then((res) => {
+        setDefaultPerts(res);
+      });
+      if (config == "M-AIBAT") {
+        getDefaultPerturbations("AIBAT").then((res) => {
+          setOriginalPerts(res.filter((p : string) => !defaultPerts.includes(p)));
+        });
       }
     });
   }, []);
@@ -74,6 +69,12 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
       setTestDirection('');
       return;
     }
+    if (isOriginal(pertType)) {
+      setType(pertType);
+      setAIPrompt('Default AI Prompt');
+      setTestDirection('INV');
+      return;
+    }
     getPerturbationInfo(pertType).then((res) => {
       setType(res.name);
       setAIPrompt(res.prompt);
@@ -82,7 +83,8 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   }
 
   // Calls the API to test the prompt on the statement
-  const handleTestPerturbation = () => {
+  const handleTestPerturbation = (e : any) => {
+    e.preventDefault();
     // Check if all inputs are valid
     if (isTestingPert || !testStatement || !aiPrompt || !testDirection) {
       return;
@@ -106,7 +108,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Check if all inputs are valid
-    if (isSubmitting || !type || !aiPrompt || !testStatement || (appConfig === "AIBAT" && !testDirection)) {
+    if (isSubmitting || !type || !aiPrompt || (appConfig === "AIBAT" && !testDirection)) {
       setIsFailedSubmit(true);
       return;
     }
@@ -168,16 +170,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   }
 
   const isDefault = (pertType: string) => defaultPerts.includes(pertType);
-
-  // logic for OG perts
-  const isOGPert = (pert: string) => OGPERTS.some(og => og.name === pert);
-  const isOGPertActive = (pert: string) => OGPERTS.find(og => og.name === pert)?.active;
-  const toggleOGPert = (pert: string) => {
-    if (!OGPERTS.find(og => og.name === pert)) return;
-
-    OGPERTS.find(og => og.name === pert)!.active = !OGPERTS.find(og => og.name === pert)!.active;
-    setIsCurrent(false);
-  }
+  const isOriginal = (pertType: string) => originalPerts.includes(pertType);
 
   return (
     <div className={'w-full h-full flex flex-col justify-between'}>
@@ -189,18 +182,16 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
         <div className={"p-1"}>
           Criteria Type:
         </div>
-        {OGPERTS.map((pert => {
-          return (
-            <button
-              className={`p-1 rounded ${selectedPerturbation == pert.name ? 'bg-blue-400' : pert.active ? 'bg-gray-200' : 'bg-gray-400'}`}
-              key={pert.name}
-              onClick={() => handleSelectPert(pert.name)}
-            >{pert.name}</button>
-          )
-        }))}
+
         {perturbations.map((pert) => {
           return (
             <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-blue-400' : 'bg-gray-200'}`} key={pert}
+              onClick={() => handleSelectPert(pert)}>{pert}</button>
+          )
+        })}
+        {originalPerts.map((pert) => {
+          return (
+            <button className={`p-1 rounded ${selectedPerturbation == pert ? 'bg-yellow-400' : 'bg-yellow-200'}`} key={pert}
               onClick={() => handleSelectPert(pert)}>{pert}</button>
           )
         })}
@@ -208,38 +199,26 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
           onClick={() => handleSelectPert("+")}>Add New</button>
       </div>
 
-      {isOGPert(selectedPerturbation) ? (
-        <div className={"flex flex-col items-center justify-start h-full"}>
-          <div className={"flex items-center"}>
-            Active:
+      <div className={"flex flex-col items-center justify-center h-full"}>
+
+        <form className={"px-8 py-2 mb-4 w-full"} onSubmit={handleSubmit}>
+
+          {/* Type input */}
+          <div className={"mb-4"}>
+            <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
+              Type:
+            </label>
             <input
-              type="checkbox"
-              className="form-checkbox h-5 w-5 ml-2"
-              checked={isOGPertActive(selectedPerturbation)}
-              onChange={() => toggleOGPert(selectedPerturbation)}
+              className={"shadow appearance-none border rounded w-2/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+              id="type" type="text" placeholder="synonyms, spelling, etc."
+              disabled={selectedPerturbation != "+"} required
+              maxLength={10}
+              value={type} onChange={(e) => setType(e.target.value)}
             />
           </div>
-        </div>
-      ) : (
-        <div className={"flex flex-col items-center justify-center h-full"}>
 
-          <form className={"px-8 py-2 mb-4 w-full"} onSubmit={handleSubmit}>
-
-            {/* Type input */}
-            <div className={"mb-4"}>
-              <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="type">
-                Type:
-              </label>
-              <input
-                className={"shadow appearance-none border rounded w-2/5 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
-                id="type" type="text" placeholder="synonyms, spelling, etc."
-                disabled={selectedPerturbation != "+"} required
-                maxLength={10}
-                value={type} onChange={(e) => setType(e.target.value)}
-              />
-            </div>
-
-            {/* AI Prompt input */}
+          {/* AI Prompt input */}
+          {!isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && (
             <div className={"mb-4"}>
               <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="prompt">
                 AI Prompt:
@@ -251,113 +230,113 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
                 disabled={isDefault(selectedPerturbation)} required
               />
             </div>
+          )}
 
-            {/* Test direction radio buttons */}
-            {appConfig == "AIBAT" &&
+          {/* Test direction radio buttons */}
+          {appConfig == "AIBAT" && !isOriginal(selectedPerturbation) &&
               <div className="mb-4">
-                <span className="text-gray-700">Test Direction:</span>
-                <div className="mt-2">
-                  <label className="inline-flex items-center">
-                    <input type="radio" className="form-radio" name="testDirection" value="INV"
-                      checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
-                      disabled={isDefault(selectedPerturbation)} required
-                    />
-                    <span className="ml-2">INV</span>
-                  </label>
-                  <label className="inline-flex items-center ml-6">
-                    <input type="radio" className="form-radio" name="testDirection" value="DIR"
-                      checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
-                      disabled={isDefault(selectedPerturbation)} required
-                    />
-                    <span className="ml-2">DIR</span>
-                  </label>
-                </div>
-              </div>
-            }
-
-            {/* Testing prompt */}
-            {!isDefault(selectedPerturbation) && (
-              <div className={"mb-4"}>
-                <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
-                  Test Statement:
+                  <span className="text-gray-700">Test Direction:</span>
+                  <div className="mt-2">
+                      <label className="inline-flex items-center">
+                          <input type="radio" className="form-radio" name="testDirection" value="INV"
+                                 checked={testDirection === 'INV'} onChange={(e) => setTestDirection(e.target.value)}
+                                 disabled={isDefault(selectedPerturbation)} required
+                          />
+                          <span className="ml-2">INV</span>
                 </label>
-                <input
-                  className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
-                  id="testPrompt" type="text" placeholder="Test Statement"
-                  value={testStatement} onChange={(e) => setTestStatement(e.target.value)}
-                />
-                <div className={'flex items-center'}>
-                  {isTestingPert ? (
-                    <div className={'bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center'}>
-                      <ThreeDots className={'w-8 h-3'} />
-                    </div>
-                  ) : (
-                    <button
-                      className={"bg-blue-700 hover:bg-blue-900 h-10 w-32 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"}
-                      type="submit" onClick={handleTestPerturbation}>
-                      Test Prompt
-                    </button>
-                  )}
-                  {/*{isFailedTest && <div className={'text-sm text-red-600 font-light ps-4'}>Please input a valid AI prompt and test statement</div>}*/}
-                </div>
-                <div
-                  className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
-                  id="testResult">
-                  {testResult}
-                </div>
+                <label className="inline-flex items-center ml-6">
+                  <input type="radio" className="form-radio" name="testDirection" value="DIR"
+                    checked={testDirection === 'DIR'} onChange={(e) => setTestDirection(e.target.value)}
+                    disabled={isDefault(selectedPerturbation) || isOriginal(selectedPerturbation)} required
+                  />
+                  <span className="ml-2">DIR</span>
+                </label>
               </div>
-            )}
-
-            <div className={"flex gap-1"}>
-              {/* Submit button */}
-              {selectedPerturbation == "+" && <div className="flex items-center justify-between">
-                {isSubmitting ? (
-                  <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                    <ThreeDots className="w-8 h-3" />
-                  </div>
-                ) : (
-                  <button
-                    className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="submit">
-                    Submit New Criteria
-                  </button>
-                )}
-              </div>}
-              {/* Edit button */}
-              {selectedPerturbation != "+" && !isDefault(selectedPerturbation) && <div className="flex items-center justify-between">
-                {isEditing ? (
-                  <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                    <ThreeDots className="w-8 h-3" />
-                  </div>
-                ) : (
-                  <button
-                    className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={(e) => editPert(e)}
-                    type="submit">
-                    Edit Criteria
-                  </button>
-                )}
-              </div>}
-              {/* Delete button */}
-              {selectedPerturbation != "+" && <div className="flex items-center justify-between">
-                {isDeleting ? (
-                  <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
-                    <ThreeDots className="w-8 h-3" />
-                  </div>
-                ) : (
-                  <button
-                    className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={(e) => removePert(e)}>
-                    Remove Criteria
-                  </button>
-                )}
-              </div>}
             </div>
+          }
 
-            {isFailedSubmit && <div className="text-red-500 text-xs italic">Please fill out all fields</div>}
-          </form>
-        </div>
-      )}
+          {/* Testing prompt */}
+          {!isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && (
+            <div className={"mb-4"}>
+              <label className={"block text-gray-700 text-sm font-bold mb-2"} htmlFor="testPrompt">
+                Test Statement:
+              </label>
+              <input
+                className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"}
+                id="testPrompt" type="text" placeholder="Test Statement"
+                value={testStatement} onChange={(e) => setTestStatement(e.target.value)}
+              />
+              <div className={'flex items-center'}>
+                {isTestingPert ? (
+                  <div className={'bg-[#ecb127] h-10 w-32 py-2 px-4 rounded flex justify-center items-center'}>
+                    <ThreeDots className={'w-8 h-3'} />
+                  </div>
+                ) : (
+                  <button
+                    className={"bg-blue-700 hover:bg-blue-900 h-10 w-32 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2"}
+                    type="submit" onClick={(event) => handleTestPerturbation(event)}>
+                    Test Prompt
+                  </button>
+                )}
+                {/*{isFailedTest && <div className={'text-sm text-red-600 font-light ps-4'}>Please input a valid AI prompt and test statement</div>}*/}
+              </div>
+              <div
+                className={"shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight mt-2"}
+                id="testResult">
+                {testResult}
+              </div>
+            </div>
+          )}
+
+          <div className={"flex gap-1"}>
+            {/* Submit button */}
+            {(selectedPerturbation == "+" || isOriginal(selectedPerturbation)) && <div className="flex items-center justify-between">
+              {isSubmitting ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3" />
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  type="submit">
+                  Add New Criteria
+                </button>
+              )}
+            </div>}
+            {/* Edit button */}
+            {selectedPerturbation != "+" && !isDefault(selectedPerturbation) && !isOriginal(selectedPerturbation) && <div className="flex items-center justify-between">
+              {isEditing ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3" />
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={(e) => editPert(e)}
+                  type="submit">
+                  Edit Criteria
+                </button>
+              )}
+            </div>}
+            {/* Delete button */}
+            {selectedPerturbation != "+" && !isOriginal(selectedPerturbation) && <div className="flex items-center justify-between">
+              {isDeleting ? (
+                <div className="bg-[#ecb127] h-10 w-60 py-2 px-4 rounded flex justify-center items-center">
+                  <ThreeDots className="w-8 h-3" />
+                </div>
+              ) : (
+                <button
+                  className="bg-blue-700 hover:bg-blue-900 text-white h-10 w-60 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={(e) => removePert(e)}>
+                  Remove Criteria
+                </button>
+              )}
+            </div>}
+          </div>
+
+          {isFailedSubmit && <div className="text-red-500 text-xs italic">Please fill out all fields</div>}
+        </form>
+      </div>
     </div>
   );
 };

@@ -217,31 +217,3 @@ export async function fetchTests(
   setTestData(newTestData);
   setIsCurrent(true);
 }
-
-// List of original perturbations
-export const OGPERTS: { name: string; active: boolean }[] = [
-  {
-    name: "spelling",
-    active: false,
-  },
-  {
-    name: "negation",
-    active: false,
-  },
-  {
-    name: "synonyms",
-    active: false,
-  },
-  {
-    name: "paraphrase",
-    active: false,
-  },
-  {
-    name: "acronyms",
-    active: false,
-  },
-  {
-    name: "antonyms",
-    active: false,
-  },
-];

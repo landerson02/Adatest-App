@@ -1,5 +1,5 @@
 import json
-
+from rest_framework import status
 from django.db.models import Q
 
 from ..models import *
@@ -169,12 +169,9 @@ def test_clear(request, config):
     Perturbation.objects.all().delete()
     Test.objects.all().delete()
 
-    if config == "Mini-AIBAT":
-        perts = ['spelling', 'synonyms', 'paraphrase', 'acronyms']
-    elif config == "M-AIBAT":
-        perts = ['spanish', 'spanglish', 'spanNouns', 'spangNouns', 'cognates', 'falseCognates', 'wordWalls', 'sentenceBuilding', 'colloquial']
-    else:
-        perts = ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish']
+    if config not in default_pert_pipeline_map:
+        return Response("Invalid Configuration", status=status.HTTP_400_BAD_REQUEST)
+    perts = default_pert_pipeline_map[config]
 
     # reset appConfig
     appConfig[0] = config
