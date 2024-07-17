@@ -97,4 +97,9 @@ def test_topic_prompt(request):
     prompt = data['prompt']
     test = data['test']
 
+    test_pipeline = GeneralGraderPipeline(llama_model, llama_tokenizer, task=prompt)
+    response = test_pipeline(test)
+
+    return Response(response)
+
 
