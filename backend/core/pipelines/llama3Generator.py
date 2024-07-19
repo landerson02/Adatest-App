@@ -70,6 +70,7 @@ class LlamaGeneratorPipeline(Pipeline):
           result = re.sub(r'\[.+?\]', '', result)
 
         # return {'generated_text': result}
+        print('generated_text %s' % result)
         return [{'generated_text': result}]
 
 
