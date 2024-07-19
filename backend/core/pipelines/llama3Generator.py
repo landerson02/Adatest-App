@@ -71,7 +71,8 @@ class LlamaGeneratorPipeline(Pipeline):
 
         # return {'generated_text': result}
         print('generated_text %s' % result)
-        return [{'generated_text': result}]
+        generation = {'generated_text': result}
+        return generation
 
 
     def __call__(self, essay):
