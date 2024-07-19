@@ -149,7 +149,7 @@ class LlamaGeneratorPipeline(Pipeline):
         input_ids = self.preprocess(prompt=prompt, system_instruct=system_instr, assist_instruct=assist_instr)
         outputs = self._forward(input_ids)
         generated_text = self.postprocess(outputs, input_ids)
-        return generated_text
+        return [{'generated_text': generated_text}]
 
     def _sanitize_parameters(self, **kwargs):
         kwargs['model'] = self.model
