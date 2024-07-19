@@ -75,7 +75,7 @@ class LlamaGeneratorPipeline(Pipeline):
         return generation
 
 
-    def __call__(self, essay):
+    def __call__(self, essay, do_sample=True,):
         prompt_list = { # M-AIBAT criteria prompts
           'spanish': "The following sentence will either be English, Spanish, or Spanglish "\
                   + "(a combination of both). If the sentence is English, translate it "\
