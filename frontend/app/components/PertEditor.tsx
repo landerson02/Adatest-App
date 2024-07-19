@@ -86,7 +86,7 @@ const PertEditor = ({ closeModal }: PertEditorProps) => {
   const handleTestPerturbation = (e : any) => {
     e.preventDefault();
     // Check if all inputs are valid
-    if (isTestingPert || !testStatement || !aiPrompt || !testDirection) {
+    if (isTestingPert || !testStatement || !aiPrompt || (appConfig === "AIBAT" && !testDirection)) {
       return;
     }
 
