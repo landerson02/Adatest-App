@@ -85,10 +85,11 @@ class LlamaGeneratorPipeline(Pipeline):
                       + "(a combination of both). If the sentence is Spanish, translate it "\
                       + "to English. If it is English, return 'not translating.' If it is "\
                       + "Spanglish, translate it fully into English. Here is the sentence: ",
-          'spanglish':"The following sentence will either be English, Spanish or Spanglish "\
-                      + "(a combination of both).  If the sentence is English, translate it "\
-                      + "to Spanglish. If it is a Spanglish combination, return 'not translating.' If it is "\
-                      + "Spanish, translate it fully into Spanglish. Here is the sentence: ",
+          'spanglish':"The following sentence will either be English, Spanish or 'Spanglish' "\
+                      + "(a combination of both).  If the sentence is English, translate some words "\
+                      + "into Spanish to make the sentence Spanglish. If it is already a Spanglish "\
+                      + "sentence, return 'not translating.' If it is Spanish, translate only some "\
+                      + "words into English to make the sentence Spanglish. Here is the sentence: ",
           'nouns':"The following sentence will either be English, Spanish, or Spanglish "\
                       + "(a combination of both). If the sentence is English, translate only nouns "\
                       + "in this sentence to Spanish. If it is Spanish, translate only nouns in "\
@@ -123,14 +124,18 @@ class LlamaGeneratorPipeline(Pipeline):
             prompt = f"Rephrase each sentence: {essay}"
             system_instr = "Do not explain your steps. Only reply with the new sentences."
         elif self.task in prompt_list:
-          prompt = prompt_list[self.task] + f"{essay}"
-          system_instr = "Only reply with the new sentence. Do not explain."
-          if self.task == "cognate":
-            system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-          elif self.task == "false_cognate":
-            system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-            assist_instr = "False cognates are pairs of words in different languages "\
-              + "that seem to be cognates because of similar sounds, but have different meanings."
+            prompt = prompt_list[self.task] + f"{essay}"
+            system_instr = "Only reply with the new sentence. Do not explain."
+            if self.task == "spanglish":
+                system_instr = "Only reply with the new translation. Do not explain."
+                assist_instr = "Spanglish is the combination of English and Spanish in a single sentence. An example sentence: "\
+                + "Mi familia often takes walks to the parque del vecindario for ice cream."
+            elif self.task == "cognate":
+                system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+            elif self.task == "false_cognate":
+                system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+                assist_instr = "False cognates are pairs of words in different languages "\
+                + "that seem to be cognates because of similar sounds, but have different meanings."
 
         # AIBAT Criteria
         elif self.task == "spelling":
