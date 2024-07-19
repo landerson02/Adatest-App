@@ -69,7 +69,9 @@ class LlamaGeneratorPipeline(Pipeline):
           result = re.sub(r'\([^)]*\)', '', result)
           result = re.sub(r'\[.+?\]', '', result)
 
-        return {'generated_text': result}
+        # return {'generated_text': result}
+        return [{'generated_text': result}]
+
 
     def __call__(self, essay):
         prompt_list = { # M-AIBAT criteria prompts
@@ -130,9 +132,9 @@ class LlamaGeneratorPipeline(Pipeline):
 
         # AIBAT Criteria
         elif self.task == "spelling":
-          for i in range(len(essay) // 20):
-            essay = Perturb.add_typos(essay)
-          return [{'generated_text': essay}]
+            for i in range(len(essay) // 20):
+                essay = Perturb.add_typos(essay)
+            return [{'generated_text': essay}]
         elif self.task == "paraphrase":
             prompt = f"Rephrase the sentence in simple words. Do not add numbers or punctuation: {essay}"
         elif self.task == "synonyms":
@@ -148,8 +150,8 @@ class LlamaGeneratorPipeline(Pipeline):
 
         input_ids = self.preprocess(prompt=prompt, system_instruct=system_instr, assist_instruct=assist_instr)
         outputs = self._forward(input_ids)
-        generated_text = self.postprocess(outputs, input_ids)
-        return [{'generated_text': generated_text}]
+        # generated_text = self.postprocess(outputs, input_ids)
+        return [self.postprocess(outputs, input_ids)]
 
     def _sanitize_parameters(self, **kwargs):
         kwargs['model'] = self.model
