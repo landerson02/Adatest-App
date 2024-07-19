@@ -74,8 +74,9 @@ class LlamaGeneratorPipeline(Pipeline):
         generation = {'generated_text': result}
         return generation
 
-
-    def __call__(self, essay, do_sample=True,):
+    #### extra params needed to match function signature of MistralPipeline
+    def __call__(self, essay, do_sample=True, max_length=225, num_return_sequences=0, pad_token_id=None,
+                 stopping_criteria=0):
         prompt_list = { # M-AIBAT criteria prompts
           'spanish': "The following sentence will either be English, Spanish, or Spanglish "\
                   + "(a combination of both). If the sentence is English, translate it "\
