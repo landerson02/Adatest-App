@@ -82,6 +82,7 @@ default_pert_pipeline_map = {
 
 if MODEL_TYPE == "mistral":
     if appConfig[0] == "M-AIBAT":
+        print("Running M-AIBAT, starting llama3 for generation and grader")
         # Load llama model for generation and grader
         model, tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
         gen_pipeline = LlamaGeneratorPipeline(model, tokenizer, task="base")
@@ -93,6 +94,7 @@ if MODEL_TYPE == "mistral":
             pert_pipeline_map[perturb_type] = LlamaGeneratorPipeline(model, tokenizer, task=perturb_type)
 
     elif appConfig[0] == "AIBAT" or appConfig[0] == "Mini-AIBAT": # MODEL_TYPE == "mistral"
+        print("Running %s, starting mistral generator and llama3 grader" % appConfig[0])
         # Load mistral model for generation
         model, tokenizer = load_mistral_model()
         gen_pipeline = MistralPipeline(model, tokenizer, task="base")
