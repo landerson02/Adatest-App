@@ -49,11 +49,11 @@ class AdaClass:
         self.df.loc[self.df['Input'] == test]["Validity"] = "Approved"
 
 
-def create_obj(mistral=None, essayPipeline=None, type=None):
+def create_obj(model=None, essayPipeline=None, type=None):
     csv_filename = os.path.join(os.path.dirname(__file__), f'Tests/NTX_{type}.csv')
     test_tree = TestTree(pd.read_csv(csv_filename, index_col=0, dtype=str, keep_default_na=False))
 
-    if mistral is None:
+    if model is None: #### If model not specified, using OPEN-AI
         print("Using OPENAI")
         if "OPENAI_API_KEY" not in os.environ:
             raise ValueError("the env file is missing the OPENAI_API_KEY")
@@ -62,7 +62,8 @@ def create_obj(mistral=None, essayPipeline=None, type=None):
 
         generator = generators.OpenAI('davinci-002', api_key=OPENAI_API_KEY)
     else:
-        generator = generators.Pipelines(mistral, sep=". ", quote="")
+        generator = generators.Pipelines(model, sep=". ", quote="") 
+### I don't actually know if it changing mistral to model changes anything....
 
     browser = test_tree.adapt(essayPipeline, generator, max_suggestions=20)
     obj = AdaClass(browser)

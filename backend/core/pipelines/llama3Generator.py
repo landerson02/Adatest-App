@@ -90,15 +90,15 @@ class LlamaGeneratorPipeline(Pipeline):
                       + "in this sentence to Spanish. If it is Spanish, translate only nouns in "\
                       + "this sentence into English. If it is Spanglish, translate only nouns "\
                       + "to the other language. Here is the sentence: ",
-          'cognate' : "Cognates are a pair of words in different languages with similar structure and meaning. "
+          'cognates' : "Cognates are a pair of words in different languages with similar structure and meaning. "
                       + "If the sentence is English, find and describe a Spanish cognate. "
                       + "If the sentence is Spanish, find and describe an English cognate. "
                       + "If it is Spanglish, find a word with a cognate "
                       + "in the other language. Here is the sentence: ",
-          'false_cognate':"If the sentence is English, find a false Spanish cognate. "
-              + "If the sentence is Spanish, find a false English cognate. "
-              + "If it is Spanglish (a combination of both languages), find a false cognate in the "
-              + "other language. Here is the sentence: ",
+        #   'false_cognate':"If the sentence is English, find a false Spanish cognate. "
+        #       + "If the sentence is Spanish, find a false English cognate. "
+        #       + "If it is Spanglish (a combination of both languages), find a false cognate in the "
+        #       + "other language. Here is the sentence: ",
           'colloquial':"The following sentence will either be English, Spanish, or Spanglish "
               + "(a combination of both). If the sentence is English, add a coloquial Spanish word. "
               + "If the sentence is Spanish, add an English coloquial word. "
