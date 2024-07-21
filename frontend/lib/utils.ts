@@ -196,6 +196,9 @@ export async function fetchTests(
     for (const test of testArrays[topic]) {
       if (test.validity == "unapproved" || test.topic != currentTopic) continue;
       newTestDecisions[topic][test.validity.toLowerCase()].push(test);
+      if (test.validity != "approved") {
+        continue;
+      }
       for (const perturbedTest of test.perturbedTests) {
         if (perturbedTest.validity == "unapproved") continue;
         newPertDecisions[perturbedTest.validity.toLowerCase()].push(
