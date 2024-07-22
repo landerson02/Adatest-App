@@ -76,8 +76,8 @@ custom_pert_pipeline_map = {
 default_pert_pipeline_map = {
     "AIBAT": ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish'],
     "Mini-AIBAT": ['spelling', 'synonyms', 'paraphrase', 'acronyms', 'spanish'],
-    "M-AIBAT": ['spanish', 'spanglish', 'english', 'nouns', 'cognates', 'word_wall', 'loan_word',
-                'sentence_building', 'spelling']
+    "M-AIBAT": ['spanish', 'spanglish', 'english', 'nouns', 'spelling', 'cognates', 'word_wall', 'loan_word',
+                'sentence_building', 'dialect']
 }
 
 ## TODO: separate model initializations on config instead of all pipelines 

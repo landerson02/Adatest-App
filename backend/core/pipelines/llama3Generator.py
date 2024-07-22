@@ -115,6 +115,7 @@ class LlamaGeneratorPipeline(Pipeline):
               + "replace only nouns or verbs to the other language. Here is the sentence: ",
           'word_wall':"Identify the theme in this sentence that can produce a word wall:",
           'sentence_building': "Build on this sentence with increasing grammatical complexity: ",
+          'dialect': "Produce a dialectal difference for the following sentence: "
         }
 
         system_instr = None
