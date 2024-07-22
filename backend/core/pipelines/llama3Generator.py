@@ -133,10 +133,10 @@ class LlamaGeneratorPipeline(Pipeline):
                 + "Mi familia often takes walks to the parque del vecindario for ice cream."
             elif self.task == "cognate":
                 system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-            elif self.task == "false_cognate":
-                system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-                assist_instr = "False cognates are pairs of words in different languages "\
-                + "that seem to be cognates because of similar sounds, but have different meanings."
+            # elif self.task == "false_cognate":
+            #     system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+            #     assist_instr = "False cognates are pairs of words in different languages "\
+            #     + "that seem to be cognates because of similar sounds, but have different meanings."
 
         # AIBAT Criteria
         elif self.task == "spelling":

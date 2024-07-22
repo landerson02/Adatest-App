@@ -77,11 +77,12 @@ default_pert_pipeline_map = {
     "AIBAT": ['spelling', 'negation', 'synonyms', 'paraphrase', 'acronyms', 'antonyms', 'spanish'],
     "Mini-AIBAT": ['spelling', 'synonyms', 'paraphrase', 'acronyms', 'spanish'],
     "M-AIBAT": ['spanish', 'spanglish', 'english', 'nouns', 'cognates', 'word_wall', 'loan_word',
-                'sentence_building', 'colloquial']
+                'sentence_building', 'spelling']
 }
 
-if MODEL_TYPE == "mistral":
-    if appConfig[0] == "M-AIBAT":
+## TODO: separate model initializations on config instead of all pipelines 
+if MODEL_TYPE == "mistral": 
+    if appConfig[0] == "M-AIBAT": 
         print("Running M-AIBAT, starting llama3 for generation and grader")
         # Load llama model for generation and grader
         model, tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
