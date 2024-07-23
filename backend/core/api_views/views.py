@@ -113,6 +113,7 @@ obj_map = {}
 df_map = {}
 
 for topic, pipeline in grader_pipelines.items():
+    print("initalizing" + topic)
     obj_map[topic] = create_obj(model=gen_pipeline, essayPipeline=pipeline, type=topic)
     df_map[topic] = obj_map[topic].df
 
