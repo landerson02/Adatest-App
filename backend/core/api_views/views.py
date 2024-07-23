@@ -35,7 +35,7 @@ grader_pipelines = {
     # "PE": pe_pipeline,
     # "KE": ke_pipeline,
     "CU0": cu0_pipeline,
-    "CU5": cu5_pipeline
+    "CU5": cu5_pipeline,
 }
 
 # HELPER FUNCTIONS
@@ -106,6 +106,8 @@ if MODEL_TYPE == "mistral":
         for perturb_type in pert_pipeline_map.keys():
             pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
 
+food_pipeline = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task="FoodCulture")
+grader_pipelines["FoodCulture"] = food_pipeline
 
 obj_map = {}
 df_map = {}
