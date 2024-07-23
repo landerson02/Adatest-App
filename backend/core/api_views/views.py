@@ -106,8 +106,8 @@ if MODEL_TYPE == "mistral":
         for perturb_type in pert_pipeline_map.keys():
             pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
 
-food_pipeline = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task="FoodCulture")
-grader_pipelines["FoodCulture"] = food_pipeline
+food_pipeline = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task="Food")
+grader_pipelines["Food"] = food_pipeline
 
 obj_map = {}
 df_map = {}

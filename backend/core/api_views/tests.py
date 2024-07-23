@@ -194,6 +194,7 @@ def test_clear(request, config):
     # reset grader pipelines
     grader_pipelines['CU0'] = cu0_pipeline
     grader_pipelines['CU5'] = cu5_pipeline
+    grader_pipelines['Food'] = food_pipeline
 
     # clear custom perturbations
     custom_pert_pipeline_map.clear()
