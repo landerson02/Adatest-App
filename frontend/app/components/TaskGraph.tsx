@@ -173,6 +173,7 @@ const TaskGraph = () => {
         topicLabels.forEach((topic, index) => {
             if (topic == 'CU0') topicLabels[index] = 'Height/PE';
             if (topic == 'CU5') topicLabels[index] = 'Mass/Energy';
+            if (topic == 'Food') topicLabels[index] = 'Food/Culture';
         });
         const topicChartOptions: ChartData<'bar', number[]> = {
             labels: topicLabels,

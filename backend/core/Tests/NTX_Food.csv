@@ -1,0 +1,10 @@
+,topic,input,output,label,labeler,description,author,model score
+2616ad6093c74d7eaec7d7411a850001,,"Durante San Juan, saltamos sobre las hogueras en la playa.",unacceptable,pass,adatest_default,,,
+3679c7634eb24910a08525e10d71204a,,"Cuando la vida te de limones, make lemonade y bébela en un hot day!",acceptable,pass,adatest_default,,,
+e8b7666bef7243ef8993e2a20070dabe,,I found ingredients at the supermarket,acceptable,pass,adatest_default,,,
+30571bae6e3e4752a89b3f491f651ee2,,Me duele la espalda a lot.,unacceptable,pass,adatest_default,,,
+1b44f8f2c7814f2d84dc106517cba7c7,,"Turn your homework in at the end of clase, por favor.",unacceptable,pass,adatest_default,,,
+1065ae9c6d794ea3b547bb54149150f3,,El olor de las galletas horneadas hace que nuestra cocina huele muy bien,acceptable,pass,adatest_default,,,
+c5007620f2dd43d293f4f51f148b76ed,,Los churros con chocolate son un breakfast o dessert dulce que nos encanta.,acceptable,pass,adatest_default,,,
+776a61408c3448f299a8f11253611f21,,Chicken soup is warm and makes me feel better when I’m sick.,acceptable,pass,adatest_default,,,
+bcf2e7918e044ea9a1189cda36146f09,,Ese place has my favorite clothes de fiesta.,unacceptable,pass,adatest_default,,,

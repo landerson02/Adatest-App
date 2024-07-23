@@ -19,7 +19,8 @@ pip install django_rest_framework
 pip install django-nextjs==2.4.0
 pip install python-dotenv
 pip install peft
-pip install git+https://github.com/nytseng/adatest_mod@split-fix
+# pip install git+https://github.com/nytseng/adatest_mod@split-fix
+pip install git+https://github.com/nytseng/adatest_mod@llama
 pip install openai
 pip install checklist
 pip install SentencePiece

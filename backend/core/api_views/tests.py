@@ -180,7 +180,10 @@ def test_clear(request, config):
     pert_pipeline_map.clear()
     for pert in perts:
         if MODEL_TYPE == "mistral":
-            pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
+            if appConfig[0] == "AIBAT" or appConfig[0] == "Mini-AIBAT":
+                pert_pipeline_map[pert] = MistralPipeline(model, tokenizer, task=pert)
+            if appConfig[0] == "M-AIBAT":
+                pert_pipeline_map[pert] = LlamaGeneratorPipeline(model, tokenizer, task=pert)
         else:
             pert_pipeline_map[pert] = None
 
@@ -191,6 +194,7 @@ def test_clear(request, config):
     # reset grader pipelines
     grader_pipelines['CU0'] = cu0_pipeline
     grader_pipelines['CU5'] = cu5_pipeline
+    grader_pipelines['Food'] = food_pipeline
 
     # clear custom perturbations
     custom_pert_pipeline_map.clear()

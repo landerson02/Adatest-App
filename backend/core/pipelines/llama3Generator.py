@@ -69,9 +69,14 @@ class LlamaGeneratorPipeline(Pipeline):
           result = re.sub(r'\([^)]*\)', '', result)
           result = re.sub(r'\[.+?\]', '', result)
 
-        return {'generated_text': result}
+        # return {'generated_text': result}
+        # print('generated_text %s' % result)
+        generation = {'generated_text': result}
+        return generation
 
-    def __call__(self, essay):
+    #### extra params needed to match function signature of MistralPipeline
+    def __call__(self, essay, do_sample=True, max_length=225, num_return_sequences=0, pad_token_id=None,
+                 stopping_criteria=0):
         prompt_list = { # M-AIBAT criteria prompts
           'spanish': "The following sentence will either be English, Spanish, or Spanglish "\
                   + "(a combination of both). If the sentence is English, translate it "\
@@ -81,24 +86,25 @@ class LlamaGeneratorPipeline(Pipeline):
                       + "(a combination of both). If the sentence is Spanish, translate it "\
                       + "to English. If it is English, return 'not translating.' If it is "\
                       + "Spanglish, translate it fully into English. Here is the sentence: ",
-          'spanglish':"The following sentence will either be English, Spanish or Spanglish "\
-                      + "(a combination of both).  If the sentence is English, translate it "\
-                      + "to Spanglish. If it is a Spanglish combination, return 'not translating.' If it is "\
-                      + "Spanish, translate it fully into Spanglish. Here is the sentence: ",
+          'spanglish':"The following sentence will either be English, Spanish or 'Spanglish' "\
+                      + "(a combination of both).  If the sentence is English, translate some words "\
+                      + "into Spanish to make the sentence Spanglish. If it is already a Spanglish "\
+                      + "sentence, return 'not translating.' If it is Spanish, translate only some "\
+                      + "words into English to make the sentence Spanglish. Here is the sentence: ",
           'nouns':"The following sentence will either be English, Spanish, or Spanglish "\
                       + "(a combination of both). If the sentence is English, translate only nouns "\
                       + "in this sentence to Spanish. If it is Spanish, translate only nouns in "\
                       + "this sentence into English. If it is Spanglish, translate only nouns "\
                       + "to the other language. Here is the sentence: ",
-          'cognate' : "Cognates are a pair of words in different languages with similar structure and meaning. "
+          'cognates' : "Cognates are a pair of words in different languages with similar structure and meaning. "
                       + "If the sentence is English, find and describe a Spanish cognate. "
                       + "If the sentence is Spanish, find and describe an English cognate. "
                       + "If it is Spanglish, find a word with a cognate "
                       + "in the other language. Here is the sentence: ",
-          'false_cognate':"If the sentence is English, find a false Spanish cognate. "
-              + "If the sentence is Spanish, find a false English cognate. "
-              + "If it is Spanglish (a combination of both languages), find a false cognate in the "
-              + "other language. Here is the sentence: ",
+        #   'false_cognate':"If the sentence is English, find a false Spanish cognate. "
+        #       + "If the sentence is Spanish, find a false English cognate. "
+        #       + "If it is Spanglish (a combination of both languages), find a false cognate in the "
+        #       + "other language. Here is the sentence: ",
           'colloquial':"The following sentence will either be English, Spanish, or Spanglish "
               + "(a combination of both). If the sentence is English, add a coloquial Spanish word. "
               + "If the sentence is Spanish, add an English coloquial word. "
@@ -109,6 +115,8 @@ class LlamaGeneratorPipeline(Pipeline):
               + "replace only nouns or verbs to the other language. Here is the sentence: ",
           'word_wall':"Identify the theme in this sentence that can produce a word wall:",
           'sentence_building': "Build on this sentence with increasing grammatical complexity: ",
+          'dialect': "Produce a different Spanish dialect for the following sentence. "
+              + "If the sentence is English, return 'not translating': "
         }
 
         system_instr = None
@@ -119,20 +127,24 @@ class LlamaGeneratorPipeline(Pipeline):
             prompt = f"Rephrase each sentence: {essay}"
             system_instr = "Do not explain your steps. Only reply with the new sentences."
         elif self.task in prompt_list:
-          prompt = prompt_list[self.task] + f"{essay}"
-          system_instr = "Only reply with the new sentence. Do not explain."
-          if self.task == "cognate":
-            system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-          elif self.task == "false_cognate":
-            system_instr = "Do not explain your steps. Give your answer and the word's meaning."
-            assist_instr = "False cognates are pairs of words in different languages "\
-              + "that seem to be cognates because of similar sounds, but have different meanings."
+            prompt = prompt_list[self.task] + f"{essay}"
+            system_instr = "Only reply with the new sentence. Do not explain."
+            if self.task == "spanglish":
+                system_instr = "Only reply with the new translation. Do not explain."
+                assist_instr = "Spanglish is the combination of English and Spanish in a single sentence. An example sentence: "\
+                + "Mi familia often takes walks to the parque del vecindario for ice cream."
+            elif self.task == "cognate":
+                system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+            # elif self.task == "false_cognate":
+            #     system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+            #     assist_instr = "False cognates are pairs of words in different languages "\
+            #     + "that seem to be cognates because of similar sounds, but have different meanings."
 
         # AIBAT Criteria
         elif self.task == "spelling":
-          for i in range(len(essay) // 20):
-            essay = Perturb.add_typos(essay)
-          return [{'generated_text': essay}]
+            for i in range(len(essay) // 20):
+                essay = Perturb.add_typos(essay)
+            return [{'generated_text': essay}]
         elif self.task == "paraphrase":
             prompt = f"Rephrase the sentence in simple words. Do not add numbers or punctuation: {essay}"
         elif self.task == "synonyms":
@@ -148,8 +160,8 @@ class LlamaGeneratorPipeline(Pipeline):
 
         input_ids = self.preprocess(prompt=prompt, system_instruct=system_instr, assist_instruct=assist_instr)
         outputs = self._forward(input_ids)
-        generated_text = self.postprocess(outputs, input_ids)
-        return generated_text
+        # generated_text = self.postprocess(outputs, input_ids)
+        return [self.postprocess(outputs, input_ids)]
 
     def _sanitize_parameters(self, **kwargs):
         kwargs['model'] = self.model
