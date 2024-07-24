@@ -108,8 +108,6 @@ class MistralPipeline(Pipeline):
             prompt = f"Add a 'not' to make this sentence wrong. Do not add comments: {essay}"
         elif self.task == "acronyms":
             prompt = f"Replace a common phrase in the following sentence with an acronym. Do not add comments: {essay}"
-        elif self.task == "colloquial":
-            prompt = f"Add a [English, Spanish, Spanglish] colloquial word to this sentence: {essay}"
         # MAIBAT Criteria
         elif self.task == "spanish":
             prompt = f"Translate this sentence into Spanish: {essay}"
@@ -127,6 +125,8 @@ class MistralPipeline(Pipeline):
             prompt = f"Take the most important word and use it in an example sentence: {essay}"
         elif self.task == "sentenceBuilding":
             prompt = f"Build on this sentence: {essay}"
+        elif self.task == "colloquial":
+            prompt = f"Add a [English, Spanish, Spanglish] colloquial word to this sentence: {essay}"
         else:
             prompt = essay
 

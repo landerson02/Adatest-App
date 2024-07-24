@@ -62,8 +62,8 @@ def generate_perturbations(request, topic):
             if pertList.filter(type=perturb_type).exists():
                 continue
 
-            if custom_pipeline is not None:
-                perturbed_test = custom_pipeline(f'{perturb_options["prompt"]}: {testData.title}')
+            if custom_pipeline[0] is not None:
+                perturbed_test = custom_pipeline[0](f'{perturb_options["prompt"]}: {testData.title}')
                 perturbed_test = perturbed_test[0]['generated_text']
             else:
                 perturbed_test = testData.title
@@ -196,7 +196,7 @@ def add_new_pert(request):
         pipeline = pert_pipeline_map[pert_name]
     else:
         custom_pert_pipeline_map[pert_name] = {"name": pert_name, "prompt": prompt, "flip_label": flip_label}
-        pipeline = custom_pipeline
+        pipeline = custom_pipeline[0]
 
     for test in test_list:
         id = test["id"]
@@ -206,7 +206,7 @@ def add_new_pert(request):
             if pert_name in default_pert_pipeline_map:
                 perturbed_test = pipeline(testData.title)
             else:
-                perturbed_test = custom_pipeline(f'{prompt}: {testData.title}')
+                perturbed_test = custom_pipeline[0](f'{prompt}: {testData.title}')
             perturbed_test = perturbed_test[0]['generated_text']
         else:
             perturbed_test = testData.title
@@ -250,8 +250,8 @@ def test_new_pert(request):
     test_case = data['test_case']
     prompt = data['prompt']
 
-    if custom_pipeline is not None:
-        perturbed_test = custom_pipeline(f'{prompt}: {test_case}')
+    if custom_pipeline[0] is not None:
+        perturbed_test = custom_pipeline[0](f'{prompt}: {test_case}')
         perturbed_test = perturbed_test[0]['generated_text']
     else:
         perturbed_test = test_case
