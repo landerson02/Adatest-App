@@ -46,7 +46,7 @@ bash stop-application.sh
 Docker or not, the application will be available at http://localhost:8000
 
 # Running the Application on the VM
-To connect to the vm, first retrieve the ssh key "adatest.pem" 
+To connect to the vm, first retrieve the ssh key "adatest.pem" from a team member.
 Then, on a terminal in a folder that contains adatest.pem on your local computer, give it permissions with the command
 ``` chmod 600 adatest.pem ```
 
@@ -56,6 +56,7 @@ grab the ssh command (should look like ssh ubuntu@1280.136.135) copy the address
 replace it with the 'address' in the code below. 
 
 Then ssh into the vm with the command:
+
 ``` ssh -i adatest.pem ubuntu@<address> -L localhost:8000:localhost:8000 ```
 
 <!--## To Run Locally (Without Docker) -->
@@ -70,7 +71,7 @@ In the same directory, stop run the application, run following command:
 ```
 bash start-application.sh
 ```
-To stop the application, run the following command:
+When done, to stop the application, run the following command:
 ```
 bash stop-application.sh
 ```
