@@ -187,7 +187,7 @@ def test_clear(request, config):
             if appConfig[0] == "M-AIBAT":
                 pert_pipeline_map[pert] = LlamaGeneratorPipeline(llama_model, llama_tokenizer, task=pert)
                 custom_pipeline[0] = llama_custom_pipeline
-                gen_pipeline[0] = llama_gen_pipeline
+                gen_pipeline[0] = mistral_gen_pipeline
         else:
             pert_pipeline_map[pert] = None
             custom_pipeline[0] = None
