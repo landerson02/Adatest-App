@@ -80,16 +80,16 @@ class LlamaGeneratorPipeline(Pipeline):
         prompt_list = { # M-AIBAT criteria prompts
           'spanish': "The following sentence will either be English, Spanish, or Spanglish "\
                   + "(a combination of both). If the sentence is English, translate it "\
-                  + "to Spanish. If it is Spanish, return 'not translating.' If it is "\
+                  + "to Spanish. If it is Spanish, return the same sentence. If it is "\
                   + "Spanglish, translate it fully into Spanish. Here is the sentence: ",
           'english': "The following sentence will either be English, Spanish, or Spanglish "\
                       + "(a combination of both). If the sentence is Spanish, translate it "\
-                      + "to English. If it is English, return 'not translating.' If it is "\
+                      + "to English. If it is English, return the same sentence. If it is "\
                       + "Spanglish, translate it fully into English. Here is the sentence: ",
           'spanglish':"The following sentence will either be English, Spanish or 'Spanglish' "\
                       + "(a combination of both).  If the sentence is English, translate some words "\
                       + "into Spanish to make the sentence Spanglish. If it is already a Spanglish "\
-                      + "sentence, return 'not translating.' If it is Spanish, translate only some "\
+                      + "sentence, return the same sentence. If it is Spanish, translate only some "\
                       + "words into English to make the sentence Spanglish. Here is the sentence: ",
           'nouns':"The following sentence will either be English, Spanish, or Spanglish "\
                       + "(a combination of both). If the sentence is English, translate only nouns "\
@@ -129,8 +129,12 @@ class LlamaGeneratorPipeline(Pipeline):
         elif self.task in prompt_list:
             prompt = prompt_list[self.task] + f"{essay}"
             system_instr = "Only reply with the new sentence. Do not explain."
-            if self.task == "spanglish":
-                system_instr = "Only reply with the new translation. Do not explain."
+            if self.task == "spanish":
+                system_instr = "Only reply with the new translation. If it is already Spanish, return the same sentence. Do not explain."
+            elif self.task == "english":
+                system_instr = "Only reply with the new translation. If it is already English, return the same sentence. Do not explain."
+            elif self.task == "spanglish":
+                system_instr = "Only reply with the new translation. If it is already Spanglish, return the same sentence. Do not explain."
                 assist_instr = "Spanglish is the combination of English and Spanish in a single sentence. An example sentence: "\
                 + "Mi familia often takes walks to the parque del vecindario for ice cream."
             elif self.task == "cognate":
