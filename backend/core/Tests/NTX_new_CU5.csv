@@ -1,0 +1,11 @@
+,topic,input,output,label,labeler,description,author,model score
+8fe34da9c6b04ea7985feb2faccd1b64,,When it comes to mass the greater the mass the greater the energía potencial y energía cinética.,acceptable,pass,adatest_default,,,
+471b8dae6f89432392b3bd80e2d27829,,"Mientras más masa tiene un objeto, más energía potencial tiene.",acceptable,pass,adatest_default,,,
+fa69d005b9874cb9b2b0ff559f245af5,,The cart will also have more total energy if it is heavier.,acceptable,pass,adatest_default,,,
+39a83c13f7dc48ec9d877b2a42317c47,,The mass of the roller coaster car also affects the kinetic energy and potential energy.,acceptable,pass,adatest_default,,,
+958ef54dffca495f9c947e365d46ba11,,"Mientras más masa, más energía total tiene el coche para usar.",acceptable,pass,adatest_default,,,
+d1285ef2dd964a9ab82d82c4a774fcc9,,The higher energy had no correlation with the mass,unacceptable,pass,adatest_default,,,
+9536f2faec014c759266e082c67232cb,,The energy doesn’t change based on the mass,unacceptable,pass,adatest_default,,,
+0b6e724371a6420d9bea5fa4b04c6d09,,El cambio de masa only changed the potential energy,unacceptable,pass,adatest_default,,,
+d4873215564f401b8f5bd0de47c364dd,,Mass is independiente of energy,unacceptable,pass,adatest_default,,,
+a4dd6a621cce4b4cac82099dcecea99c,,Higher mass led to less energy,unacceptable,pass,adatest_default,,,
