@@ -36,11 +36,11 @@ def add_topic(request):
         writer.writerows(new_data)  # Writing all rows including the header
 
     if MODEL_TYPE == "mistral":
-        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task=new_prompt_topic)
+        grader_pipelines[new_topic] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=new_prompt_topic)
     else:
         grader_pipelines[new_topic] = cu0_pipeline
 
-    obj_map[new_topic] = create_obj(model=gen_pipeline, essayPipeline=grader_pipelines[new_topic], type=new_topic)
+    obj_map[new_topic] = create_obj(model=gen_pipeline[0], essayPipeline=grader_pipelines[new_topic], type=new_topic)
     df_map[new_topic] = obj_map[new_topic].df
 
     for i, row in df_map[new_topic].head(11).iterrows():
@@ -97,7 +97,7 @@ def test_topic_prompt(request):
     prompt = data['prompt']
     test = data['test']
 
-    test_pipeline = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task=prompt) if MODEL_TYPE == "mistral" else cu0_pipeline
+    test_pipeline = GeneralGraderPipeline(llama_model, llama_tokenizer, task=prompt) if MODEL_TYPE == "mistral" else cu0_pipeline
     response = test_pipeline(test)
 
     return Response(response)

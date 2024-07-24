@@ -63,10 +63,10 @@ def index(request):
     return render_nextjs_page_sync(request)
 
 ####### mode: AIBAT, MINI-AIBAT, M-AIBAT
-appConfig = ["M-AIBAT"]
+appConfig = ["AIBAT"]
 
-gen_pipeline = None
-custom_pipeline = None
+gen_pipeline = [None]
+custom_pipeline = [None]
 pert_pipeline_map = {
     # will fill up with perturbations
 }
@@ -82,47 +82,27 @@ default_pert_pipeline_map = {
 
 ## TODO: separate model initializations on config instead of all pipelines 
 if MODEL_TYPE == "mistral": 
-    if appConfig[0] == "M-AIBAT": 
-        print("Running M-AIBAT, starting llama3 for generation and grader")
-        # Load llama model for generation and grader
-        model, tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
-        gen_pipeline = LlamaGeneratorPipeline(model, tokenizer, task="base")
-        custom_pipeline = LlamaGeneratorPipeline(model, tokenizer, task="custom")
-        # load llama model for grader
-        llama_grade_model, llama_grade_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
+    print("Loading Llama Model")
+    # Load llama model for generation and grader
+    llama_model, llama_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
+    llama_gen_pipeline = LlamaGeneratorPipeline(llama_model, llama_tokenizer, task="base")
+    llama_custom_pipeline = LlamaGeneratorPipeline(llama_model, llama_tokenizer, task="custom")
 
-        for perturb_type in pert_pipeline_map.keys():
-            pert_pipeline_map[perturb_type] = LlamaGeneratorPipeline(model, tokenizer, task=perturb_type)
-
-    elif appConfig[0] == "AIBAT" or appConfig[0] == "Mini-AIBAT": # MODEL_TYPE == "mistral"
-        print("Running %s, starting mistral generator and llama3 grader" % appConfig[0])
-        # Load mistral model for generation
-        model, tokenizer = load_mistral_model()
-        gen_pipeline = MistralPipeline(model, tokenizer, task="base")
-        custom_pipeline = MistralPipeline(model, tokenizer, task="custom")
-        # load llama model for grader
-        llama_grade_model, llama_grade_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
-
-        for perturb_type in pert_pipeline_map.keys():
-            pert_pipeline_map[perturb_type] = MistralPipeline(model, tokenizer, task=perturb_type)
-
-food_pipeline = GeneralGraderPipeline(llama_grade_model, llama_grade_tokenizer, task="Food")
-grader_pipelines["Food"] = food_pipeline
+    print("Loading Mistral Model")
+    # Load mistral model for generation
+    mistral_model, mistral_tokenizer = load_mistral_model()
+    mistral_gen_pipeline = MistralPipeline(mistral_model, mistral_tokenizer, task="base")
+    mistral_custom_pipeline = MistralPipeline(mistral_model, mistral_tokenizer, task="custom")
 
 obj_map = {}
 df_map = {}
-
-for topic, pipeline in grader_pipelines.items():
-    print("initalizing" + topic)
-    obj_map[topic] = create_obj(model=gen_pipeline, essayPipeline=pipeline, type=topic)
-    df_map[topic] = obj_map[topic].df
 
 
 # create default vals in db
 @api_view(['POST'])
 def init_database(request):
     for top, pipe in grader_pipelines.items():
-        obj_map[top] = create_obj(model=gen_pipeline, essayPipeline=pipe, type=top)
+        obj_map[top] = create_obj(model=gen_pipeline[0], essayPipeline=pipe, type=top)
         df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
         data = obj_map[top].df

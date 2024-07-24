@@ -16,3 +16,4 @@ backend/core/Tests/*
 !backend/core/Tests/NTX_PE.csv
 !backend/core/Tests/NTX_KE.csv
 !backend/core/Tests/NTX_LCE.csv
+!backend/core/Tests/NTX_Food.csv

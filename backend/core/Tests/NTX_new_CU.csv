@@ -1,0 +1,11 @@
+,topic,input,output,label,labeler,description,author,model score
+d74e40cb8ca5449da6d43322ff99928d,,"Esto es porque entre más altura tiene un objeto, tiene más energía potencial.",acceptable,pass,adatest_default,,,
+9125b7e9192e4aa2aa79d0c3bb8f1920,,"Height and Energy are directly related. En otras palabras, when the drop height is greater the total energy will be greater.",acceptable,pass,adatest_default,,,
+c3e55059aef14683be19e26444cd9f00,,Cuando disminuí la altura a 4m la energía potencial disminuyó a 1564 julios.,acceptable,pass,adatest_default,,,
+58091b33453944e9816a480d537d485a,,"Para tanto la caída inicial como la colina, entre mayor la altura, mayor su energía.",acceptable,pass,adatest_default,,,
+2c15449efa3145c79181bc1af93304e6,,"Hemos aprendido que la altura inicial de caída debe ser la más alta posible- entre más energía, mejor",acceptable,pass,adatest_default,,,
+ac1fe18c0c6743fe86c3f2b30ad83ae2,,Notamos que la energía potencial wasn’t affected when we increased the height,unacceptable,pass,adatest_default,,,
+1759696051c74dc4b1dca9840823ea6f,,"When I increased the height to 10 meters, the potential energy was less than what it was at 5 meters",unacceptable,pass,adatest_default,,,
+062837db3e884f8ebab77ed858ad0058,,The increase in potential energy was caused by a decrease in height,unacceptable,pass,adatest_default,,,
+f1153a41aac048809386dec7875f842c,,The potential energy in the system siempre era la misma no matter what the height was,unacceptable,pass,adatest_default,,,
+8ac9b5ef88144f62ab9b71194cb10183,,Changing the height of the drop didn’t change the potential energy at all,unacceptable,pass,adatest_default,,,
