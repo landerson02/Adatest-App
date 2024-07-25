@@ -198,12 +198,17 @@ def test_clear(request, config):
     df_map.clear()
 
     # reset grader pipelines
-    grader_pipelines['CU0'] = cu0_pipeline
-    grader_pipelines['CU5'] = cu5_pipeline
+    # grader_pipelines['CU0'] = cu0_pipeline
+    # grader_pipelines['CU5'] = cu5_pipeline
 
     if appConfig[0] == "M-AIBAT":
         grader_pipelines['Food'] = grader_pipelines["Food"] = GeneralGraderPipeline(llama_model, llama_tokenizer, task="Food") if MODEL_TYPE == "mistral" else cu0_pipeline
-
+        grader_pipelines['CU0_esp'] = grader_pipelines["CU0_esp"] = GeneralGraderPipeline(llama_model, llama_tokenizer, task="CU0_esp") if MODEL_TYPE == "mistral" else cu0_pipeline
+        grader_pipelines['CU5_esp'] = grader_pipelines["CU5_esp"] = GeneralGraderPipeline(llama_model, llama_tokenizer, task="CU5_esp") if MODEL_TYPE == "mistral" else cu0_pipeline
+    else:
+        grader_pipelines['CU0'] = cu0_pipeline
+        grader_pipelines['CU5'] = cu5_pipeline
+    
     # clear custom perturbations
     custom_pert_pipeline_map.clear()
 

@@ -174,6 +174,9 @@ const TaskGraph = () => {
             if (topic == 'CU0') topicLabels[index] = 'Height/PE';
             if (topic == 'CU5') topicLabels[index] = 'Mass/Energy';
             if (topic == 'Food') topicLabels[index] = 'Food/Culture';
+            if (topic == 'CU0_esp') topicLabels[index] = 'Height/PE';
+            if (topic == 'CU5_esp') topicLabels[index] = 'Mass/Energy';
+
         });
         const topicChartOptions: ChartData<'bar', number[]> = {
             labels: topicLabels,
