@@ -199,8 +199,8 @@ def test_clear(request, config):
     df_map.clear()
 
     # reset grader prompts
-    grader_prompts['CU0'] = 'Is the following sentence an acceptable or unacceptable definition of the concept of height and potential energy? Here is the sentence:'
-    grader_prompts['CU5'] = 'Is the following sentence an acceptable or unacceptable definition of the concept of mass and energy? Here is the sentence:'
+    grader_prompts['CU0'] = 'Does the following sentence include the concept: Greater height means greater potential energy? Here is the sentence:'
+    grader_prompts['CU5'] = 'Does the following sentence include the concept: Greater mass means greater energy? Here is the sentence:'
     grader_prompts['Food'] = 'Is this sentence an acceptable or unacceptable description of food and culture? Here is the sentence:'
 
     # reset grader pipelines

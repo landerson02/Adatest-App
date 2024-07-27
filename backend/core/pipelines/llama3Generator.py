@@ -113,8 +113,8 @@ class LlamaGeneratorPipeline(Pipeline):
               + "in this sentence with a loanword in Spanish. If the sentence is Spanish, replace "
               + "a noun or a verb in this sentence with a loanword in English.  If it is Spanglish (a combination of both English and Spanish), "
               + "replace only nouns or verbs to the other language. Here is the sentence: ",
-          'word_wall':"Identify the theme in this sentence that can produce a word wall:",
-          'sentence_building': "Build on this sentence with increasing grammatical complexity: ",
+        #   'word_wall':"Identify the theme in this sentence that can produce a word wall:",
+        #   'sentence_building': "Build on this sentence with increasing grammatical complexity and keep vocabulary simple: ",
           'dialect': "Produce a different Spanish dialect for the following sentence. "
               + "If the sentence is English, return 'not translating': "
         }
