@@ -80,9 +80,18 @@ def delete_topic(request):
 def get_topics(request):
     """
     Gets all topics from the db
+    :return: All topic names
     """
-    topics = Test.objects.values_list('topic', flat=True).distinct()
-    return Response([x for x in list(topics) if not x.startswith('suggested_')])
+    return Response(grader_pipelines.keys())
+
+@api_view(['GET'])
+def get_topic_prompt(request, topic):
+    """
+    Gets the prompt for a topic
+    :param request: topic: str
+    :return: The prompt for the topic
+    """
+    return Response(grader_prompts[topic])
 
 
 @api_view(['POST'])

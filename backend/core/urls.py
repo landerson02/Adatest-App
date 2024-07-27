@@ -40,6 +40,7 @@ urlpatterns = [
     # Topic endpoints (api_views/topics.py)
     path('core/topics/add', topics.add_topic),
     path('core/topics/get', topics.get_topics),
+    path('core/topics/prompt/<str:topic>', topics.get_topic_prompt),
     path('core/topics/delete', topics.delete_topic),
     path('core/topics/test', topics.test_topic_prompt)
 ]

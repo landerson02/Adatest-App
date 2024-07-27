@@ -3,7 +3,7 @@
 import TestList from "@/app/components/TestList";
 import TaskGraph from "@/app/components/TaskGraph";
 import { useState, useEffect, useContext } from "react";
-import { generateTests } from "@/lib/Service";
+import {generateTests, getPrompt} from "@/lib/Service";
 import { testDataType } from "@/lib/Types";
 import { TestDataContext } from "@/lib/TestContext";
 import RadioButtons from "@/app/components/RadioButtons";
@@ -15,6 +15,8 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   // Boolean for if perturbations are being generated
   const [isPerturbing, setIsPerturbing] = useState(false);
+  // String for the current topic prompt
+  const [topicPrompt, setTopicPrompt] = useState<string>("");
 
   // Map that contains all current filters ('' is no filter)
   // 'label' -> (un)acceptable
@@ -65,6 +67,9 @@ export default function Home() {
       pert_decisions: testData.pert_decisions,
     };
     setTestData(newTestsData);
+    getPrompt(currentTopic).then((prompt) => {
+      setTopicPrompt(prompt);
+    });
   }, [currentTopic, isCurrent]);
 
   /**
@@ -88,12 +93,16 @@ export default function Home() {
       </div>
       <main className="col-span-3 flex w-full h-screen flex-col items-center">
         {/* HEADER */}
-        <div className={"px-4 w-full h-20 flex gap-2 items-center py-3"}>
+        <div className={"px-4 w-full h-20 flex gap-2 items-center py-1"}>
           <span className={"text-3xl font-light"}>Topic:</span>
           <RadioButtons
             isAutoCheck={isAutoCheck}
             setIsAutoCheck={setIsAutoSelect}
           />
+        </div>
+        <div className={"px-4 w-full py-1 h-24 flex items-center gap-2"}>
+          <div className={"font-bold"}>Prompt:</div>
+          <div className={"italic"}>&quot;{topicPrompt}&quot;</div>
         </div>
         <TestList filterMap={filterMap} setFilterMap={setFilterMap} />
         <Buttons

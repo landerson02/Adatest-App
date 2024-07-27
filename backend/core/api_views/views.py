@@ -38,6 +38,11 @@ grader_pipelines = {
     "CU5": cu5_pipeline,
 }
 
+grader_prompts = {
+    "CU0": "",
+    "CU5": "",
+}
+
 # HELPER FUNCTIONS
 def generate_random_id():
     random_uuid = uuid.uuid4()
@@ -81,7 +86,7 @@ default_pert_pipeline_map = {
 }
 
 ## TODO: separate model initializations on config instead of all pipelines 
-if MODEL_TYPE == "mistral": 
+if MODEL_TYPE == "mistral":
     print("Loading Llama Model")
     # Load llama model for generation and grader
     llama_model, llama_tokenizer = load_llama3_model('meta-llama/Meta-Llama-3-8B-Instruct')
@@ -102,7 +107,7 @@ df_map = {}
 @api_view(['POST'])
 def init_database(request):
     for top, pipe in grader_pipelines.items():
-        obj_map[top] = create_obj(model=gen_pipeline[0], essayPipeline=pipe, type=top)
+        obj_map[top] = create_obj(model=gen_pipeline[0], essayPipeline=pipe, type=f"{top}_esp" if (appConfig[0] != "M-AIBAT" and "CU" in top) else top)
         df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
         data = obj_map[top].df
