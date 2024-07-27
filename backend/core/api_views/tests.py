@@ -205,8 +205,8 @@ def test_clear(request, config):
 
     # reset grader pipelines
     if appConfig[0] == "M-AIBAT":
-        grader_pipelines['CU0'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU0']) if MODEL_TYPE == "mistral" else cu0_pipeline
-        grader_pipelines['CU5'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU5']) if MODEL_TYPE == "mistral" else cu5_pipeline
+        grader_pipelines['CU0_esp'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU0']) if MODEL_TYPE == "mistral" else cu0_pipeline
+        grader_pipelines['CU5_esp'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU5']) if MODEL_TYPE == "mistral" else cu5_pipeline
         grader_pipelines['Food'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['Food']) if MODEL_TYPE == "mistral" else cu0_pipeline
     else:
         grader_pipelines['CU0'] = cu0_pipeline
