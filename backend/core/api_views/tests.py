@@ -201,7 +201,7 @@ def test_clear(request, config):
     # reset grader prompts
     grader_prompts['CU0'] = 'Does the following sentence include an acceptable/unacceptable description of the physics concept: Greater height means greater potential energy? Here is the sentence:'
     grader_prompts['CU5'] = 'Does the following sentence include an acceptable/unacceptable description of the physics concept: Greater mass means greater energy? Here is the sentence:'
-    grader_prompts['Food'] = 'Is this sentence an acceptable or unacceptable description of food and/or culture? Here is the sentence:'
+    grader_prompts['Food'] = 'Does this sentence include an acceptable or unacceptable description of food and/or culture? Here is the sentence:'
 
     # reset grader pipelines
     if appConfig[0] == "M-AIBAT":
