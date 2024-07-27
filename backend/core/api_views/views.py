@@ -39,8 +39,9 @@ grader_pipelines = {
 }
 
 grader_prompts = {
-    "CU0": "",
-    "CU5": "",
+    "CU0_esp": "",
+    "CU5_esp": "",
+    "Food": "",
 }
 
 # HELPER FUNCTIONS
