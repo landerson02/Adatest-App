@@ -39,8 +39,8 @@ grader_pipelines = {
 }
 
 grader_prompts = {
-    "CU0_esp": "",
-    "CU5_esp": "",
+    "CU0": "",
+    "CU5": "",
     "Food": "",
 }
 
@@ -107,7 +107,7 @@ df_map = {}
 @api_view(['POST'])
 def init_database(request):
     for top, pipe in grader_pipelines.items():
-        obj_map[top] = create_obj(model=gen_pipeline[0], essayPipeline=pipe, type=f"{top}_esp" if (appConfig[0] != "M-AIBAT" and "CU" in top) else top)
+        obj_map[top] = create_obj(model=gen_pipeline[0], essayPipeline=pipe, type=f"{top}_esp" if (appConfig[0] == "M-AIBAT" and "CU" in top) else top)
         df_map[top] = obj_map[top].df
         # PE KE LCE for this user study will have no tests
         data = obj_map[top].df

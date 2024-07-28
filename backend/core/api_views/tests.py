@@ -199,15 +199,15 @@ def test_clear(request, config):
     df_map.clear()
 
     # reset grader prompts
-    grader_prompts['CU0_esp'] = 'Does the following contain the physics concept: Greater height means greater energy? Here is the sentence:'
-    grader_prompts['CU5_esp'] = 'The sentence is acceptable if it contain the physics concept: The more mass, the more energy. If not, it is unacceptable. Here is the sentence:'
+    grader_prompts['CU0'] = 'Does the following contain the physics concept: Greater height means greater energy? Here is the sentence:'
+    grader_prompts['CU5'] = 'The sentence is acceptable if it contain the physics concept: The more mass, the more energy. If not, it is unacceptable. Here is the sentence:'
     grader_prompts['Food'] = 'Does this sentence include a description of food and/or culture? Here is the sentence:'
 
 
     # reset grader pipelines
     if appConfig[0] == "M-AIBAT":
-        grader_pipelines['CU0_esp'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU0_esp']) if MODEL_TYPE == "mistral" else cu0_pipeline
-        grader_pipelines['CU5_esp'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU5_esp']) if MODEL_TYPE == "mistral" else cu5_pipeline
+        grader_pipelines['CU0'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU0']) if MODEL_TYPE == "mistral" else cu0_pipeline
+        grader_pipelines['CU5'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['CU5']) if MODEL_TYPE == "mistral" else cu5_pipeline
         grader_pipelines['Food'] = GeneralGraderPipeline(llama_model, llama_tokenizer, task=grader_prompts['Food']) if MODEL_TYPE == "mistral" else cu0_pipeline
     else:
         grader_pipelines['CU0'] = cu0_pipeline
