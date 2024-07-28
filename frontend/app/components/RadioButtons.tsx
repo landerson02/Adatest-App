@@ -113,7 +113,7 @@ function RadioButtons({ isAutoCheck, setIsAutoCheck }: RadioButtonsProps) {
             topics.map((topic: string) => {
               return (
                 <div key={topic} onClick={handleTopicChange(topic)}>
-                  <RadioButton text={topic == 'CU0' ? 'Height/PE' : topic == 'CU5' ? 'Mass/Energy' : topic == 'CU0_esp' ? 'Mass/Energy' : topic == 'CU5_esp' ? 'Mass/Energy' : topic == 'Food' ? 'Food/Culture' : topic}
+                  <RadioButton text={topic == 'CU0' ? 'Height/PE' : topic == 'CU5' ? 'Mass/Energy' : topic == 'CU0_esp' ? 'Height/PE' : topic == 'CU5_esp' ? 'Mass/Energy' : topic == 'Food' ? 'Food/Culture' : topic}
                     isSelected={currentTopic === topic} />
                 </div>
               );

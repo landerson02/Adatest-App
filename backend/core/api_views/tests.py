@@ -199,9 +199,10 @@ def test_clear(request, config):
     df_map.clear()
 
     # reset grader prompts
-    grader_prompts['CU0_esp'] = 'Does the following sentence include an acceptable/unacceptable description of the physics concept: Greater height means greater potential energy? Here is the sentence:'
-    grader_prompts['CU5_esp'] = 'Does the following sentence include an acceptable/unacceptable description of the physics concept: Greater mass means greater energy? Here is the sentence:'
-    grader_prompts['Food'] = 'Does this sentence include an acceptable or unacceptable description of food and/or culture? Here is the sentence:'
+    grader_prompts['CU0_esp'] = 'Does the following contain the physics concept: Greater height means greater energy? Here is the sentence:'
+    grader_prompts['CU5_esp'] = 'The sentence is acceptable if it contain the physics concept: The more mass, the more energy. If not, it is unacceptable. Here is the sentence:'
+    grader_prompts['Food'] = 'Does this sentence include a description of food and/or culture? Here is the sentence:'
+
 
     # reset grader pipelines
     if appConfig[0] == "M-AIBAT":
