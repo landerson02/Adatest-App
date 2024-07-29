@@ -28,9 +28,9 @@ class GeneralGraderPipeline(Pipeline):
     def __init__(self, model, tokenizer, task):
         super().__init__(model=model, tokenizer=tokenizer, task=task)
 
-    def preprocess(self, concept, essay): # continue tweaking prompt
+    def preprocess(self, instruction, essay): # continue tweaking prompt
         # prompt = f"Is this sentence an acceptable or unacceptable definition of {concept}? Here is the example: {essay}"
-        prompt = f"{concept}: {essay}"
+        prompt = f"{instruction} {essay}"
 
         messages = [
             {"role": "system", "content": "Always only answer with acceptable or unacceptable."},
@@ -54,6 +54,7 @@ class GeneralGraderPipeline(Pipeline):
         outputs = self.model.generate(
             input_ids=model_inputs,
             max_new_tokens=256,
+            pad_token_id=self.tokenizer.eos_token_id,
             eos_token_id=terminators,
             do_sample=True,
             temperature=0.6,

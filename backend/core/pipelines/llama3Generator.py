@@ -46,7 +46,7 @@ class LlamaGeneratorPipeline(Pipeline):
 
         return input_ids
 
-    def _forward(self, model_inputs, max_new_tokens=225):
+    def _forward(self, model_inputs, max_new_tokens=256):
         terminators = [
             self.tokenizer.eos_token_id,
             self.tokenizer.convert_tokens_to_ids("<|eot_id|>")
@@ -55,6 +55,7 @@ class LlamaGeneratorPipeline(Pipeline):
         outputs = self.model.generate(
             input_ids=model_inputs,
             max_new_tokens=max_new_tokens,
+            pad_token_id=self.tokenizer.eos_token_id,
             eos_token_id=terminators,
             do_sample=True,
             temperature=0.6,
@@ -96,11 +97,13 @@ class LlamaGeneratorPipeline(Pipeline):
                       + "in this sentence to Spanish. If it is Spanish, translate only nouns in "\
                       + "this sentence into English. If it is Spanglish, translate only nouns "\
                       + "to the other language. Here is the sentence: ",
-          'cognates' : "Cognates are a pair of words in different languages with similar structure and meaning. "
-                      + "If the sentence is English, find and describe a Spanish cognate. "
-                      + "If the sentence is Spanish, find and describe an English cognate. "
-                      + "If it is Spanglish, find a word with a cognate "
-                      + "in the other language. Here is the sentence: ",
+        #   'cognates' : "Cognates are a pair of words in different languages with similar structure and meaning. "
+        #               + "If the sentence is English, find and describe a Spanish cognate. "
+        #               + "If the sentence is Spanish, find and describe an English cognate. "
+        #               + "If it is Spanglish, find a word with a cognate "
+        #               + "in the other language. Here is the sentence: ",
+           'cognates' : "Switch between English and Spanish. If the sentence has a cognate in either language, "
+                      + "switch the cognate word and return the new sentence. Otherwise, return the original sentence: ",
         #   'false_cognate':"If the sentence is English, find a false Spanish cognate. "
         #       + "If the sentence is Spanish, find a false English cognate. "
         #       + "If it is Spanglish (a combination of both languages), find a false cognate in the "
@@ -113,8 +116,8 @@ class LlamaGeneratorPipeline(Pipeline):
               + "in this sentence with a loanword in Spanish. If the sentence is Spanish, replace "
               + "a noun or a verb in this sentence with a loanword in English.  If it is Spanglish (a combination of both English and Spanish), "
               + "replace only nouns or verbs to the other language. Here is the sentence: ",
-          'word_wall':"Identify the theme in this sentence that can produce a word wall:",
-          'sentence_building': "Build on this sentence with increasing grammatical complexity: ",
+        #   'word_wall':"Identify the theme in this sentence that can produce a word wall:",
+        #   'sentence_building': "Build on this sentence with increasing grammatical complexity and keep vocabulary simple: ",
           'dialect': "Produce a different Spanish dialect for the following sentence. "
               + "If the sentence is English, return 'not translating': "
         }
@@ -137,8 +140,14 @@ class LlamaGeneratorPipeline(Pipeline):
                 system_instr = "Only reply with the new translation. If it is already Spanglish, return the same sentence. Do not explain."
                 assist_instr = "Spanglish is the combination of English and Spanish in a single sentence. An example sentence: "\
                 + "Mi familia often takes walks to the parque del vecindario for ice cream."
-            elif self.task == "cognate":
-                system_instr = "Do not explain your steps. Give your answer and the word's meaning."
+            # elif self.task == "cognate":
+            #     system_instr = "Do not explain your steps. Only respond with the new or original sentence with no change.'"
+            #     assist_instr = "Cognates are a pair of words in different languages that must have similar spelling and meaning. Is there a cognate in this sentence? If there are none, return 'no cognates found'"
+            elif self.task == "cognates":
+                system_instr = "Do not explain your steps. Only respond with the new sentence or original sentence with no change.'"
+                # assist_instr = "Cognates are a pair of words in different languages that must have similar spelling and meaning."
+                assist_instr = "Cognates are a pair of words in different languages that must have similar spelling and meaning. Is there a cognate in this sentence? If there are none, return the original sentence"
+
             # elif self.task == "false_cognate":
             #     system_instr = "Do not explain your steps. Give your answer and the word's meaning."
             #     assist_instr = "False cognates are pairs of words in different languages "\

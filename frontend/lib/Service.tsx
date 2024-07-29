@@ -401,6 +401,24 @@ export async function getTopics() {
 }
 
 /**
+ * Gets prompt for a topic
+ * @param topic Topic to get prompt for
+ * @returns A string of the prompt
+ */
+export async function getPrompt(topic: string) {
+  const url = `core/topics/prompt/${topic}`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      cache: "no-store",
+    });
+    return await res.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
  * Adds a topic
  * @param topic Topic to add (shorthand)
  * @param prompt_topic Topic to add (full name that will go in the prompt)
