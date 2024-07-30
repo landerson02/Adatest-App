@@ -100,9 +100,10 @@ In the same directory as the adatest.pem file, run the following command:
 scp -i adatest.pem ubuntu@<address>:/home/ubuntu/Adatest/Adatest-App/backend/log.csv <destination in local>
 ```
 You will need to replace the "address" with the address of the VM and "destination in local" with the location 
-you want to save the log file to on your local computer. This command saves the file "log.csv" to the location you specify, 
-but you will also need to save the files "perturbations.csv" and "tests.csv" in the same way. Just replace the "log.csv" 
-in the scp command with the file you want to save.
+you want to save the log file to on your local computer. This command saves the file "log.csv" to the location you specify,
+
+Repeat for "perturbations.csv" and "tests.csv," using the same command except replacing "log.csv"
+
 # In Case vm_setup.sh fails
 The VM won't have any packages installed, use the following commands to download docker-compose:
 ```
