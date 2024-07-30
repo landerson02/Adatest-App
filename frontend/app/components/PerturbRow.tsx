@@ -96,7 +96,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
       </div>
 
       {/* Test Essay */}
-      <div className={'text-md font-light flex justify-around items-center w-[55%] pl-2'}>
+      <div className={'text-md font-light flex justify-around items-center w-[40%] pl-2'}>
         <textarea
           className={'w-[80%] text-md font-light px-2 resize-none bg-gray-50'}
           value={newTest}
@@ -115,7 +115,7 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
       </div>
 
       {/* AI Grade */}
-      <div className={'w-[17%] items-center'}>
+      <div className={'w-[15%] items-center'}>
         {
           pertTest.label.toLowerCase() == "acceptable" ?
             <div className={'w-full flex justify-center'}>
@@ -133,8 +133,33 @@ const PerturbRow = ({ pertTest }: PerturbRowProps) => {
         }
       </div>
 
-      {/* Your Grade Placeholder */}
-      <div className={'w-[13%] items-center'}>
+      {/* Your Grade */}
+      <div className={'w-[15%] items-center'}>
+        {
+          pertTest.ground_truth.toLowerCase() == "acceptable" ?
+            <div className={'w-full flex justify-center'}>
+              <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
+                'flex justify-left font-light border border-green-500 pr-1'}>
+                <CiCircleCheck className={'h-6 w-6 text-green-500'}/>Acceptable
+              </div>
+            </div> : pertTest.ground_truth.toLowerCase() == "unacceptable" ?
+              <div className={'w-full flex justify-center'}>
+                <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
+                  'flex justify-left font-light border border-red-500 pr-1'}>
+                  <CiCircleRemove className={'h-6 w-6 text-red-500'}/> Unacceptable
+                </div>
+              </div> :
+              <div className={'w-full flex justify-center'}>
+                <div className={'bg-gray-50 text-gray-500 rounded-md text-center ' +
+                  'flex justify-left font-light border border-gray-500 px-1'}>
+                  Ungraded
+                </div>
+              </div>
+        }
+      </div>
+
+      {/* Your Agreement with AI */}
+      <div className={'w-[15%] items-center'}>
         {pertTest.validity?.toLowerCase() == "approved" ? (
           <div className={'w-full flex justify-center'}>
             <div className={'bg-green-50 text-green-500 rounded-md text-center ' +

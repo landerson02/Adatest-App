@@ -82,7 +82,7 @@ const Row = ({ test, isPertsFiltered }: rowProps) => {
           </div>
 
           {/* Test Essay */}
-          <div className={hasPerturbed(testData) ? "w-[55%] flex justify-around items-center" : "w-[65%] flex justify-around items-center"}>
+          <div className={hasPerturbed(testData) ? "w-[40%] flex justify-around items-center" : "w-[50%] flex justify-around items-center"}>
             <textarea
               className={`text-lg font-light px-2 resize-none ${test.perturbedTests.length === 0 ? 'w-[85%]' : 'w-full'} ${test.validity === 'unapproved' ? 'bg-gray-50' : 'bg-gray-300'}`}
               value={newTest}
@@ -102,7 +102,7 @@ const Row = ({ test, isPertsFiltered }: rowProps) => {
           </div>
 
           {/* AI Grade */}
-          <div className={'w-[17%] items-center'}>
+          <div className={'w-[15%] items-center'}>
             {
               test.label == "acceptable" ?
                 <div className={'w-full flex justify-center'}>
@@ -121,7 +121,32 @@ const Row = ({ test, isPertsFiltered }: rowProps) => {
           </div>
 
           {/* Your Grade */}
-          <div className={'w-[13%] items-center'}>
+          <div className={'w-[15%] items-center'}>
+            {
+              test.ground_truth.toLowerCase() == "acceptable" ?
+                <div className={'w-full flex justify-center'}>
+                  <div className={'bg-green-50 text-green-500 rounded-md text-center ' +
+                    'flex justify-left font-light border border-green-500 pr-1'}>
+                    <CiCircleCheck className={'h-6 w-6 text-green-500'}/>Acceptable
+                  </div>
+                </div> : test.ground_truth.toLowerCase() == "unacceptable" ?
+                  <div className={'w-full flex justify-center'}>
+                    <div className={'bg-red-50 text-red-500 rounded-md text-center ' +
+                      'flex justify-left font-light border border-red-500 pr-1'}>
+                      <CiCircleRemove className={'h-6 w-6 text-red-500'}/> Unacceptable
+                    </div>
+                  </div> :
+                  <div className={'w-full flex justify-center'}>
+                    <div className={'bg-gray-50 text-gray-500 rounded-md text-center ' +
+                      'flex justify-left font-light border border-gray-500 px-1'}>
+                      Ungraded
+                    </div>
+                  </div>
+            }
+          </div>
+
+          {/* Your Agreement With AI */}
+          <div className={'w-[15%] items-center'}>
             {
               test.validity == "approved" ?
                 <div className={'w-full flex justify-center'}>

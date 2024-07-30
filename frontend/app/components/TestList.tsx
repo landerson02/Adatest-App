@@ -81,7 +81,7 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
   return (
     <div className={'w-full h-screen flex flex-col overflow-y-scroll overflow-x-hidden'}>
       {/* HEADER */}
-      <div className={'sticky top-0 border-y border-gray-400 w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200 shadow'}>
+      <div className={'text-lg sticky top-0 border-y border-gray-400 w-full max-h-12 min-h-12 items-center flex justify-between bg-gray-200 shadow'}>
         <div className={'flex flex-row items-center justify-center w-[5%] hover:cursor-pointer'} onClick={toggleSelectAll}>
           {isAllSelected ? (
             <MdOutlineCheckBox className="w-6 h-6" />
@@ -90,9 +90,9 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
           )}
           {/*Select All*/}
         </div>
-        <div className={`text-xl text-center ${hasPerturbed(testData) ? "w-[55%]" : "w-[65%]"}`}>Statements</div>
-        <div className={'flex w-[17%] justify-center items-center pr-2'}>
-          <div className={'text-xl whitespace-nowrap'}>AI Assessment</div>
+        <div className={`text-center ${hasPerturbed(testData) ? "w-[40%]" : "w-[50%]"}`}>Statements</div>
+        <div className={'flex w-[15%] justify-center items-center pr-2'}>
+          <div className={'whitespace-nowrap'}>AI Assessment</div>
           <div>
             {filterMap['label'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingGradeFilter(!isSelectingGradeFilter)} /> :
@@ -130,8 +130,11 @@ const TestList = ({ filterMap, setFilterMap }: testListProps) => {
             }
           </div>
         </div>
-        <div className={'flex w-[13%] justify-center items-center pr-2'}>
-          <div className={'text-xl whitespace-nowrap'}>My Decision</div>
+        <div className={'flex w-[15%] justify-center items-center pr-2'}>
+          <div className={'whitespace-nowrap'}>Your Assessment</div>
+        </div>
+        <div className={'flex w-[15%] justify-center items-center pr-2'}>
+          <div className={'whitespace-nowrap'}>Agreement</div>
           <div>
             {filterMap['grade'] === '' ?
               <RiFilterLine className={'h-6 w-6 text-black hover:scale-110'} onClick={() => setIsSelectingDecisionFilter(!isSelectingDecisionFilter)} /> :

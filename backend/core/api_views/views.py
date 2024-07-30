@@ -114,8 +114,7 @@ def init_database(request):
         for i, row in data.iterrows():
             if row['input'] == '':
                 continue
-            obj = Test(id=i, title=row['input'], topic=top, label=check_lab(top, row['input']),
-                       ground_truth=row['output'])
+            obj = Test(id=i, title=row['input'], topic=top, label=check_lab(top, row['input']))
             obj.save()
 
     return Response("All initial tests loaded!")
