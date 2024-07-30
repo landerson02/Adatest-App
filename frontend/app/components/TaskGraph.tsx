@@ -25,7 +25,7 @@ ChartJS.register(BarElement,
     Title);
 
 const TaskGraph = () => {
-    const { testData, isCurrent } = useContext(TestDataContext);
+    const { testData, isCurrent, currentTopic } = useContext(TestDataContext);
 
     // Boolean to check if the graph is loaded
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -58,7 +58,8 @@ const TaskGraph = () => {
         setTotalTests(total);
 
         // Set topic labels
-        const topicLabels = Object.keys(testData.test_decisions);
+        // const topicLabels = Object.keys(testData.test_decisions);
+        const topicLabels = [currentTopic];
         // Set topic data
         const topicData = createTopicData(topicLabels);
 
@@ -258,7 +259,7 @@ const TaskGraph = () => {
         <div className={'overflow-y-scroll h-full w-full justify-start items-center flex flex-col'}>
             <div className={'w-full h-22'}>
                 <div className={'bg-gray-100 w-full h-[25%] justify-center items-center flex border-b border-gray-200'}>
-                    <h1 className={'align-middle text-2xl font-normal text-gray-600'}>Where AI Fails</h1>
+                    <div className={'align-middle text-2xl font-normal text-gray-600'}>Where You and AI (Dis)Agree</div>
                 </div>
                 <div className={'justify-center mt-7 float-start w-full'}>
                     <p>Statements Evaluated in Total</p>
@@ -266,7 +267,7 @@ const TaskGraph = () => {
                 </div>
                 {isPerturbed && isLoaded && <Options onPerturbationChange={setSelectedCriteria} criteriaLabels={criteriaLabelsDropdown} />}
             </div>
-            {isLoaded && <div className={'w-full h-72'}>
+            {isLoaded && <div className={'w-full h-52'}>
                 {/*@ts-ignore*/}
                 {topicChartOptions && <Bar data={topicChartOptions} options={createOptions('Tests by Topic')}> </Bar>}
             </div>}

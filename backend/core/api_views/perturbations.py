@@ -49,6 +49,7 @@ def generate_perturbations(request, topic):
 
             if perturbed_test == testData.title:
                 perturbed_validity = "unapproved"
+                perturbed_gt = "unknown"
 
             perturbed_id = generate_random_id()
 
@@ -82,6 +83,7 @@ def generate_perturbations(request, topic):
 
             if perturbed_test == testData.title:
                 perturbed_validity = "unapproved"
+                perturbed_gt = "unknown"
 
             perturbed_id = generate_random_id()
 
