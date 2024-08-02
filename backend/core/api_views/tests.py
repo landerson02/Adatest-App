@@ -43,7 +43,7 @@ def test_generate(request, topic: str):
     data = obj.df
     for i, row in data.iterrows():
         if row['topic'].__contains__("suggestions"):
-            test = Test(id=i, title=row['input'], topic=f'suggested_{topic}', label=check_lab(topic, row['input']))
+            test = Test(id=i, title=row['input'], topic=f'{topic}', label=check_lab(topic, row['input']))
             test.save()
 
     testData = Test.objects.filter(topic__icontains=topic)
