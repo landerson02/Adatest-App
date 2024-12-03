@@ -3,7 +3,10 @@ This is a full stack application built with Next.js and Django implementing the
 [adatest](https://github.com/microsoft/adaptive-testing) library, to allow for a 
 more user-friendly and complete end-to-end experience.
 
-It allows users to generate, grade, and review results of adaptive test cases.
+Using an AI grader and generator, users can generate, grade, and review results of adaptive test cases. We use Llama3 - grader and Mistral - generator.
+
+<img width="918" alt="Screenshot 2024-12-02 at 6 39 14 PM" src="https://github.com/user-attachments/assets/4ff2dee4-93c3-45ad-b6c1-4ba87c4d46cf">
+
 
 ## Getting started
 Clone the repository
