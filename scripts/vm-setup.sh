@@ -18,7 +18,7 @@ pip install Django==4.2.11
 pip install django_cors_headers==4.3.1
 pip install django_rest_framework==0.1.0
 pip install django-nextjs==2.4.0
-pip install python-dotenv=1.0.1
+pip install python-dotenv==1.0.1
 pip install peft==0.10.0
 pip install git+https://github.com/nytseng/adatest_mod@split-fix
 # pip install git+https://github.com/nytseng/adatest_mod@llama
