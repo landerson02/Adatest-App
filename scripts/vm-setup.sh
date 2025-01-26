@@ -12,18 +12,19 @@ sudo chown -R ubuntu /home/ubuntu/Adatest/Adatest-App/frontend/.next
 #Backend: Python - Django
 cd ../backend || return
 pip install --upgrade pip
+pip install numpy==1.24.3
 pip install notebook==6.1.5
-pip install Django
-pip install django_cors_headers
-pip install django_rest_framework
+pip install Django==4.2.11
+pip install django_cors_headers==4.3.1
+pip install django_rest_framework==0.1.0
 pip install django-nextjs==2.4.0
-pip install python-dotenv
-pip install peft
+pip install python-dotenv=1.0.1
+pip install peft==0.10.0
 pip install git+https://github.com/nytseng/adatest_mod@split-fix
 # pip install git+https://github.com/nytseng/adatest_mod@llama
-pip install openai
-pip install checklist
-pip install SentencePiece
+pip install openai==0.28.0
+pip install checklist==0.0.11
+pip install SentencePiece==0.2.0
 pip install bitsandbytes
 pip install torch -U
 pip install jinja2==3.1.0
