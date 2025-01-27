@@ -23,8 +23,8 @@ pip install peft==0.10.0
 pip install git+https://github.com/nytseng/adatest_mod@split-fix
 # pip install git+https://github.com/nytseng/adatest_mod@llama
 pip install openai==0.28.0
-pip install checklist==0.0.11
-pip install SentencePiece==0.2.0
+pip install checklist
+pip install SentencePiece
 pip install bitsandbytes
 pip install torch -U
 pip install jinja2==3.1.0
