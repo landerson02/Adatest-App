@@ -27,7 +27,9 @@ MODEL_TYPE = os.getenv('MODEL')
 # ke_model, ke_tokenizer = load_flant5_model('aanandan/FlanT5_AdaTest_KE_v2')
 # ke_pipeline = CustomEssayPipeline(model=ke_model, tokenizer=ke_tokenizer)
 
+print("Loading CU0 Model")
 cu0_pipeline = CUPipeline("CU0")
+print("Loading CU5 Model")
 cu5_pipeline = CUPipeline("CU5")
 
 grader_pipelines = {
@@ -61,7 +63,9 @@ def check_lab(type, inp):
     if type not in grader_pipelines.keys():
         return 'unacceptable'
 
+    print(f"Checking label for {type} with input: {inp}")
     lab = grader_pipelines[type](inp)
+    print(f"Finished grading with label: {lab}")
     return lab[0].lower() if lab[0].lower() in ['acceptable', 'unacceptable'] else 'unacceptable'
 
 
@@ -114,7 +118,9 @@ def init_database(request):
         for i, row in data.iterrows():
             if row['input'] == '':
                 continue
+            print("Adding test:", row['input'])
             obj = Test(id=i, title=row['input'], topic=top, label=check_lab(top, row['input']))
+            print("Test added!")
             obj.save()
 
     return Response("All initial tests loaded!")
