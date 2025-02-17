@@ -78,6 +78,10 @@ When done, to stop the application, run the following command:
 ```
 bash stop-application.sh
 ```
+If ngrok is set up on the current virtual machine/filesystem, you can run this command to generate a temporary URL:
+```
+ngrok http http://localhost:8000
+```
 
 <!-- ## To Run With Docker (currently not working)
 To run the application with docker, you will first need to run the shell script to set everything up for it
